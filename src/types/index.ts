@@ -29,12 +29,20 @@ export interface Teacher {
   id: string
   name: string
   title: string
+  price: string
+  avatarSeed: string
+  strongestFeature: string
   subjects: string[]
-  score: string
   experience: string
   style: string[]
   bio: string
   highlights: string[]
+  caseStudy: {
+    student: string
+    result: string
+    detail: string
+    quote: string
+  }
 }
 
 export type SpeakingView = 'list' | 'topic' | 'practice'

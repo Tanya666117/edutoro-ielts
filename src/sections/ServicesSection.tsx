@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarCheck, Check, ClipboardList, User, Users } from 'lucide-react'
+import { ArrowRight, CalendarCheck, Check, ClipboardList, Image, MessageSquareText, User, Users } from 'lucide-react'
 import { SectionHeader } from '../components/SectionHeader'
 
 interface ServicesSectionProps {
@@ -11,7 +11,9 @@ const serviceCards = [
     label: '1 老师 : 1 学生',
     title: '独立老师一对一',
     desc: '适合目标明确、短板突出或需要高密度反馈的同学。先做入学诊断，再按目标分倒推课表。',
-    points: ['口语逐题陪练与发音纠正', '作文逐段批改和表达升级', '听阅题型方法与错题复盘', '可约试听，按需匹配老师'],
+    points: ['口语逐题陪练与发音纠正', '作文逐段批改和表达升级', '听阅题型方法与错题复盘', '按价位和需求匹配老师'],
+    feedbackTitle: '一对一学生反馈样张',
+    feedbackText: '可查看往期提分截图、课后反馈和学生评价，确认风格后再试听。',
     action: '查看老师',
     target: 'teachers',
     dark: false,
@@ -22,6 +24,8 @@ const serviceCards = [
     title: '多对一督学营',
     desc: '适合自律不足、备考周期紧或需要社群氛围的同学。每天有人检查进度，周周复盘。',
     points: ['每日打卡和作业检查', '每周学习计划与阶段测试', '群内答疑与考情同步', '冲刺期模考和复盘调整'],
+    feedbackTitle: '督学营打卡好评样张',
+    feedbackText: '可查看往期打卡记录、阶段反馈和真实好评图片，了解执行氛围。',
     action: '咨询当期营',
     target: 'contact',
     dark: true,
@@ -43,8 +47,8 @@ export function ServicesSection({ onContact }: ServicesSectionProps) {
         <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
           <SectionHeader
             eyebrow="课程服务"
-            title="不用先买大课，先选适合自己的提分路径"
-            description="参考 Superprof 的老师匹配逻辑，也保留雅思机构该有的规划、题库、督学和资料服务。"
+            title="先看反馈，再选适合自己的提分路径"
+            description="独立老师和督学营都支持先咨询、看往期真实反馈、再决定是否试听或报名。"
           />
           <div className="grid gap-3 sm:grid-cols-3">
             {[
@@ -67,7 +71,7 @@ export function ServicesSection({ onContact }: ServicesSectionProps) {
             return (
               <article
                 key={card.title}
-                className={`card card-lift overflow-hidden ${card.dark ? 'bg-[var(--charcoal)] text-white' : ''}`}
+                className={`card card-lift overflow-hidden ${card.dark ? 'text-white' : ''}`}
                 style={card.dark ? { background: 'var(--charcoal)', borderColor: 'var(--charcoal)' } : undefined}
               >
                 <div className="p-7 md:p-8">
@@ -103,6 +107,27 @@ export function ServicesSection({ onContact }: ServicesSectionProps) {
                       </li>
                     ))}
                   </ul>
+
+                  <button
+                    type="button"
+                    onClick={onContact}
+                    className={`mt-7 flex w-full items-center gap-4 rounded-[8px] p-4 text-left ring-1 transition hover:-translate-y-0.5 ${
+                      card.dark ? 'bg-white/8 ring-white/12' : 'bg-[var(--bg)] ring-black/10'
+                    }`}
+                  >
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] bg-white text-[var(--teal)] ring-1 ring-black/10">
+                      <Image size={21} />
+                    </span>
+                    <span>
+                      <span className={`block text-sm font-black ${card.dark ? 'text-white' : 'text-[var(--ink)]'}`}>
+                        {card.feedbackTitle}
+                      </span>
+                      <span className={`mt-1 block text-xs leading-relaxed ${card.dark ? 'text-white/62' : 'text-[var(--ink-3)]'}`}>
+                        {card.feedbackText}
+                      </span>
+                    </span>
+                    <MessageSquareText size={18} className="ml-auto shrink-0 text-[var(--yellow-2)]" />
+                  </button>
 
                   <button
                     type="button"
