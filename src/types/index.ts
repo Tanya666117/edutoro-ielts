@@ -43,6 +43,11 @@ export interface Teacher {
     detail: string
     quote: string
   }
+  feedbacks: Array<{
+    student: string
+    tag: string
+    text: string
+  }>
 }
 
 export type SpeakingView = 'list' | 'topic' | 'practice'

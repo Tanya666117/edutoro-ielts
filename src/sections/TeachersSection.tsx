@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BadgeCheck, MessageCircle, ReceiptText, RotateCcw, SearchCheck, WalletCards } from 'lucide-react'
+import { BadgeCheck, MessageCircle, ReceiptText, RotateCcw, SearchCheck, WalletCards, X } from 'lucide-react'
 import { SectionHeader } from '../components/SectionHeader'
 import teachersData from '../data/teachers.json'
 import type { Teacher } from '../types'
@@ -16,11 +16,13 @@ function avatarUrl(seed: string) {
 
 export function TeachersSection({ onContact }: TeachersSectionProps) {
   const [active, setActive] = useState(0)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const teacher = teachers[active]
 
   return (
-    <section id="teachers" className="section scroll-mt-24 bg-[var(--bg)]">
-      <div className="shell">
+    <>
+      <section id="teachers" className="section scroll-mt-24 bg-[var(--bg)]">
+        <div className="shell">
         <SectionHeader
           eyebrow="找老师"
           title="创始人试听过的独立老师，按价位和需求匹配"
@@ -49,7 +51,10 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setActive(i)}
+                onClick={() => {
+                  setActive(i)
+                  setFeedbackOpen(false)
+                }}
                 className={`card card-lift flex min-h-[280px] flex-col p-5 text-left ${on ? 'ring-2 ring-[var(--charcoal)]' : ''}`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -104,7 +109,7 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
 
             <button type="button" onClick={onContact} className="btn btn-yellow mt-7 w-full">
               <MessageCircle size={17} />
-              联系试听 / 看反馈
+              联系试听
             </button>
           </div>
 
@@ -150,14 +155,76 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
                     “{teacher.caseStudy.quote}”
                   </blockquote>
                 </div>
-                <button type="button" onClick={onContact} className="btn btn-outline mt-5 w-full">
-                  查看截图版战绩和好评
+                <button type="button" onClick={() => setFeedbackOpen(true)} className="btn btn-outline mt-5 w-full">
+                  查看全部客返
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      {feedbackOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center"
+          style={{ background: 'rgba(23,23,23,0.58)', backdropFilter: 'blur(6px)' }}
+          onClick={() => setFeedbackOpen(false)}
+          role="presentation"
+        >
+          <div
+            className="fade-up relative max-h-[86vh] w-full max-w-3xl overflow-y-auto rounded-[8px] bg-white p-6 shadow-[var(--shadow)] md:p-8"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="teacher-feedback-title"
+          >
+            <button
+              type="button"
+              onClick={() => setFeedbackOpen(false)}
+              className="absolute right-5 top-5 rounded-[8px] p-2 hover:bg-[var(--bg)]"
+              aria-label="关闭客返窗口"
+              style={{ color: 'var(--ink-3)' }}
+            >
+              <X size={20} />
+            </button>
+
+            <p className="eyebrow">Student Feedback</p>
+            <h3 id="teacher-feedback-title" className="mt-2 pr-10 text-2xl font-black text-[var(--ink)]">
+              {teacher.name} 的往期客返
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-2)]">
+              这里先用文字样张占位。后续你拿到真实聊天截图、成绩单或学生评价图片后，可以替换成图片墙。
+            </p>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {teacher.feedbacks.map((feedback, idx) => (
+                <article key={`${feedback.student}-${idx}`} className="rounded-[8px] bg-[var(--bg)] p-5 ring-1 ring-black/10">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-black text-[var(--ink-3)]">{feedback.student}</p>
+                      <h4 className="mt-1 text-lg font-black leading-tight text-[var(--ink)]">{feedback.tag}</h4>
+                    </div>
+                    <span className="rounded-full bg-[var(--yellow)] px-2.5 py-1 text-[11px] font-black text-[var(--ink)]">
+                      客返 {idx + 1}
+                    </span>
+                  </div>
+                  <blockquote className="mt-4 border-l-4 border-[var(--yellow)] pl-4 text-sm font-bold leading-relaxed text-[var(--ink-2)]">
+                    “{feedback.text}”
+                  </blockquote>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-[8px] bg-[var(--charcoal)] p-5 text-white">
+              <p className="text-sm font-black">可补充的真实图片材料</p>
+              <p className="mt-2 text-sm leading-relaxed text-white/68">
+                成绩单截图、聊天好评截图、课后反馈截图、学习计划截图。为保护隐私，学生姓名和联系方式建议打码。
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
