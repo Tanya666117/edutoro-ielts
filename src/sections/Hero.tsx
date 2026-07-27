@@ -1,11 +1,22 @@
-import { ArrowRight, BookOpen, Check, Search, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, FileText, Gift, Sparkles, Star } from 'lucide-react'
 import { SITE } from '../data/site'
 
 interface HeroProps {
   onContact: () => void
 }
 
-const quickFilters = ['口语 6.5+', '写作批改', '机考冲刺', '1 对 1 老师']
+const resourceCards = [
+  {
+    icon: FileText,
+    title: 'Z 家阅读思路资料',
+    desc: '整理阅读题型方法、定位练习和错题复盘表，作为资料领取入口，不搬运原版内容。',
+  },
+  {
+    icon: Gift,
+    title: '虾滑口语素材索引',
+    desc: '提供口语话题素材方向、表达清单和练习路径，方便按题库补表达。',
+  },
+]
 
 export function Hero({ onContact }: HeroProps) {
   const scrollTo = (id: string) => {
@@ -31,37 +42,25 @@ export function Hero({ onContact }: HeroProps) {
             {SITE.description}
           </p>
 
-          <div className="mt-8 max-w-2xl rounded-[8px] bg-white p-3 shadow-[var(--shadow)] ring-1 ring-black/10">
-            <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-              <label className="flex min-h-[56px] items-center gap-3 rounded-[6px] bg-[var(--bg)] px-4">
-                <Search size={20} className="shrink-0 text-[var(--ink-3)]" />
-                <input
-                  aria-label="搜索课程或老师"
-                  className="w-full bg-transparent text-[15px] font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
-                  placeholder="搜口语、写作、目标分或备考周期"
-                />
-              </label>
-              <button type="button" onClick={() => scrollTo('teachers')} className="btn btn-dark min-w-[148px]">
-                找老师
-                <ArrowRight size={18} />
+          <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-2">
+            {resourceCards.map(({ icon: Icon, title, desc }) => (
+              <button
+                key={title}
+                type="button"
+                onClick={onContact}
+                className="card card-lift flex min-h-[148px] flex-col items-start p-5 text-left"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[var(--ink)]">
+                  <Icon size={20} />
+                </span>
+                <span className="mt-4 text-lg font-black text-[var(--ink)]">{title}</span>
+                <span className="mt-2 text-sm font-semibold leading-relaxed text-[var(--ink-2)]">{desc}</span>
               </button>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {quickFilters.map((filter) => (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => scrollTo(filter.includes('老师') ? 'teachers' : 'services')}
-                  className="rounded-full border border-black/10 bg-white px-3 py-1.5 text-xs font-extrabold text-[var(--ink-2)] transition hover:border-black/25"
-                >
-                  {filter}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
 
           <ul className="mt-8 grid gap-3 sm:grid-cols-3">
-            {['真题题库免费练', '独立老师按需匹配', '督学营每日跟进'].map((t) => (
+            {['口语真题题库免费练', '独立老师按价位和需求匹配', '督学营每日跟进'].map((t) => (
               <li key={t} className="flex items-center gap-2 text-[14px] font-bold text-[var(--ink-2)]">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--yellow)] text-[var(--ink)]">
                   <Check size={12} strokeWidth={3} />
@@ -77,7 +76,8 @@ export function Hero({ onContact }: HeroProps) {
               先练口语题库
             </button>
             <button type="button" onClick={onContact} className="btn btn-outline">
-              领取备考资料
+              免费领取备考资料
+              <ArrowRight size={17} />
             </button>
           </div>
         </div>
@@ -102,9 +102,9 @@ export function Hero({ onContact }: HeroProps) {
 
             <div className="grid grid-cols-3 divide-x divide-black/10">
               {[
-                { value: '23', label: '口语话题' },
-                { value: '118+', label: '真题示范' },
-                { value: '5', label: '独立老师' },
+                { value: '42', label: '口语话题' },
+                { value: '210+', label: '真题题目' },
+                { value: '2', label: '资料包入口' },
               ].map((s) => (
                 <div key={s.label} className="p-5">
                   <p className="text-3xl font-black leading-none text-[var(--ink)]">{s.value}</p>

@@ -2,7 +2,9 @@ import {
   Building2,
   Car,
   Film,
+  FileText,
   FlaskConical,
+  Gift,
   Globe,
   GraduationCap,
   Headphones,
@@ -51,6 +53,8 @@ const ICONS: Record<string, LucideIcon> = {
   Share2,
   GraduationCap,
   MessageCircle,
+  FileText,
+  Gift,
 }
 
 export function TopicIcon({ name, className }: { name: string; className?: string }) {

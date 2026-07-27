@@ -21,6 +21,10 @@ function pickRandomQuestion() {
   return { topic, question }
 }
 
+function isPracticePrompt(text: string) {
+  return text.startsWith('Practice prompt:')
+}
+
 export function SpeakingSection() {
   const [view, setView] = useState<SpeakingView>('list')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -62,8 +66,8 @@ export function SpeakingSection() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeader
             eyebrow="口语题库"
-            title="Part 1 题库，页面里直接练"
-            description={`${topics.length} 大话题 · ${totalQuestions}+ 真题 · 配 7.5+ 示例回答。适合先热身，也适合课后复盘。`}
+            title="Part 1 新题 + 老题沿用，页面里直接练"
+            description={`${topics.length} 大话题 · ${totalQuestions}+ 真题。部分题目配 7.5+ 示例回答，PDF 新补题先提供练习提示。`}
           />
           {view === 'list' && (
             <button type="button" onClick={startPractice} className="btn btn-dark shrink-0">
@@ -146,19 +150,24 @@ export function SpeakingSection() {
               </div>
             </div>
 
-            {selected.questions.map((q, idx) => (
-              <article key={q.id} className="card overflow-hidden">
-                <div className="p-6" style={{ borderLeft: '5px solid var(--yellow)' }}>
-                  <span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">Q{idx + 1}</span>
-                  <p className="mt-3 text-lg font-black leading-snug">{q.questionEn}</p>
-                  {q.questionZh && <p className="mt-2 text-sm text-[var(--ink-3)]">{q.questionZh}</p>}
-                </div>
-                <div className="px-6 py-5" style={{ background: 'var(--bg)', borderTop: '1px solid var(--line-2)' }}>
-                  <p className="text-xs font-black tracking-wide text-[var(--teal)]">MODEL ANSWER</p>
-                  <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{q.modelAnswerEn}</p>
-                </div>
-              </article>
-            ))}
+            {selected.questions.map((q, idx) => {
+              const promptOnly = isPracticePrompt(q.modelAnswerEn)
+              return (
+                <article key={q.id} className="card overflow-hidden">
+                  <div className="p-6" style={{ borderLeft: '5px solid var(--yellow)' }}>
+                    <span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">Q{idx + 1}</span>
+                    <p className="mt-3 text-lg font-black leading-snug">{q.questionEn}</p>
+                    {q.questionZh && <p className="mt-2 text-sm text-[var(--ink-3)]">{q.questionZh}</p>}
+                  </div>
+                  <div className="px-6 py-5" style={{ background: 'var(--bg)', borderTop: '1px solid var(--line-2)' }}>
+                    <p className="text-xs font-black tracking-wide text-[var(--teal)]">
+                      {promptOnly ? 'PRACTICE PROMPT' : 'MODEL ANSWER'}
+                    </p>
+                    <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{q.modelAnswerEn}</p>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         )}
 
@@ -178,12 +187,12 @@ export function SpeakingSection() {
                 </div>
                 <div className="mt-5 flex items-start gap-2 rounded-[8px] bg-white p-4 text-sm text-[var(--ink-2)] ring-1 ring-black/10">
                   <Timer size={16} className="mt-0.5 text-[var(--teal)]" />
-                  建议先用 20-30 秒组织思路，口头回答后再看示例。
+                  建议先用 20-30 秒组织思路，口头回答后再看示例或练习提示。
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button type="button" onClick={() => setShowAnswer((v) => !v)} className="btn btn-dark">
                     {showAnswer ? <EyeOff size={16} /> : <Eye size={16} />}
-                    {showAnswer ? '隐藏示例' : '查看示例'}
+                    {showAnswer ? '隐藏内容' : '查看提示'}
                   </button>
                   <button
                     type="button"
@@ -199,7 +208,9 @@ export function SpeakingSection() {
                 </div>
                 {showAnswer && (
                   <div className="mt-6 rounded-[8px] p-5 ring-1 ring-black/10">
-                    <p className="text-xs font-black text-[var(--teal)]">MODEL ANSWER · Band 7.5+</p>
+                    <p className="text-xs font-black text-[var(--teal)]">
+                      {isPracticePrompt(practice.question.modelAnswerEn) ? 'PRACTICE PROMPT' : 'MODEL ANSWER · Band 7.5+'}
+                    </p>
                     <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">
                       {practice.question.modelAnswerEn}
                     </p>

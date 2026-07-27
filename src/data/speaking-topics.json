@@ -936,5 +936,921 @@
         "modelAnswerEn": "That's a difficult comparison to make because they served such different purposes at distinct stages of my development. My primary school teachers were wonderfully nurturing and patient, providing a safe and supportive environment where I could explore and make mistakes without fear of harsh judgment. On the other hand, my high school teachers challenged me intellectually and pushed me out of my comfort zone in ways that were uncomfortable at the time but ultimately transformative. I suppose I appreciate both groups immensely, just for profoundly different reasons that reflect the evolving needs of a growing student.\n\n---"
       }
     ]
+  },
+  {
+    "id": "food",
+    "num": 24,
+    "titleEn": "Food",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "MessageCircle",
+    "questions": [
+      {
+        "id": "24-1",
+        "questionEn": "What is your favourite food?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Food. Include one personal example and one reason."
+      },
+      {
+        "id": "24-2",
+        "questionEn": "What kind of food did you like when you were young?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Food. Include one personal example and one reason."
+      },
+      {
+        "id": "24-3",
+        "questionEn": "Do you eat different foods at different times of the year?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Food. Include one personal example and one reason."
+      },
+      {
+        "id": "24-4",
+        "questionEn": "Has your favourite food changed since you were a child?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Food. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "pets-and-animals",
+    "num": 25,
+    "titleEn": "Pets and Animals",
+    "titleZh": "",
+    "questionCount": 8,
+    "icon": "Star",
+    "questions": [
+      {
+        "id": "25-1",
+        "questionEn": "What's your favourite animal? Why?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-2",
+        "questionEn": "Where do you prefer to keep your pet, indoors or outdoors?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-3",
+        "questionEn": "Have you ever had a pet before?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-4",
+        "questionEn": "What is the most popular animal in China?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-5",
+        "questionEn": "Have you ever visited a zoo?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-6",
+        "questionEn": "How often do you visit a zoo?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-7",
+        "questionEn": "Are there many people keeping pets in your country?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      },
+      {
+        "id": "25-8",
+        "questionEn": "Should schools teach students knowledge about pets or animals?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Pets and Animals. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "sports-team",
+    "num": 26,
+    "titleEn": "Sports Team",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Trophy",
+    "questions": [
+      {
+        "id": "26-1",
+        "questionEn": "Have you ever been part of a sports team?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Sports Team. Include one personal example and one reason."
+      },
+      {
+        "id": "26-2",
+        "questionEn": "Is team sports popular in your culture?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Sports Team. Include one personal example and one reason."
+      },
+      {
+        "id": "26-3",
+        "questionEn": "Do you like watching team games? Why?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Sports Team. Include one personal example and one reason."
+      },
+      {
+        "id": "26-4",
+        "questionEn": "What are the differences between team sports and individual sports?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Sports Team. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "hobby",
+    "num": 27,
+    "titleEn": "Hobby",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Sparkles",
+    "questions": [
+      {
+        "id": "27-1",
+        "questionEn": "Do you have any hobbies?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hobby. Include one personal example and one reason."
+      },
+      {
+        "id": "27-2",
+        "questionEn": "Did you have any hobbies when you were a child?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hobby. Include one personal example and one reason."
+      },
+      {
+        "id": "27-3",
+        "questionEn": "Do you have a hobby that you've had since childhood?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hobby. Include one personal example and one reason."
+      },
+      {
+        "id": "27-4",
+        "questionEn": "Do you have the same hobbies as your family members?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hobby. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "morning-time",
+    "num": 28,
+    "titleEn": "Morning Time",
+    "titleZh": "",
+    "questionCount": 5,
+    "icon": "Sun",
+    "questions": [
+      {
+        "id": "28-1",
+        "questionEn": "Do you like getting up early in the morning?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Morning Time. Include one personal example and one reason."
+      },
+      {
+        "id": "28-2",
+        "questionEn": "What do you usually do in the morning?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Morning Time. Include one personal example and one reason."
+      },
+      {
+        "id": "28-3",
+        "questionEn": "What did you do in the morning when you were little? Why?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Morning Time. Include one personal example and one reason."
+      },
+      {
+        "id": "28-4",
+        "questionEn": "Are there any differences between what you do in the morning now and what you did in the past?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Morning Time. Include one personal example and one reason."
+      },
+      {
+        "id": "28-5",
+        "questionEn": "Do you spend your mornings doing the same things on both weekends and weekdays? Why?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Morning Time. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "gifts",
+    "num": 29,
+    "titleEn": "Gifts",
+    "titleZh": "",
+    "questionCount": 5,
+    "icon": "Gift",
+    "questions": [
+      {
+        "id": "29-1",
+        "questionEn": "Have you ever sent handmade gifts to others?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Gifts. Include one personal example and one reason."
+      },
+      {
+        "id": "29-2",
+        "questionEn": "Have you ever received a great gift?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Gifts. Include one personal example and one reason."
+      },
+      {
+        "id": "29-3",
+        "questionEn": "What do you consider when choosing a gift?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Gifts. Include one personal example and one reason."
+      },
+      {
+        "id": "29-4",
+        "questionEn": "Do you think you are good at choosing gifts?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Gifts. Include one personal example and one reason."
+      },
+      {
+        "id": "29-5",
+        "questionEn": "What gift have you received recently?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Gifts. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "reading",
+    "num": 30,
+    "titleEn": "Reading",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "FileText",
+    "questions": [
+      {
+        "id": "30-1",
+        "questionEn": "Do you like reading?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Reading. Include one personal example and one reason."
+      },
+      {
+        "id": "30-2",
+        "questionEn": "Do you prefer to read on paper or on a screen?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Reading. Include one personal example and one reason."
+      },
+      {
+        "id": "30-3",
+        "questionEn": "When do you need to read carefully, and when not?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Reading. Include one personal example and one reason."
+      },
+      {
+        "id": "30-4",
+        "questionEn": "Do you prefer scanning or detailed reading?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Reading. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "walking",
+    "num": 31,
+    "titleEn": "Walking",
+    "titleZh": "",
+    "questionCount": 5,
+    "icon": "Trees",
+    "questions": [
+      {
+        "id": "31-1",
+        "questionEn": "Do you walk a lot?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Walking. Include one personal example and one reason."
+      },
+      {
+        "id": "31-2",
+        "questionEn": "Did you often go outside to have a walk when you were a child?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Walking. Include one personal example and one reason."
+      },
+      {
+        "id": "31-3",
+        "questionEn": "Why do people like to walk in parks?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Walking. Include one personal example and one reason."
+      },
+      {
+        "id": "31-4",
+        "questionEn": "Where would you like to take a long walk if you had the chance?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Walking. Include one personal example and one reason."
+      },
+      {
+        "id": "31-5",
+        "questionEn": "Where did you go for a walk lately?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Walking. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "typing",
+    "num": 32,
+    "titleEn": "Typing",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Scan",
+    "questions": [
+      {
+        "id": "32-1",
+        "questionEn": "Do you prefer typing or handwriting?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Typing. Include one personal example and one reason."
+      },
+      {
+        "id": "32-2",
+        "questionEn": "Do you type on a desktop or laptop keyboard every day?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Typing. Include one personal example and one reason."
+      },
+      {
+        "id": "32-3",
+        "questionEn": "When did you learn how to type on a keyboard?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Typing. Include one personal example and one reason."
+      },
+      {
+        "id": "32-4",
+        "questionEn": "How do you improve your typing?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Typing. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "scenery",
+    "num": 33,
+    "titleEn": "Scenery",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Trees",
+    "questions": [
+      {
+        "id": "33-1",
+        "questionEn": "Do you look out the window at the scenery when travelling by bus or car?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Scenery. Include one personal example and one reason."
+      },
+      {
+        "id": "33-2",
+        "questionEn": "Do you prefer the mountains or the sea?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Scenery. Include one personal example and one reason."
+      },
+      {
+        "id": "33-3",
+        "questionEn": "Do you like to take scenery pictures?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Scenery. Include one personal example and one reason."
+      },
+      {
+        "id": "33-4",
+        "questionEn": "What are the most beautiful sights you have seen while traveling?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Scenery. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "building",
+    "num": 34,
+    "titleEn": "Building",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Building2",
+    "questions": [
+      {
+        "id": "34-1",
+        "questionEn": "Are there tall buildings near your home?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Building. Include one personal example and one reason."
+      },
+      {
+        "id": "34-2",
+        "questionEn": "Do you take photos of buildings?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Building. Include one personal example and one reason."
+      },
+      {
+        "id": "34-3",
+        "questionEn": "Is there a building that you would like to visit?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Building. Include one personal example and one reason."
+      },
+      {
+        "id": "34-4",
+        "questionEn": "Do you want to live in a tall building?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Building. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "childhood-activities",
+    "num": 35,
+    "titleEn": "Childhood Activities",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Sun",
+    "questions": [
+      {
+        "id": "35-1",
+        "questionEn": "What are your favourite activities?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Childhood Activities. Include one personal example and one reason."
+      },
+      {
+        "id": "35-2",
+        "questionEn": "What were your favourite activities when you were a child?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Childhood Activities. Include one personal example and one reason."
+      },
+      {
+        "id": "35-3",
+        "questionEn": "Did you prefer to do activities alone or with a group of people when you were a child?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Childhood Activities. Include one personal example and one reason."
+      },
+      {
+        "id": "35-4",
+        "questionEn": "Are there any differences between the activities you liked when you were a child and those you like now?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Childhood Activities. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "views",
+    "num": 36,
+    "titleEn": "Views",
+    "titleZh": "",
+    "questionCount": 4,
+    "icon": "Scan",
+    "questions": [
+      {
+        "id": "36-1",
+        "questionEn": "Do you like taking pictures of different views?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Views. Include one personal example and one reason."
+      },
+      {
+        "id": "36-2",
+        "questionEn": "Do you prefer views in urban areas or rural areas?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Views. Include one personal example and one reason."
+      },
+      {
+        "id": "36-3",
+        "questionEn": "Do you prefer views in your own country or in other countries?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Views. Include one personal example and one reason."
+      },
+      {
+        "id": "36-4",
+        "questionEn": "Have you seen an unforgettable and beautiful view or scenery?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Views. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "life-stages",
+    "num": 37,
+    "titleEn": "Life Stages",
+    "titleZh": "",
+    "questionCount": 6,
+    "icon": "Sparkles",
+    "questions": [
+      {
+        "id": "37-1",
+        "questionEn": "What did you often do with your friends in your childhood?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      },
+      {
+        "id": "37-2",
+        "questionEn": "What do you think is the most important at the moment?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      },
+      {
+        "id": "37-3",
+        "questionEn": "Do you have any plans for the next five years?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      },
+      {
+        "id": "37-4",
+        "questionEn": "How do people remember each stage of their lives?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      },
+      {
+        "id": "37-5",
+        "questionEn": "Do you enjoy being the age you are now?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      },
+      {
+        "id": "37-6",
+        "questionEn": "At what age do you think people are the happiest?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Life Stages. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "work-or-studies",
+    "num": 38,
+    "titleEn": "Work or Studies",
+    "titleZh": "",
+    "questionCount": 15,
+    "icon": "GraduationCap",
+    "questions": [
+      {
+        "id": "38-1",
+        "questionEn": "What subjects are you studying?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-2",
+        "questionEn": "Do you like your subject?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-3",
+        "questionEn": "Why did you choose to study that subject?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-4",
+        "questionEn": "Do you think that your subject is popular in your country?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-5",
+        "questionEn": "Do you have any plans for your studies in the next five years?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-6",
+        "questionEn": "Do you prefer to study in the mornings or in the afternoons?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-7",
+        "questionEn": "How much time do you spend on your studies each week?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-8",
+        "questionEn": "Are you looking forward to working?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-9",
+        "questionEn": "What technology do you use when you study?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-10",
+        "questionEn": "What work do you do?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-11",
+        "questionEn": "Why did you choose to do that type of work?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-12",
+        "questionEn": "Do you like your job?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-13",
+        "questionEn": "Do you have any plans for your work in the next five years?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-14",
+        "questionEn": "Do you want to change to another job?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      },
+      {
+        "id": "38-15",
+        "questionEn": "What technology do you use at work?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Work or Studies. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "home-accommodation",
+    "num": 39,
+    "titleEn": "Home / Accommodation",
+    "titleZh": "",
+    "questionCount": 12,
+    "icon": "Building2",
+    "questions": [
+      {
+        "id": "39-1",
+        "questionEn": "What kind of house or apartment do you want to live in in the future?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-2",
+        "questionEn": "Are the transport facilities to your home very good?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-3",
+        "questionEn": "Do you prefer living in a house or an apartment?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-4",
+        "questionEn": "Please describe the room you live in.",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-5",
+        "questionEn": "What part of your home do you like the most?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-6",
+        "questionEn": "How long have you lived there?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-7",
+        "questionEn": "Do you plan to live there for a long time?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-8",
+        "questionEn": "Can you describe the place where you live?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-9",
+        "questionEn": "What room does your family spend most of the time in?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-10",
+        "questionEn": "What's your favourite room in your apartment or house?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-11",
+        "questionEn": "Do you live in an apartment or a house?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      },
+      {
+        "id": "39-12",
+        "questionEn": "Who do you live with?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Home / Accommodation. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "hometown",
+    "num": 40,
+    "titleEn": "Hometown",
+    "titleZh": "",
+    "questionCount": 11,
+    "icon": "Landmark",
+    "questions": [
+      {
+        "id": "40-1",
+        "questionEn": "Where is your hometown?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-2",
+        "questionEn": "Is that a big city or a small place?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-3",
+        "questionEn": "Please describe your hometown a little.",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-4",
+        "questionEn": "How long have you been living there?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-5",
+        "questionEn": "Do you think you will continue living there for a long time?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-6",
+        "questionEn": "Do you like your hometown?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-7",
+        "questionEn": "What do you like most about your hometown?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-8",
+        "questionEn": "What's your hometown famous for?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-9",
+        "questionEn": "Did you learn about the history of your hometown at school?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-10",
+        "questionEn": "Are there many young people in your hometown?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      },
+      {
+        "id": "40-11",
+        "questionEn": "Is your hometown a good place for young people to pursue their careers?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about Hometown. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "the-area-you-live-in",
+    "num": 41,
+    "titleEn": "The Area You Live In",
+    "titleZh": "",
+    "questionCount": 7,
+    "icon": "Globe",
+    "questions": [
+      {
+        "id": "41-1",
+        "questionEn": "Do you like the area that you live in?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-2",
+        "questionEn": "Where do you like to go in that area?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-3",
+        "questionEn": "Do you know any famous people in your area?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-4",
+        "questionEn": "What are some changes in the area recently?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-5",
+        "questionEn": "Do you know any of your neighbors?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-6",
+        "questionEn": "Are the people in your neighborhood nice and friendly?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "41-7",
+        "questionEn": "Do you live in a noisy or a quiet area?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The Area You Live In. Include one personal example and one reason."
+      }
+    ]
+  },
+  {
+    "id": "the-city-you-live-in",
+    "num": 42,
+    "titleEn": "The City You Live In",
+    "titleZh": "",
+    "questionCount": 11,
+    "icon": "Globe",
+    "questions": [
+      {
+        "id": "42-1",
+        "questionEn": "What city do you live in?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-2",
+        "questionEn": "Do you like this city? Why?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-3",
+        "questionEn": "How long have you lived in this city?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-4",
+        "questionEn": "Are there big changes in this city?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-5",
+        "questionEn": "Is this city your permanent residence?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-6",
+        "questionEn": "Are there people of different ages living in this city?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-7",
+        "questionEn": "Are the people friendly in the city?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-8",
+        "questionEn": "Is the city friendly to children and old people?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-9",
+        "questionEn": "Do you often see your neighbors?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-10",
+        "questionEn": "What's the weather like where you live?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      },
+      {
+        "id": "42-11",
+        "questionEn": "Would you recommend your city to others?",
+        "questionZh": "",
+        "modelAnswerEn": "Practice prompt: Give a 30-45 second answer about The City You Live In. Include one personal example and one reason."
+      }
+    ]
   }
 ]
