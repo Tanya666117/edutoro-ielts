@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>雅思口语 Part 1 题库 — 2026年5-8月新题</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Paged.js Page Setup ===== */
+    @page {
+      size: A4;
+      margin: 2.2cm 1.8cm 2.5cm 1.8cm;
+      @top-center {
+        content: string(doctitle);
+        font-size: 8.5pt;
+        color: #999;
+        font-family: Georgia, 'Noto Serif SC', serif;
+      }
+      @bottom-center {
+        content: counter(page);
+        font-size: 9pt;
+        color: #666;
+        font-family: Georgia, 'Noto Serif SC', serif;
+      }
+    }
+
+    @page :first {
+      margin: 0;
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+    }
+
+    @page cover {
+      margin: 0;
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+    }
+
+    @page toc {
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+    }
+
+    /* ===== Base Styles ===== */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, 'Noto Serif SC', 'Noto Sans SC', 'Source Han Serif SC', serif;
+      font-size: 10.8pt;
+      line-height: 1.65;
+      color: #333;
+      max-width: 100%;
+    }
+
+    /* ===== Cover Page - Soft Blocks Style ===== */
+    .cover {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      page: cover;
+      background: linear-gradient(160deg, #fef9f3 0%, #ffffff 40%, #fff5e6 100%);
+    }
+
+    .cover .deco-block-1 {
+      position: absolute;
+      top: 30mm;
+      right: 15mm;
+      width: 45mm;
+      height: 45mm;
+      background: linear-gradient(135deg, rgba(255,165,0,0.18), rgba(255,200,100,0.08));
+      border-radius: 12px;
+      transform: rotate(15deg);
+    }
+
+    .cover .deco-block-2 {
+      position: absolute;
+      top: 70mm;
+      right: 45mm;
+      width: 30mm;
+      height: 30mm;
+      background: linear-gradient(135deg, rgba(255,140,0,0.15), rgba(255,180,80,0.06));
+      border-radius: 10px;
+      transform: rotate(-10deg);
+    }
+
+    .cover .deco-block-3 {
+      position: absolute;
+      bottom: 60mm;
+      left: 12mm;
+      width: 35mm;
+      height: 35mm;
+      background: linear-gradient(135deg, rgba(255,165,0,0.12), rgba(255,190,120,0.06));
+      border-radius: 8px;
+      transform: rotate(25deg);
+    }
+
+    .cover .deco-block-4 {
+      position: absolute;
+      bottom: 40mm;
+      right: 25mm;
+      width: 25mm;
+      height: 25mm;
+      background: linear-gradient(135deg, rgba(255,130,0,0.14), rgba(255,170,90,0.07));
+      border-radius: 6px;
+      transform: rotate(-20deg);
+    }
+
+    .cover .deco-block-5 {
+      position: absolute;
+      top: 120mm;
+      left: 8mm;
+      width: 18mm;
+      height: 18mm;
+      background: rgba(255,165,0,0.10);
+      border-radius: 50%;
+    }
+
+    .cover .accent-line-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8mm;
+      background: linear-gradient(90deg, #ff9500, #ffb84d, #ff9500);
+    }
+
+    .cover .accent-line-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5mm;
+      background: linear-gradient(90deg, #ff9500, #ffb84d, #ff9500);
+    }
+
+    .cover-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 85%;
+      z-index: 10;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff9500, #ffb84d);
+      color: #fff;
+      font-size: 10pt;
+      font-weight: bold;
+      padding: 6px 22px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 20mm;
+    }
+
+    .cover h1 {
+      font-size: 28pt;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 8mm 0;
+      line-height: 1.3;
+      letter-spacing: 0.5px;
+    }
+
+    .cover .subtitle {
+      font-size: 12.5pt;
+      color: #555;
+      margin: 0 0 25mm 0;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .cover .meta-info {
+      font-size: 10pt;
+      color: #777;
+      line-height: 1.8;
+    }
+
+    .cover .meta-info .highlight {
+      color: #e67e00;
+      font-weight: 700;
+    }
+
+    .cover .divider {
+      width: 60mm;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff9500, transparent);
+      margin: 8mm auto;
+    }
+
+    /* ===== TOC Page ===== */
+    .toc-page {
+      page: toc;
+      page-break-after: always;
+    }
+
+    .toc-page h2 {
+      font-size: 22pt;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 0 0 15mm 0;
+      padding: 0 0 5mm 0;
+      border-bottom: 3px solid #FFA500;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc-list li {
+      margin: 3mm 0;
+      padding: 2.5mm 4mm;
+      border-bottom: 1px dotted #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .toc-list .topic-name {
+      font-size: 11pt;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .toc-list .topic-num {
+      color: #ff9500;
+      font-weight: 700;
+      margin-right: 3mm;
+    }
+
+    .toc-list .topic-page {
+      font-size: 10pt;
+      color: #999;
+    }
+
+    .toc-list .dotted-leader {
+      flex: 1;
+      border-bottom: 1px dotted #ccc;
+      margin: 0 3mm;
+      min-width: 10mm;
+      position: relative;
+      top: -2px;
+    }
+
+    /* ===== Content Styles ===== */
+    .content {
+      padding: 0;
+    }
+
+    .topic-section {
+      margin-bottom: 6mm;
+    }
+
+    .topic-section h2 {
+      font-size: 17pt;
+      font-weight: 700;
+      color: #d46400;
+      margin: 8mm 0 5mm 0;
+      padding: 0 0 3mm 0;
+      border-bottom: 2.5px solid #FFA500;
+      string-set: doctitle content();
+      page-break-after: avoid;
+    }
+
+    .qa-block {
+      margin: 0 0 4mm 0;
+      max-width: 100%;
+    }
+
+    /* ===== Question Highlight - Orange Background + Bold Black Text ===== */
+    .question {
+      background-color: #FFA500;
+      color: #000;
+      font-weight: bold;
+      padding: 7px 12px;
+      margin: 0 0 2.5mm 0;
+      border-radius: 4px;
+      display: block;
+      max-width: 100%;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      page-break-inside: avoid;
+    }
+
+    /* ===== Answer Styles ===== */
+    .answer {
+      margin: 0 0 4mm 0;
+      padding: 2mm 3mm 2mm 5mm;
+      max-width: 100%;
+      text-align: justify;
+      color: #333;
+    }
+
+    /* ===== Utility ===== */
+    h1, h2, h3, h4, h5, h6 {
+      max-width: 100%;
+    }
+
+    div, p, span {
+      max-width: 100%;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover">
+    <div class="accent-line-top"></div>
+    <div class="accent-line-bottom"></div>
+    <div class="deco-block-1"></div>
+    <div class="deco-block-2"></div>
+    <div class="deco-block-3"></div>
+    <div class="deco-block-4"></div>
+    <div class="deco-block-5"></div>
+    <div class="cover-content">
+      <div class="cover-badge">2026 NEW EDITION</div>
+      <h1>雅思口语 Part 1 题库<br>2026年5-8月新题</h1>
+      <p class="subtitle">高质量参考答案 | 雅思7.5+水平 | 23大话题全覆盖</p>
+      <div class="divider"></div>
+      <div class="meta-info">
+        <p><span class="highlight">23</span> 大热门话题 &nbsp;|&nbsp; <span class="highlight">120+</span> 道真题 &nbsp;|&nbsp; <span class="highlight">7.5+</span> 分范例回答</p>
+        <p style="margin-top: 6mm; font-size: 9pt; color: #999;">雅思口语备考必备 · 高分表达+地道词汇+流畅思路</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc-page">
+    <h2>目 录</h2>
+    <ul class="toc-list">
+      <li data-topic-num="1">
+        <span class="topic-name"><span class="topic-num">01.</span> Sports programs</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="2">
+        <span class="topic-name"><span class="topic-num">02.</span> History</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="3">
+        <span class="topic-name"><span class="topic-num">03.</span> Films/cinemas</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="4">
+        <span class="topic-name"><span class="topic-num">04.</span> Old buildings</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="5">
+        <span class="topic-name"><span class="topic-num">05.</span> Evening time</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="6">
+        <span class="topic-name"><span class="topic-num">06.</span> Morning routines</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="7">
+        <span class="topic-name"><span class="topic-num">07.</span> Singing</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="8">
+        <span class="topic-name"><span class="topic-num">08.</span> Clothing</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="9">
+        <span class="topic-name"><span class="topic-num">09.</span> Jokes & Comedies</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="10">
+        <span class="topic-name"><span class="topic-num">10.</span> Headphones</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="11">
+        <span class="topic-name"><span class="topic-num">11.</span> Cars</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="12">
+        <span class="topic-name"><span class="topic-num">12.</span> Public gardens and parks</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="13">
+        <span class="topic-name"><span class="topic-num">13.</span> Science</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="14">
+        <span class="topic-name"><span class="topic-num">14.</span> Outer space and stars</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="15">
+        <span class="topic-name"><span class="topic-num">15.</span> Mirrors</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="16">
+        <span class="topic-name"><span class="topic-num">16.</span> Tidiness</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="17">
+        <span class="topic-name"><span class="topic-num">17.</span> Websites</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="18">
+        <span class="topic-name"><span class="topic-num">18.</span> Watch</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="19">
+        <span class="topic-name"><span class="topic-num">19.</span> Shopping</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="20">
+        <span class="topic-name"><span class="topic-num">20.</span> Music</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="21">
+        <span class="topic-name"><span class="topic-num">21.</span> Dream and Ambition</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="22">
+        <span class="topic-name"><span class="topic-num">22.</span> Social Media</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+      <li data-topic-num="23">
+        <span class="topic-name"><span class="topic-num">23.</span> Teachers</span>
+        <span class="dotted-leader"></span>
+        <span class="topic-page"></span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="content">
+
+    <div class="topic-section" data-topic="1">
+      <h2 data-topic-num="1">1. Sports programs</h2>
+      <div class="qa-block" data-qa="1-1">
+        <div class="question">Do you like watching sports programs on TV? (你喜欢在电视上看体育节目吗?)</div>
+        <div class="answer">It really depends on the sport, to be honest. I'm quite selective about what I watch—I tend to gravitate towards high-intensity sports like tennis or basketball where there's genuine suspense and strategic depth, whereas I find myself switching channels when it comes to slower-paced events like golf or cricket. That said, I do appreciate how sports documentaries, such as the ones Netflix has been putting out recently, offer a far more compelling narrative than just live match coverage.</div>
+      </div>
+      <div class="qa-block" data-qa="1-2">
+        <div class="question">Do you like to watch live sports games? (你喜欢看现场体育比赛吗?)</div>
+        <div class="answer">Absolutely, there's something electrifying about witnessing a game unfold in real time that no replay can truly replicate. I remember watching the World Cup final at a packed bar a few years ago, and the collective tension in the room during the penalty shootout was absolutely palpable. Having said that, I do think the experience can sometimes be dampened by excessive commercial breaks or when the match turns out to be a rather one-sided affair.</div>
+      </div>
+      <div class="qa-block" data-qa="1-3">
+        <div class="question">Who do you like to watch sports games with? (你喜欢和谁一起看体育比赛?)</div>
+        <div class="answer">I generally prefer watching with friends who are genuinely knowledgeable about the sport rather than casual viewers, because there's nothing more enjoyable than dissecting tactics and debating refereeing decisions with someone who understands the nuances. My father and I have this long-standing tradition of watching the Grand Slam finals together, and our post-match analysis often stretches longer than the actual game. That being said, I do occasionally appreciate watching alone when I'm emotionally invested in a particular team and don't want any distractions.</div>
+      </div>
+      <div class="qa-block" data-qa="1-4">
+        <div class="question">What kinds of games do you expect to watch in the future? (你未来想看什么样的比赛?)</div>
+        <div class="answer">I'm quite keen to experience an esports tournament in person, not necessarily because I'm an avid gamer myself, but because I'm fascinated by how competitive gaming has evolved into this global phenomenon with its own culture and ecosystem. Beyond that, I'd love to attend a Formula 1 race at some point—there's something about the raw speed and engineering precision that I find captivating. I also have my eye on some emerging sports like padel or pickleball, which seem to be gaining tremendous traction worldwide.</div>
+      </div>
+      <div class="qa-block" data-qa="1-5">
+        <div class="question">Do you prefer to watch sports games alone or with a group of friends? (你更喜欢独自看体育比赛还是和一群朋友一起看?)</div>
+        <div class="answer">It largely hinges on the significance of the match and my emotional stake in it. For major finals or crucial knockout stages where I'm genuinely rooting for a team, I tend to seek out a lively group atmosphere because sharing those rollercoaster emotions with others amplifies the experience tenfold. Conversely, for routine league matches or sports I'm less invested in, I actually prefer solitude as it allows me to focus on the tactical intricacies without the background chatter.</div>
+      </div>
+      <div class="qa-block" data-qa="1-6">
+        <div class="question">Have you ever watched a sports game in a stadium? (你曾经在体育场看过体育比赛吗?)</div>
+        <div class="answer">Yes, I have, though admittedly not as frequently as I'd like. I was fortunate enough to catch a Premier League match during a trip to London a couple of years ago, and what struck me most was how different the atmosphere was from watching on television—the chants, the collective gasps, the sheer scale of the venue. I did find, however, that unless you're in a premium seating area, you sometimes get a better tactical view of the game on TV than from the stands.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="2">
+      <h2 data-topic-num="2">2. History</h2>
+      <div class="qa-block" data-qa="2-1">
+        <div class="question">Have you ever been to historical museums? (你曾经去过历史博物馆吗?)</div>
+        <div class="answer">I have, quite regularly actually, and I find them to be windows into how societies have evolved over centuries. One that left a lasting impression on me was the British Museum in London, where standing face-to-face with the Rosetta Stone gave me this profound sense of connection to ancient civilizations. I do think, though, that the quality of museums varies enormously—some genuinely bring history to life through interactive exhibits, while others feel like little more than dusty artifact warehouses.</div>
+      </div>
+      <div class="qa-block" data-qa="2-2">
+        <div class="question">Do you like history? (你喜欢历史吗?)</div>
+        <div class="answer">I do, particularly when it's presented through the lens of social and economic development rather than as a dry chronicle of dates and battles. What fascinates me most is understanding the chain of cause and effect—how seemingly minor decisions or events can cascade into world-altering consequences decades later. Having said that, I find certain periods, like the Cold War era or the Industrial Revolution, far more gripping than others, perhaps because their repercussions are still shaping our contemporary world.</div>
+      </div>
+      <div class="qa-block" data-qa="2-3">
+        <div class="question">When was the last time you read about history? (你上次读关于历史的内容是什么时候?)</div>
+        <div class="answer">Just last month, I finished reading Yuval Noah Harari's "Sapiens," which offers this refreshingly broad perspective on human history from the cognitive revolution through to modernity. Before that, I had been diving into some podcasts about the fall of the Roman Empire, which I found surprisingly relevant to many of today's geopolitical challenges. I think what draws me to these materials is how they encourage critical thinking about the narratives we've been taught rather than accepting them at face value.</div>
+      </div>
+      <div class="qa-block" data-qa="2-4">
+        <div class="question">Did you like history when you were young? (你小时候喜欢历史吗?)</div>
+        <div class="answer">Honestly, not particularly, and I think that had a lot to do with how it was taught in school—purely as a sequence of disconnected facts and figures to be memorized for exams. What changed my perspective was actually traveling to historical sites in my late teens; standing in the Colosseum or walking along the Great Wall made the past feel tangible and real in a way textbooks never could. In retrospect, I wish my teachers had focused more on the human stories behind the events rather than just the dates and names.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="3">
+      <h2 data-topic-num="3">3. Films/cinemas</h2>
+      <div class="qa-block" data-qa="3-1">
+        <div class="question">What films do you like? (你喜欢什么类型的电影?)</div>
+        <div class="answer">I'm particularly drawn to psychological thrillers and thought-provoking dramas that leave me pondering long after the credits roll—films like "Inception" or anything by Denis Villeneuve tend to really resonate with me. I also have a soft spot for well-crafted documentaries that shed light on untold stories or social issues, as I find them both intellectually stimulating and emotionally impactful. That said, I do appreciate the occasional mindless action flick or comedy when I just want to unwind without having to think too deeply.</div>
+      </div>
+      <div class="qa-block" data-qa="3-2">
+        <div class="question">Did you often watch films when you were a child? (你小时候经常看电影吗?)</div>
+        <div class="answer">Not as much as children do today, largely because access wasn't as seamless back then—there was no streaming, so we had to rely on whatever happened to be showing on television or make a special trip to the video rental store. I do have vivid memories, though, of weekend family movie nights where we'd all gather around with popcorn and watch something together, which felt like a real treat. Looking back, I think those shared viewing experiences created a sense of occasion that perhaps my generation's children, with instant access to everything, might be missing out on.</div>
+      </div>
+      <div class="qa-block" data-qa="3-3">
+        <div class="question">Did you ever go to the cinema alone as a child? (你小时候曾经独自去过电影院吗?)</div>
+        <div class="answer">No, never—it simply wasn't the done thing in my family, and to be honest, I don't think I would have felt comfortable going solo at that age. Cinema trips were very much treated as social outings, whether with family or a group of friends, and the whole experience of getting there together and discussing the film afterward was considered part of the fun. I do remember feeling a slight pang of envy, though, when I heard about older kids who had the independence to just pop to the cinema on their own.</div>
+      </div>
+      <div class="qa-block" data-qa="3-4">
+        <div class="question">Do you often go to the cinema with your friends? (你经常和朋友去电影院吗?)</div>
+        <div class="answer">I used to far more frequently, but these days it tends to be reserved for major blockbusters or films that genuinely benefit from the big-screen experience, like visually stunning sci-fi epics or action films. Most of my friends and I have gravitated towards streaming for more intimate or dialogue-driven films, where the cinematic spectacle isn't as crucial. When we do go, though, we usually make an evening of it—dinner beforehand and a lengthy post-film debrief over drinks, which I suppose is the adult version of making a day of it.</div>
+      </div>
+      <div class="qa-block" data-qa="3-5">
+        <div class="question">Do you think going to the cinema is a good way to spend time with friends? (你认为去电影院是和朋友共度时光的好方式吗?)</div>
+        <div class="answer">It's a mixed bag, really. On one hand, the shared experience of watching a compelling film together and then dissecting it afterward can spark genuinely fascinating conversations that reveal different perspectives. On the other hand, I've always felt that cinema dates are somewhat counterintuitive as social activities because you spend two hours sitting in silence, which isn't exactly conducive to bonding. For me, it works best when combined with something more interactive, like a meal either before or after where you can actually catch up properly.</div>
+      </div>
+      <div class="qa-block" data-qa="3-6">
+        <div class="question">How often do you watch films? (你多久看一次电影?)</div>
+        <div class="answer">I'd say I average around three to four films a week, though the format varies considerably depending on my schedule and what I'm in the mood for. I tend to reserve cinema trips for films that truly demand the theatrical experience, while smaller indie productions or foreign films I'll happily watch at home. There are periods, especially during exam seasons or intense work deadlines, when that drops significantly, and then I find myself binge-watching to catch up during holidays.</div>
+      </div>
+      <div class="qa-block" data-qa="3-7">
+        <div class="question">Do you prefer to watch films at home or in the cinema? (你喜欢在家看电影还是去电影院?)</div>
+        <div class="answer">It very much depends on the film itself and what I'm hoping to get out of the experience. For visually ambitious films with spectacular cinematography or sound design, I still believe nothing rivals the immersive quality of a proper cinema with its massive screen and surround sound. However, for more intimate, character-driven stories, I actually prefer the comfort of my own home where I can pause to reflect on particularly poignant moments without worrying about disturbing fellow audience members.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="4">
+      <h2 data-topic-num="4">4. Old buildings</h2>
+      <div class="qa-block" data-qa="4-1">
+        <div class="question">Have you ever seen old buildings in the city? (你在城市里见过老建筑吗?)</div>
+        <div class="answer">Growing up in a city that seamlessly blends the ancient with the ultramodern, I've been surrounded by old buildings my entire life. One that particularly captivates me is a Qing dynasty courtyard house tucked away in a narrow alley, which stands in almost surreal contrast to the glass-and-steel skyscrapers that have sprung up around it. I've noticed, though, that many of these architectural gems are being swallowed by rapid urbanization, which I find rather disheartening.</div>
+      </div>
+      <div class="qa-block" data-qa="4-2">
+        <div class="question">Do you think we should preserve old buildings in cities? (你认为我们应该保护城市里的老建筑吗?)</div>
+        <div class="answer">I absolutely do, though I think the preservation needs to be strategic and purposeful rather than indiscriminate. Old buildings serve as tangible links to our collective past, and demolishing them in the name of progress is, to my mind, erasing stories and identities that can never be replicated. That said, I'm also a pragmatist—I believe adaptive reuse, where historical structures are repurposed for contemporary needs like boutique hotels or cultural centers, often strikes the best balance between preservation and practicality.</div>
+      </div>
+      <div class="qa-block" data-qa="4-3">
+        <div class="question">Do you prefer living in an old building or a modern house? (你喜欢住在老建筑还是现代房子里?)</div>
+        <div class="answer">Given the choice, I'd probably opt for a thoughtfully renovated old building that retains its original character while incorporating modern amenities. There's something about high ceilings, original hardwood floors, and period architectural details that I find infinitely more charming than the rather sterile uniformity of many new constructions. I have to admit, though, that I've experienced the frustrations firsthand—drafty windows, outdated plumbing, and poor insulation can make winters rather miserable if the renovation hasn't been done properly.</div>
+      </div>
+      <div class="qa-block" data-qa="4-4">
+        <div class="question">Are there any old buildings you want to see in the future? Why? (未来有没有你想参观的老建筑?为什么?)</div>
+        <div class="answer">I've long harbored a desire to visit the Alhambra in Granada, Spain, not merely for its breathtaking Moorish architecture but because it represents this remarkable period of cultural coexistence and intellectual flourishing. The intricate geometric patterns and water features are said to embody a philosophical approach to design that I find deeply intriguing. I'm also drawn to the idea of experiencing how a centuries-old palace can still evoke such powerful emotional responses, which to me is the ultimate testament to its architectural genius.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="5">
+      <h2 data-topic-num="5">5. Evening time</h2>
+      <div class="qa-block" data-qa="5-1">
+        <div class="question">Do you like the morning or evening? (你喜欢早晨还是晚上?)</div>
+        <div class="answer">I'm unreservedly an evening person, and I've come to accept that my brain simply doesn't fire on all cylinders until well after lunch. There's something about the quietude and slower pace of the evening that I find conducive to both creative thinking and genuine relaxation. I do envy those "early risers" who seem to accomplish half their day's goals before I've even had my first coffee, but I've learned to work with my natural rhythms rather than against them.</div>
+      </div>
+      <div class="qa-block" data-qa="5-2">
+        <div class="question">What do you usually do in the evening? (你晚上通常做什么?)</div>
+        <div class="answer">My evenings tend to be a blend of productivity and unwinding, depending on what the day has demanded of me. On a typical weekday, I'll spend a couple of hours either reading, working on personal projects, or catching up on industry-related articles before allowing myself some downtime with a series or podcast. I've also made a conscious effort to incorporate evening walks into my routine, which I've found remarkably effective for processing the day's events and mentally transitioning into a more restful state.</div>
+      </div>
+      <div class="qa-block" data-qa="5-3">
+        <div class="question">What did you do in the evening when you were little? Why? (你小时候晚上做什么?为什么?)</div>
+        <div class="answer">My childhood evenings were remarkably structured, largely because my parents firmly believed in the importance of family time. We'd almost always have dinner together, followed by homework supervision, and then perhaps an hour of television before an invariably early bedtime. Looking back, I think that regimented routine was partly a product of the era—there were no smartphones or tablets vying for my attention, and my parents were quite intentional about limiting screen time even for the television.</div>
+      </div>
+      <div class="qa-block" data-qa="5-4">
+        <div class="question">Are there any differences between what you do in the evening now and what you did in the past? (你现在晚上做的事情和过去有什么不同吗?)</div>
+        <div class="answer">The differences are quite stark, to be honest. As a child, my evenings were largely dictated by my parents' rules and schedules, whereas now I have complete autonomy over how I spend that time, which is both liberating and occasionally overwhelming. I've also noticed that technology has fundamentally altered my evening habits—whereas I used to read physical books or engage in face-to-face activities, I now find myself drifting between my laptop, phone, and tablet, which I'm not entirely convinced is an improvement.</div>
+      </div>
+      <div class="qa-block" data-qa="5-5">
+        <div class="question">Do you spend your evenings doing the same things on both weekends and weekdays? Why? (你周末和工作日的晚上做同样的事情吗?为什么?)</div>
+        <div class="answer">Not at all—my weekday evenings tend to be relatively subdued and functional, focused on recharging for the next day and perhaps squeezing in some personal development. Weekends, by contrast, are when I properly socialize, whether that's going out for dinner with friends, attending cultural events, or simply staying up later without the anxiety of an early alarm looming. I think this deliberate compartmentalization helps me maintain a sense of balance; if every evening were identical, life would feel rather monotonous.</div>
+      </div>
+      <div class="qa-block" data-qa="5-6">
+        <div class="question">What do you hate doing in the evening? (你晚上讨厌做什么?)</div>
+        <div class="answer">I absolutely dread having to deal with work-related emails or messages in the evening, as I find it completely disrupts my ability to mentally disconnect and recharge. There's something particularly invasive about professional demands encroaching on what should be personal time, and I've made a conscious effort to set boundaries around this. I also loathe forced socializing when I'm genuinely exhausted—those obligatory after-work drinks when all I want is to curl up with a good book and decompress in peace.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="6">
+      <h2 data-topic-num="6">6. Morning routines</h2>
+      <div class="qa-block" data-qa="6-1">
+        <div class="question">What do you do right after getting up in the morning? (你早上起床后立刻做什么?)</div>
+        <div class="answer">The very first thing I do, without fail, is drink a large glass of water to rehydrate after hours of sleep, followed by opening my curtains to let natural light flood in. I've found that these two small actions—hydration and exposure to daylight—significantly improve my alertness and set a positive tone for the rest of the day. Only then do I allow myself to check my phone, which I've disciplined myself to do after rather than immediately upon waking.</div>
+      </div>
+      <div class="qa-block" data-qa="6-2">
+        <div class="question">Is breakfast important? (早餐重要吗?)</div>
+        <div class="answer">I firmly believe it is, though I appreciate the intermittent fasting trend has challenged this conventional wisdom in recent years. For me personally, skipping breakfast turns me into a rather irritable and unfocused version of myself by mid-morning, so I make it a non-negotiable part of my routine. I've also noticed that taking the time to prepare and eat a proper breakfast—rather than grabbing something on the go—creates this sense of calm intentionality that carries through into the rest of my morning.</div>
+      </div>
+      <div class="qa-block" data-qa="6-3">
+        <div class="question">What is your morning routine? (你的晨间例行程序是什么?)</div>
+        <div class="answer">My mornings follow a fairly consistent pattern: I wake up around seven, hydrate and stretch briefly, then prepare a proper breakfast while listening to a news podcast to stay informed. After eating, I spend about thirty minutes either reading or journaling, which I've found helps clear my mental cache before the day's demands begin. I then shower, get dressed, and intentionally leave for work with enough time to avoid the stress of rushing, as I've learned that starting the day in a flustered state tends to throw off my productivity for hours.</div>
+      </div>
+      <div class="qa-block" data-qa="6-4">
+        <div class="question">Do you like to get up early in the morning? (你喜欢早起吗?)</div>
+        <div class="answer">To be perfectly candid, I don't naturally enjoy it, and my ideal sleep schedule would probably see me waking up closer to eight-thirty or nine. However, I've trained myself to rise early because I've objectively observed that I'm more productive and centered when I have those quiet morning hours to myself before the world becomes demanding. It's very much a case of appreciating the results rather than relishing the process—I still hit the snooze button more often than I'd care to admit.
+
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="7">
+      <h2 data-topic-num="7">7. Singing</h2>
+      <div class="qa-block" data-qa="7-1">
+        <div class="question">Do you like singing? Why? (你喜欢唱歌吗？为什么？)</div>
+        <div class="answer">I would say I'm rather fond of singing, though I'm certainly not what you'd call a gifted vocalist. There's something profoundly therapeutic about belting out a tune after a long day at work — it works wonders for relieving stress. For me, singing is less about hitting the perfect notes and more about expressing emotions that are hard to put into words.</div>
+      </div>
+      <div class="qa-block" data-qa="7-2">
+        <div class="question">Have you ever learnt how to sing? (你曾经学过唱歌吗？)</div>
+        <div class="answer">I dabbled in it briefly during my secondary school years when I joined the school choir, but I never pursued any formal training beyond that. We used to have weekly rehearsals where a rather strict instructor drilled us on breathing techniques and vocal projection. Looking back, I wish I had stuck with it because mastering proper vocal control is genuinely a skill that takes years to refine.</div>
+      </div>
+      <div class="qa-block" data-qa="7-3">
+        <div class="question">Who do you want to sing for? (你想为谁唱歌？)</div>
+        <div class="answer">I'd have to say I'd feel most comfortable singing for a small, intimate gathering of close friends rather than a large crowd. There's something magical about performing in front of people who know you inside out and won't judge you harshly if you hit a bum note. Actually, I think serenading my grandparents at a family reunion would be particularly meaningful, as they have always been my biggest supporters.</div>
+      </div>
+      <div class="qa-block" data-qa="7-4">
+        <div class="question">Do you think singing can bring happiness to people? (你认为唱歌能给人们带来快乐吗？)</div>
+        <div class="answer">Absolutely — I genuinely believe singing has an almost universal power to lift people's spirits and forge emotional connections. There's solid scientific evidence behind it too: when you sing, your brain releases endorphins and oxytocin, which are natural mood boosters. Beyond the biology, think about how communal singing at concerts or festivals creates this incredible sense of belonging and collective joy that few other activities can replicate.</div>
+      </div>
+      <div class="qa-block" data-qa="7-5">
+        <div class="question">Do you like listening to others singing? (你喜欢听别人唱歌吗？)</div>
+        <div class="answer">It really depends on the context and the vocalist in question. I'm definitely drawn to live performances at small venues where raw talent shines through without the crutch of studio production. That said, I'm not a huge fan of amateur karaoke sessions that drag on endlessly — there's a fine line between an endearing performance and one that makes you wince.</div>
+      </div>
+      <div class="qa-block" data-qa="7-6">
+        <div class="question">Have you ever taken a singing class? (你曾经上过唱歌课吗？)</div>
+        <div class="answer">I enrolled in a short-term vocal workshop at a community centre about two years ago, hoping to iron out some bad habits I'd picked up. The instructor was incredibly patient and taught us some fundamental techniques about diaphragmatic breathing and pitch accuracy. While I didn't emerge as the next great singer, I did come away with a much deeper appreciation for how much skill and discipline professional vocalists possess.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="8">
+      <h2 data-topic-num="8">8. Clothing</h2>
+      <div class="qa-block" data-qa="8-1">
+        <div class="question">What kind of clothes do you like to wear? (你喜欢穿什么样的衣服？)</div>
+        <div class="answer">I tend to gravitate towards well-tailored, versatile pieces that can transition seamlessly from day to evening without looking out of place. Clean lines, neutral palettes, and quality fabrics are what I prioritise over fleeting trends that fade within a season. I'm a firm believer in the less-is-more philosophy, so my wardrobe is built around a handful of carefully curated staples rather than an overwhelming array of options.</div>
+      </div>
+      <div class="qa-block" data-qa="8-2">
+        <div class="question">Do you prefer to wear comfortable and casual clothes or smart clothes? (你喜欢穿舒适休闲的衣服还是正式的衣服？)</div>
+        <div class="answer">It entirely depends on the occasion, but if I'm being perfectly honest, I lean towards smart-casual attire that strikes a balance between comfort and polish. There's no denying that loungewear has its place on lazy weekends, but I find that dressing sharply gives me a noticeable confidence boost and puts me in a more productive mindset. That said, I draw the line at being uncomfortably formal — there's absolutely no need to suffer in stiff, ill-fitting clothes just to look presentable.</div>
+      </div>
+      <div class="qa-block" data-qa="8-3">
+        <div class="question">Do you like wearing T-shirts? (你喜欢穿T恤吗？)</div>
+        <div class="answer">I do appreciate a good-quality T-shirt, especially one that's been crafted from premium cotton with a flattering cut. The humble T-shirt has become something of a fashion staple in recent years, with designers elevating it to almost an art form. However, I'm quite particular about the fit — a sloppy, oversized T-shirt can make even the most put-together outfit look dishevelled and unintentional.</div>
+      </div>
+      <div class="qa-block" data-qa="8-4">
+        <div class="question">Do you spend a lot of time choosing clothes? (你会花很多时间选衣服吗？)</div>
+        <div class="answer">I've streamlined my morning routine to the point where selecting an outfit takes me no more than five minutes, thanks to my rather minimalist wardrobe. I used to agonise over every detail, but I've since realised that deliberating excessively over clothing choices is a drain on mental energy I'd rather allocate elsewhere. Of course, for special occasions like weddings or important interviews, I'm willing to invest considerably more thought into putting together the right look.</div>
+      </div>
+      <div class="qa-block" data-qa="8-5">
+        <div class="question">Do you wear different styles of clothes on weekdays and weekends? (你工作日和周末穿的衣服风格不同吗？)</div>
+        <div class="answer">Yes, there's a clear distinction between my weekday and weekend wardrobe, though the gap has narrowed since remote working became more prevalent. During the week, I typically opt for semi-formal attire that projects professionalism in the workplace — think chinos, button-down shirts, and perhaps a blazer. Come the weekend, I happily swap those for relaxed joggers, soft knits, and trainers that prioritise comfort without crossing into slob territory.</div>
+      </div>
+      <div class="qa-block" data-qa="8-6">
+        <div class="question">What colour clothes do you like? (你喜欢什么颜色的衣服？)</div>
+        <div class="answer">I'm predominantly drawn to earthy, muted tones — olive greens, warm greys, navy blues, and camel browns seem to dominate my wardrobe. These colours have a timeless quality about them and pair effortlessly with one another, which makes getting dressed infinitely simpler. I do occasionally incorporate a pop of colour through accessories, but I've found that bold, garish hues tend to clash with my skin tone and look dated rather quickly.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="9">
+      <h2 data-topic-num="9">9. Jokes & Comedies</h2>
+      <div class="qa-block" data-qa="9-1">
+        <div class="question">Are you good at telling jokes? (你擅长讲笑话吗？)</div>
+        <div class="answer">I'd modestly say I'm passable at best, though I certainly wouldn't make a living from stand-up comedy. The problem is I tend to either forget the punchline halfway through or over-explain the joke, which completely kills the comedic timing. I greatly admire people who can deliver a joke with perfect deadpan delivery — it's an underrated social skill that requires impeccable timing and reading the room.</div>
+      </div>
+      <div class="qa-block" data-qa="9-2">
+        <div class="question">Do your friends like to tell jokes? (你的朋友们喜欢讲笑话吗？)</div>
+        <div class="answer">My close circle includes one friend in particular who is an absolute natural at cracking jokes and keeping everyone in stitches. He's got this remarkable ability to turn even mundane, everyday situations into hilarious anecdotes that have us all doubled over with laughter. The rest of us are more than content to be his appreciative audience, though we do occasionally attempt to one-up each other with witty comebacks.</div>
+      </div>
+      <div class="qa-block" data-qa="9-3">
+        <div class="question">Do you like to watch comedies? (你喜欢看喜剧吗？)</div>
+        <div class="answer">I'm quite selective about the comedies I watch — I'm not a fan of lowbrow, slapstick humour that relies on cheap gags and crude stereotypes. Instead, I'm drawn to sharp, intelligent comedies with clever wordplay and nuanced social satire, like the works of British writers such as Armando Iannucci. There's something deeply satisfying about comedy that makes you laugh while also prompting you to think critically about the world we inhabit.</div>
+      </div>
+      <div class="qa-block" data-qa="9-4">
+        <div class="question">Have you ever watched a live show? (你曾经看过现场表演吗？)</div>
+        <div class="answer">I had the privilege of attending a live stand-up comedy show at a rather intimate venue in the city centre about a year ago. The atmosphere was electric — there's an undeniable energy in a live performance that no television screen or streaming service can possibly replicate. What struck me most was how the comedian fed off the audience's reactions in real time, improvising and adapting his set on the fly, which made the whole experience feel uniquely personal and spontaneous.</div>
+      </div>
+      <div class="qa-block" data-qa="9-5">
+        <div class="question">Are comedy shows popular in your country? (喜剧节目在你们国家受欢迎吗？)</div>
+        <div class="answer">Comedy has absolutely exploded in popularity here over the past decade, with stand-up clubs popping up in virtually every major city and comedy festivals drawing enormous crowds. A lot of this can be attributed to streaming platforms like Netflix, which have made international comedy specials accessible to a much broader audience. There's also been a fascinating shift in the type of comedy people appreciate — audiences are increasingly gravitating towards observational and self-deprecating humour rather than the more traditional comedic styles.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="10">
+      <h2 data-topic-num="10">10. Headphones</h2>
+      <div class="qa-block" data-qa="10-1">
+        <div class="question">Do you use headphones? (你使用耳机吗？)</div>
+        <div class="answer">I use headphones on a daily basis — they've become something of an essential accessory in my everyday routine. Whether I'm commuting to work, hitting the gym, or simply trying to concentrate in a noisy open-plan office, a good pair of headphones is absolutely indispensable. I honestly can't imagine navigating modern life without them, especially given how noisy and distracting urban environments have become.</div>
+      </div>
+      <div class="qa-block" data-qa="10-2">
+        <div class="question">What type of headphones do you use? (你使用什么类型的耳机？)</div>
+        <div class="answer">I currently use a pair of over-ear wireless noise-cancelling headphones for longer listening sessions and daily commutes, paired with a compact set of true wireless earbuds for workouts and quick calls. The over-ear model delivers exceptional sound quality and effectively blocks out ambient noise, which is a godsend on crowded trains. The earbuds, meanwhile, are fantastically portable and sweat-resistant, making them ideal for more active situations.</div>
+      </div>
+      <div class="qa-block" data-qa="10-3">
+        <div class="question">When would you use headphones? (你什么时候会使用耳机？)</div>
+        <div class="answer">I reach for my headphones whenever I need to create a personal bubble of focus, whether that's during my morning commute, while working on demanding tasks, or when I'm unwinding with a podcast in the evening. They're particularly invaluable when I'm in shared spaces where I don't want my audio to disturb others, or conversely, where I don't want to be disturbed by the cacophony around me. To be frank, any situation that calls for immersive audio or a degree of acoustic isolation justifies putting them on.</div>
+      </div>
+      <div class="qa-block" data-qa="10-4">
+        <div class="question">In what conditions would you not use headphones? (在什么情况下你不会使用耳机？)</div>
+        <div class="answer">I make a conscious effort not to use headphones when I'm walking through busy city streets or cycling, as I believe situational awareness is paramount for personal safety. I also steer clear of them during face-to-face conversations or social gatherings, as wearing headphones in those contexts sends a rather antisocial message and erects an unnecessary barrier between you and the people around you. There's a time and place for everything, and sometimes being fully present in the moment matters more than any playlist.</div>
+      </div>
+      <div class="qa-block" data-qa="10-5">
+        <div class="question">Is wearing headphones comfortable? (戴耳机舒服吗？)</div>
+        <div class="answer">Modern high-end headphones are remarkably comfortable for short to medium durations, thanks to memory foam cushions and ergonomic designs that distribute pressure evenly. However, I have noticed that prolonged use — anything beyond two or three hours — can lead to a slight sense of pressure fatigue and even mild ear fatigue. My advice would be to invest in quality over-ear models if comfort is a priority, as cheap alternatives can become genuinely unpleasant after extended wear.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="11">
+      <h2 data-topic-num="11">11. Cars</h2>
+      <div class="qa-block" data-qa="11-1">
+        <div class="question">Did you enjoy traveling by car when you were a kid? (你小时候喜欢坐车旅行吗？)</div>
+        <div class="answer">As a child, I absolutely relished car journeys, particularly long road trips with my family where the destination itself felt like a grand adventure. I would eagerly claim a window seat and spend hours gazing at the ever-changing scenery, imagining stories about the places we passed. Looking back with adult eyes, I suspect my parents might not have shared my enthusiasm, given the inevitable chorus of "are we there yet" that punctuated every journey.</div>
+      </div>
+      <div class="qa-block" data-qa="11-2">
+        <div class="question">What types of cars do you like? (你喜欢什么类型的车？)</div>
+        <div class="answer">I'm quite partial to sleek, understated saloons and crossovers that combine practicality with a touch of refined elegance. Electric vehicles have particularly caught my interest in recent years — not out of any environmental virtue-signalling, but because the instant torque and whisper-quiet ride quality make for a genuinely superior driving experience. I'm not one for ostentatious supercars or oversized SUVs that dominate narrow city streets; understated sophistication appeals to me far more than aggressive styling.</div>
+      </div>
+      <div class="qa-block" data-qa="11-3">
+        <div class="question">Do you prefer to be a driver or a passenger? (你更喜欢当司机还是乘客？)</div>
+        <div class="answer">On short urban journeys, I'd much rather be a passenger so I can read, reply to messages, or simply watch the world go by. However, on open country roads or coastal drives, there's an incomparable pleasure in being behind the wheel that no passenger seat can match. The sense of control, the connection between driver and machine, and the pure joy of a well-executed corner — these are experiences that make driving genuinely exhilarating rather than merely functional.</div>
+      </div>
+      <div class="qa-block" data-qa="11-4">
+        <div class="question">What do you usually do when there is a traffic jam? (堵车的时候你通常会做什么？)</div>
+        <div class="answer">During a traffic jam, I tend to put on a podcast or an audiobook to make the time feel somewhat productive rather than utterly wasted. I've also developed the habit of doing gentle neck stretches and shoulder rolls, which helps counteract the physical tension that builds up from stop-start driving. If the gridlock is particularly severe and stationary, I'll check traffic apps to see if there's an alternative route worth attempting — though sometimes resigning yourself to patience is the only sensible option.</div>
+      </div>
+      <div class="qa-block" data-qa="11-5">
+        <div class="question">Do you think car colours are important? (你认为汽车颜色重要吗？)</div>
+        <div class="answer">Car colours matter more than most people realise, both in terms of aesthetic appeal and practical considerations like resale value and visibility on the road. I've always believed that neutral colours such as silver, grey, and navy blue strike the best balance — they age gracefully and tend to hold their value better than garish or trendy shades. That said, I do think a thoughtfully chosen, slightly unconventional colour can add real character to a vehicle without veering into tastelessness.</div>
+      </div>
+      <div class="qa-block" data-qa="11-6">
+        <div class="question">Will you buy an expensive car in the future? (你未来会买昂贵的车吗？)</div>
+        <div class="answer">I'm rather pragmatic when it comes to vehicles, so I doubt I'd ever splurge on a flashy luxury car purely as a status symbol. If I were to invest in a premium vehicle, it would need to offer tangible benefits in terms of safety features, build quality, and reliability rather than just a prestigious badge on the bonnet. At the end of the day, a car is fundamentally a depreciating asset, and I'd rather allocate significant funds towards property or experiences that provide lasting value.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="12">
+      <h2 data-topic-num="12">12. Public gardens and parks</h2>
+      <div class="qa-block" data-qa="12-1">
+        <div class="question">Did you like going to parks as a child? (你小时候喜欢去公园吗？)</div>
+        <div class="answer">I absolutely adored going to parks as a child — they felt like enormous wonderlands where adventure lurked around every corner. I have vivid memories of racing my friends to the climbing frames, swinging as high as I dared, and constructing elaborate imaginary worlds in the shrubbery. The freedom and sheer physicality of outdoor play in those days is something I deeply miss now that adulthood has tethered me to screens and schedules.</div>
+      </div>
+      <div class="qa-block" data-qa="12-2">
+        <div class="question">Do you still like going to parks now? (你现在还喜欢去公园吗？)</div>
+        <div class="answer">I do, though the way I experience parks has transformed dramatically since my childhood. Nowadays, I find immense value in them as sanctuaries of calm where I can escape the relentless pace of city life and reconnect with nature, even if only for half an hour. There's something deeply restorative about sitting on a park bench with a good book or simply watching the changing seasons unfold in the foliage around me.</div>
+      </div>
+      <div class="qa-block" data-qa="12-3">
+        <div class="question">Would you like to see more parks in your city? (你希望你的城市有更多公园吗？)</div>
+        <div class="answer">Without a shadow of a doubt — I firmly believe that well-designed green spaces are not a luxury but an absolute necessity for any liveable urban environment. Studies have consistently shown that proximity to parks correlates with better mental health, lower stress levels, and stronger community bonds. My city, in particular, has seen rapid development that has swallowed up much of its greenery, so creating more accessible public parks should be a top priority for urban planners.</div>
+      </div>
+      <div class="qa-block" data-qa="12-4">
+        <div class="question">Are there any parks you want to go to in the future? (未来有你想去的公园吗？)</div>
+        <div class="answer">I've had my eye on visiting the Singapore Botanic Gardens for quite some time now, as I've heard extraordinary things about their tropical flora and impeccably landscaped grounds. Closer to home, there's a newly opened riverside park on the outskirts of the city that features walking trails through restored wetlands. I'm also planning a trip to see the cherry blossoms in one of the historic imperial gardens during the spring season.</div>
+      </div>
+      <div class="qa-block" data-qa="12-5">
+        <div class="question">Would you prefer to play in a personal garden or public garden? (你更喜欢在私人花园还是公共花园里玩耍？)</div>
+        <div class="answer">There's certainly something appealing about a personal garden — the privacy, the ability to personalise the space, and the convenience of having it right outside your door. That said, I believe public gardens offer a richness of experience that private ones simply cannot replicate, from the diversity of landscapes to the serendipitous encounters with fellow visitors. The social dimension of public parks, where strangers coexist peacefully in shared space, adds a layer of depth that makes them uniquely rewarding.</div>
+      </div>
+      <div class="qa-block" data-qa="12-6">
+        <div class="question">How are the parks today different from those you visited as a kid? (现在的公园和你小时候去的有什么不同？)</div>
+        <div class="answer">The parks I visit today are noticeably more thoughtfully designed than those of my childhood, with a far greater emphasis on inclusivity, sustainability, and multi-generational use. Modern parks often incorporate fitness trails, outdoor gyms, and accessible play equipment for children with disabilities, which simply didn't exist in the parks of my youth. On the flip side, I do sometimes feel that today's parks have become overly sanitised and regulated compared to the slightly wilder, more rugged spaces I remember exploring as a child.</div>
+      </div>
+      <div class="qa-block" data-qa="12-7">
+        <div class="question">What do you like to do when visiting a park? (你去公园时喜欢做什么？)</div>
+        <div class="answer">When I visit a park, I most enjoy taking a leisurely stroll along the pathways, deliberately slowing my pace to notice the small details — the way light filters through the canopy, the patterns of birdsong, the changing textures of bark. On weekends, I occasionally bring along a sketchbook and attempt to capture the landscape, though I'm an amateur at best. If the weather is particularly pleasant, I'll pack a simple picnic and while away an afternoon on the grass with friends.</div>
+      </div>
+      <div class="qa-block" data-qa="12-8">
+        <div class="question">Would you like to play in a public garden or park? (你想在公共花园或公园里玩耍吗？)</div>
+        <div class="answer">I'm always open to the idea of engaging in recreational activities in a public park, though "play" for me these days looks quite different from childhood games. I thoroughly enjoy a friendly game of frisbee, badminton, or even a casual kickabout with friends on the open lawns. There's a certain carefree joy in letting your guard down and embracing physical play in a beautiful outdoor setting that no gym or indoor facility can quite replicate.
+
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="13">
+      <h2 data-topic-num="13">13. Science</h2>
+      <div class="qa-block" data-qa="13-1">
+        <div class="question">Do you like science? (你喜欢科学吗？)</div>
+        <div class="answer">Absolutely — I've always been fascinated by science because it provides a systematic framework for understanding the world around us. What I particularly admire is how scientific thinking encourages evidence-based reasoning rather than relying on assumptions or superstition.</div>
+      </div>
+      <div class="qa-block" data-qa="13-2">
+        <div class="question">When did you start to learn about science? (你什么时候开始学习科学的？)</div>
+        <div class="answer">I suppose my first exposure to science was in primary school, where we conducted simple experiments like growing plants or observing chemical reactions. However, it wasn't until high school, when I had an exceptional biology teacher, that I genuinely developed a passion for the subject.</div>
+      </div>
+      <div class="qa-block" data-qa="13-3">
+        <div class="question">Which science subject is interesting to you? (你对哪门科学学科感兴趣？)</div>
+        <div class="answer">I'm particularly drawn to neuroscience, as it sits at the fascinating intersection of biology and psychology, attempting to unravel the mysteries of human consciousness. There's something profoundly captivating about understanding how billions of neurons firing together give rise to our thoughts, emotions, and sense of self.</div>
+      </div>
+      <div class="qa-block" data-qa="13-4">
+        <div class="question">What kinds of interesting things have you done with science? (你用科学做过什么有趣的事情？)</div>
+        <div class="answer">I once participated in a citizen science project where I collected local air quality data and submitted it to a research initiative at a university. It was incredibly rewarding to see how my small contribution helped build a broader dataset that could inform environmental policy decisions.</div>
+      </div>
+      <div class="qa-block" data-qa="13-5">
+        <div class="question">Do you like watching science TV programs? (你喜欢看科学类电视节目吗？)</div>
+        <div class="answer">Yes, I find well-made science documentaries absolutely riveting, especially those presented by figures like David Attenborough or Brian Cox who have a gift for making complex concepts accessible. I think high-quality science programming plays a crucial role in sparking public curiosity and countering scientific illiteracy.</div>
+      </div>
+      <div class="qa-block" data-qa="13-6">
+        <div class="question">Do Chinese people often visit science museums? (中国人经常去科学博物馆吗？)</div>
+        <div class="answer">Science museums have definitely surged in popularity in recent years, particularly among young families who see them as both educational and entertaining weekend destinations. That said, I'd say the visitor demographic still skews heavily toward parents with children, rather than adults going purely out of intellectual curiosity.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="14">
+      <h2 data-topic-num="14">14. Outer space and stars</h2>
+      <div class="qa-block" data-qa="14-1">
+        <div class="question">Have you ever learnt about outer space and stars? (你曾经学习过关于外太空和恒星的知识吗？)</div>
+        <div class="answer">Yes, I've picked up quite a bit of knowledge over the years, both through formal education and personal reading about astronomy and astrophysics. I find the sheer scale of the cosmos almost impossible to wrap my head around — the fact that we're staring at light that left its star millions of years ago never ceases to humble me.</div>
+      </div>
+      <div class="qa-block" data-qa="14-2">
+        <div class="question">Do you like science fiction movies? Why? (你喜欢科幻电影吗？为什么？)</div>
+        <div class="answer">I'm a huge fan of science fiction films, particularly those like *Interstellar* or *Arrival* that grapple with profound philosophical questions about time, consciousness, and what it means to be human. What I appreciate most is how the genre uses speculative scenarios to hold a mirror up to contemporary society and challenge our assumptions about progress and technology.</div>
+      </div>
+      <div class="qa-block" data-qa="14-3">
+        <div class="question">Do you want to know more about outer space? (你想了解更多关于外太空的知识吗？)</div>
+        <div class="answer">Definitely — I think we're living through an extraordinarily exciting era of space exploration, with missions to Mars and the discovery of exoplanets happening almost routinely. I make a conscious effort to keep up with developments in this field because I genuinely believe that understanding our place in the universe gives us invaluable perspective.</div>
+      </div>
+      <div class="qa-block" data-qa="14-4">
+        <div class="question">Do you want to go into outer space in the future? (你未来想去外太空吗？)</div>
+        <div class="answer">If the opportunity arose and it was genuinely safe, I would jump at the chance, even though I'm well aware of the physical toll space travel takes on the human body. There's something deeply compelling about the prospect of seeing Earth from above with my own eyes — I imagine it would be one of those transformative experiences that shifts your entire worldview.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="15">
+      <h2 data-topic-num="15">15. Mirrors</h2>
+      <div class="qa-block" data-qa="15-1">
+        <div class="question">Do you like looking at yourself in the mirror? How often? (你喜欢照镜子吗？多久照一次？)</div>
+        <div class="answer">I wouldn't say I'm particularly vain, but I do glance in the mirror a couple of times a day, mainly to check I'm presentable before heading out. I think there's a subtle difference between using a mirror for practical grooming purposes and being genuinely preoccupied with one's appearance.</div>
+      </div>
+      <div class="qa-block" data-qa="15-2">
+        <div class="question">Have you ever bought mirrors? (你曾经买过镜子吗？)</div>
+        <div class="answer">Yes, I purchased a full-length mirror for my bedroom a few years ago because the lighting in my previous one was rather unflattering. I was quite particular about the frame as well — I wanted something minimalist that wouldn't dominate the space but would blend in with the overall aesthetic.</div>
+      </div>
+      <div class="qa-block" data-qa="15-3">
+        <div class="question">Do you usually take a mirror with you? (你通常会随身携带镜子吗？)</div>
+        <div class="answer">Not as a rule, though I do keep a compact mirror in my bag for practical reasons like checking if I've got something stuck in my teeth. I think carrying a mirror has become somewhat redundant for most people since our phone front cameras essentially serve the same purpose.</div>
+      </div>
+      <div class="qa-block" data-qa="15-4">
+        <div class="question">Would you use mirrors to decorate your room? (你会用镜子来装饰你的房间吗？)</div>
+        <div class="answer">Absolutely — strategically placed mirrors can work wonders in making a room feel more spacious and bounce natural light around. Interior designers often use oversized mirrors as statement pieces, and I think a well-chosen mirror can add both functionality and a touch of sophistication to a living space.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="16">
+      <h2 data-topic-num="16">16. Tidiness</h2>
+      <div class="qa-block" data-qa="16-1">
+        <div class="question">Do you like to keep things tidy? (你喜欢保持东西整洁吗？)</div>
+        <div class="answer">For the most part, yes — I've come to realise that a clutter-free environment has a surprisingly powerful effect on my mental clarity and productivity. However, I'm not obsessive about it; I think there's a healthy middle ground between being organised and being rigidly perfectionist about tidiness.</div>
+      </div>
+      <div class="qa-block" data-qa="16-2">
+        <div class="question">Did you use to keep your room tidy as a child? (你小时候保持房间整洁吗？)</div>
+        <div class="answer">Honestly, my room was an absolute disaster zone when I was a child — clothes strewn everywhere, books piled haphazardly, the works. My mother used to despair at the state of it, and looking back, I think my aversion to tidying up stemmed from simply having more interesting things to do with my time.</div>
+      </div>
+      <div class="qa-block" data-qa="16-3">
+        <div class="question">How do you keep your work or study space tidy? (你如何保持工作或学习空间整洁？)</div>
+        <div class="answer">I've adopted a "clean desk policy" where I spend the last five minutes of each day clearing away papers, wiping down surfaces, and organising any loose items. I also follow the principle of "a place for everything and everything in its place," which prevents clutter from accumulating in the first place.</div>
+      </div>
+      <div class="qa-block" data-qa="16-4">
+        <div class="question">Do you think that it is necessary to be tidy? (你认为保持整洁是必要的吗？)</div>
+        <div class="answer">I think it depends entirely on context — in shared spaces or professional environments, being tidy is a matter of basic courtesy and respect for others. That said, I'm reluctant to say it's universally necessary; some of the most creative people I know thrive in what most would consider organised chaos.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="17">
+      <h2 data-topic-num="17">17. Websites</h2>
+      <div class="qa-block" data-qa="17-1">
+        <div class="question">What kinds of websites do you often visit? (你经常访问什么样的网站？)</div>
+        <div class="answer">I tend to gravitate towards long-form journalism platforms like The Guardian or The Atlantic, as well as a few niche blogs related to my professional field. I also find myself spending a fair amount of time on educational platforms like Coursera, where I can dip into courses and stay intellectually engaged.</div>
+      </div>
+      <div class="qa-block" data-qa="17-2">
+        <div class="question">What is your favourite website? (你最喜欢的网站是什么？)</div>
+        <div class="answer">If I had to single one out, it would probably be The New York Times, because their international coverage is remarkably thorough and their opinion pieces often challenge me to think differently. I also appreciate how they've adapted to digital journalism without sacrificing the depth and rigour that define quality reporting.</div>
+      </div>
+      <div class="qa-block" data-qa="17-3">
+        <div class="question">Are there any changes to the websites you often visit? (你经常访问的网站有什么变化吗？)</div>
+        <div class="answer">Many have shifted towards paywall models in recent years, which is understandable given the economics of journalism but does limit access to information. I've also noticed an increasing trend towards personalised content recommendations, which can be convenient but runs the risk of trapping you in an echo chamber.</div>
+      </div>
+      <div class="qa-block" data-qa="17-4">
+        <div class="question">What kinds of websites are popular in your country? (在你的国家，什么样的网站受欢迎？)</div>
+        <div class="answer">E-commerce platforms like Taobao and JD.com dominate, alongside short-video apps like Douyin that have fundamentally reshaped how people consume content. Social media and lifestyle platforms such as Xiaohongshu have also exploded in popularity, particularly among younger demographics.</div>
+      </div>
+      <div class="qa-block" data-qa="17-5">
+        <div class="question">Do you prefer getting information from websites or books? (你更喜欢从网站还是书籍中获取信息？)</div>
+        <div class="answer">It really depends on the depth of knowledge I'm seeking — for quick facts or current affairs, websites are undeniably more efficient and up-to-date. However, for truly mastering a subject, I still believe nothing beats a well-researched book that presents arguments in a coherent, in-depth manner.</div>
+      </div>
+      <div class="qa-block" data-qa="17-6">
+        <div class="question">Would you like to have your own website? (你想拥有自己的网站吗？)</div>
+        <div class="answer">I've actually toyed with the idea of launching a personal blog where I could write essays about topics I'm genuinely passionate about. I think having your own digital space, free from the constraints and algorithms of social media platforms, offers a refreshing degree of creative autonomy.</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="18">
+      <h2 data-topic-num="18">18. Watch</h2>
+      <div class="qa-block" data-qa="18-1">
+        <div class="question">Do you wear a watch? (你戴手表吗？)</div>
+        <div class="answer">I do, actually — despite having a smartphone constantly within arm's reach, I still find glancing at my wrist far more convenient and less distracting than pulling out my phone. There's also something undeniably elegant about a well-crafted timepiece that a digital screen simply cannot replicate.</div>
+      </div>
+      <div class="qa-block" data-qa="18-2">
+        <div class="question">Have you ever got a watch as a gift? (你曾经收到过手表作为礼物吗？)</div>
+        <div class="answer">Yes, my parents gave me a classic analogue watch for my university graduation, which I treasure not just for its monetary value but for what it symbolises. It marked a significant milestone in my life, and every time I strap it on, I'm reminded of their support and the transition into adulthood.</div>
+      </div>
+      <div class="qa-block" data-qa="18-3">
+        <div class="question">Why do some people wear expensive watches? (为什么有些人戴昂贵的手表？)</div>
+        <div class="answer">For many, I suspect it's a subtle form of signalling — a way to communicate success and taste without being overtly ostentatious. There's also an appreciation for the horological craftsmanship involved; luxury watches represent centuries of mechanical ingenuity distilled into something you can wear on your wrist.</div>
+      </div>
+      <div class="qa-block" data-qa="18-4">
+        <div class="question">Do you think it is important to wear a watch? Why? (你认为戴手表重要吗？为什么？)</div>
+        <div class="answer">From a purely practical standpoint, wearing a watch has become less essential now that we carry smartphones everywhere. Yet I still think there's value in it — a watch encourages a certain mindfulness about how you spend your time, and it avoids the rabbit hole of distractions you inevitably fall into when you check your phone for the time.
+
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="19">
+      <h2 data-topic-num="19">19. Shopping</h2>
+      <div class="qa-block" data-qa="19-1">
+        <div class="question">Do you like shopping? (你喜欢购物吗?)</div>
+        <div class="answer">Well, it really depends on what I'm buying. I genuinely enjoy shopping for things like books or tech gadgets because there's a sense of discovery and research involved, but I find grocery shopping or browsing for clothes rather tedious and time-consuming. So I suppose I'm quite a selective shopper rather than someone who shops for leisure.</div>
+      </div>
+      <div class="qa-block" data-qa="19-2">
+        <div class="question">How often do you go shopping? (你多久去购物一次?)</div>
+        <div class="answer">I would say I go grocery shopping once or twice a week out of necessity, but in terms of discretionary shopping, I tend to make purchases only every couple of months or so. I've become much more intentional about my spending over the years, so I usually wait until something I genuinely need wears out or until there's a compelling reason to buy. This approach has definitely helped me curb impulse purchases and save a considerable amount of money.</div>
+      </div>
+      <div class="qa-block" data-qa="19-3">
+        <div class="question">Do you prefer online shopping or in-store shopping? (你更喜欢网购还是实体店购物?)</div>
+        <div class="answer">For the vast majority of items, I'd say online shopping wins hands down simply because of the convenience and the ability to compare prices across multiple platforms within minutes. That said, there are certain things, like shoes or a tailored suit, where I still prefer the in-store experience because fit and fabric quality are impossible to assess through a screen. I suppose the ideal approach is a hybrid model where you research online but verify in person when it matters.</div>
+      </div>
+      <div class="qa-block" data-qa="19-4">
+        <div class="question">Have you ever returned anything you bought online? (你曾经退过网购的商品吗?)</div>
+        <div class="answer">Yes, absolutely, and I think most avid online shoppers have been in that boat at some point. I once ordered a jacket that looked sleek and well-fitted in the product photos, but when it arrived, the material felt cheap and the sizing was completely off. It was a bit of a hassle to go through the return process, but it taught me to always check the return policy and read customer reviews with photos before committing to a purchase.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="20">
+      <h2 data-topic-num="20">20. Music</h2>
+      <div class="qa-block" data-qa="20-1">
+        <div class="question">Do you prefer sad or happy music? (你更喜欢悲伤的音乐还是欢快的音乐?)</div>
+        <div class="answer">To be perfectly honest, my preference shifts depending on my mood and the context, but if I had to choose, I'd lean towards melancholic or introspective music. There's something oddly comforting about sad songs, they seem to validate complex emotions and provide a kind of cathartic release that upbeat tracks simply can't replicate. I suppose artists like Adele or Leonard Cohen resonate with me because their lyrics explore the nuances of human vulnerability so poignantly.</div>
+      </div>
+      <div class="qa-block" data-qa="20-2">
+        <div class="question">Does happy music make you feel more excited? (欢快的音乐会让你感到更兴奋吗?)</div>
+        <div class="answer">Well, there's certainly some scientific evidence that upbeat music with a fast tempo can trigger the release of dopamine and elevate one's mood, and I do find that true to some extent. If I'm gearing up for a workout or need to get through a mundane task like cleaning, an energetic playlist can genuinely give me that extra momentum. However, I wouldn't say it makes me feel dramatically more excited in a deep or meaningful way, it's more of a surface-level energy boost rather than a profound emotional shift.</div>
+      </div>
+      <div class="qa-block" data-qa="20-3">
+        <div class="question">Have you taken any music classes? (你上过音乐课吗?)</div>
+        <div class="answer">Yes, I dabbled in piano lessons for about three years when I was in primary school, though I have to admit I wasn't the most dedicated student at the time. My parents enrolled me because they believed learning an instrument fosters discipline and cognitive development, which I now realize was quite forward-thinking of them. I eventually drifted away from it during my teenage years, and it's one of those things I somewhat regret not sticking with, as musical literacy is such a valuable lifelong skill.</div>
+      </div>
+      <div class="qa-block" data-qa="20-4">
+        <div class="question">Do you listen to music while doing other things? (你会在做其他事情的时候听音乐吗?)</div>
+        <div class="answer">All the time, in fact, I find it difficult to focus on certain tasks without some background music playing. When I'm working on something creative or doing household chores, I usually put on instrumental jazz or lo-fi hip-hop because lyrics can be too distracting and fragment my concentration. That said, if I'm reading dense academic material or tackling a complex problem, I need complete silence, so I suppose it really depends on the cognitive demands of the activity at hand.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="21">
+      <h2 data-topic-num="21">21. Dream and Ambition</h2>
+      <div class="qa-block" data-qa="21-1">
+        <div class="question">What was your childhood dream? (你儿时的梦想是什么?)</div>
+        <div class="answer">When I was around seven or eight, I was absolutely convinced I wanted to become an astronaut, which I suppose was fueled by a fascination with space documentaries and science fiction films. I would spend hours gazing at the night sky, imagining what it would be like to float in zero gravity and look back at Earth from the cosmos. Of course, as I grew older and came to terms with the rigorous physical and academic demands of that career path, my aspirations gradually became more grounded and evolved in entirely different directions.</div>
+      </div>
+      <div class="qa-block" data-qa="21-2">
+        <div class="question">Are you the kind of person who sticks to dreams? (你是那种坚持梦想的人吗?)</div>
+        <div class="answer">I'd say I'm persistent when it comes to overarching goals, but I'm also pragmatic enough to recalibrate my path when circumstances change or when I gain new information that challenges my original plan. I don't believe in clinging to a dream dogmatically if it no longer aligns with who I've become or what I now value, that seems more like stubbornness than determination. What I do stick to, however, is the underlying principle of continuous self-improvement and pursuing meaningful work, even if the specific form it takes shifts over time.</div>
+      </div>
+      <div class="qa-block" data-qa="21-3">
+        <div class="question">What is your dream job? (你梦想的工作是什么?)</div>
+        <div class="answer">My ideal role would be something that sits at the intersection of innovation and social impact, perhaps leading a project or initiative that leverages technology to address pressing environmental or educational challenges. I'm particularly drawn to positions that offer intellectual stimulation, creative autonomy, and the tangible satisfaction of knowing your work contributes to the greater good. Ultimately, I think a dream job isn't just about the title or salary, it's about waking up each morning feeling genuinely motivated by the problems you're solving.</div>
+      </div>
+      <div class="qa-block" data-qa="21-4">
+        <div class="question">Do you think you are an ambitious person? (你认为自己是一个有野心的人吗?)</div>
+        <div class="answer">Yes, I would characterize myself as ambitious, though perhaps not in the conventional sense of relentlessly climbing a corporate ladder or amassing wealth. My ambition manifests more as a deep-seated desire to master my craft, expand my intellectual horizons, and leave a positive mark on the communities I'm part of. I think there's a distinction between healthy ambition, which drives growth and contribution, and toxic ambition, which comes at the expense of relationships and wellbeing, and I try to stay firmly in the former category.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="22">
+      <h2 data-topic-num="22">22. Social Media</h2>
+      <div class="qa-block" data-qa="22-1">
+        <div class="question">Have you ever posted anything on social media? (你有没有在社交媒体上发过东西?)</div>
+        <div class="answer">Yes, I have, though I would describe myself as a fairly restrained and selective poster rather than someone who shares every detail of their daily life. I tend to post only when I have something genuinely worth sharing, like a meaningful travel experience, a professional milestone, or a book recommendation that I think my network might appreciate. Over time, I've become increasingly conscious of the digital footprint I leave behind, so I always pause to consider whether a post adds value or is simply seeking validation.</div>
+      </div>
+      <div class="qa-block" data-qa="22-2">
+        <div class="question">When did you start using social media? (你什么时候开始使用社交媒体的?)</div>
+        <div class="answer">I created my first social media account back in my early high school days, so I must have been around fourteen or fifteen at the time. It was predominantly Facebook and a local messaging platform back then, and I remember it felt like an exciting gateway into a broader social world where you could connect with classmates and follow celebrities. Looking back now, I had very little understanding of data privacy or the psychological impact of constant comparison, which are things I'm far more mindful of as an adult user.</div>
+      </div>
+      <div class="qa-block" data-qa="22-3">
+        <div class="question">Do you think you spend too much time on social media? (你认为自己在社交媒体上花的时间太多了吗?)</div>
+        <div class="answer">There are definitely periods when I catch myself mindlessly scrolling through feeds longer than I intended, and I would say those moments qualify as excessive usage. I've made a conscious effort to set boundaries, like keeping my phone out of the bedroom and using app timers to limit my daily screen time, because I noticed that overconsumption was making me feel anxious and less present in my actual surroundings. It's an ongoing challenge though, because these platforms are engineered to be addictive, and breaking that cycle requires constant self-discipline.</div>
+      </div>
+      <div class="qa-block" data-qa="22-4">
+        <div class="question">Do your friends use social media? (你的朋友们使用社交媒体吗?)</div>
+        <div class="answer">Virtually all of my friends are on at least one or two platforms, whether it's Instagram for visual storytelling, LinkedIn for professional networking, or WeChat for day-to-day communication. What I've noticed is that there's a generational divide in how we use these tools, my younger friends tend to be heavy content creators and consumers, while those of us in our late twenties or early thirties have become more passive users who primarily lurk rather than post. It's fascinating how social norms around digital sharing have shifted even within a single decade.</div>
+      </div>
+      <div class="qa-block" data-qa="22-5">
+        <div class="question">What do people often do on social media? (人们通常在社交媒体上做什么?)</div>
+        <div class="answer">From what I've observed, the activities span a broad spectrum, ranging from keeping up with friends' lives and consuming news to building personal brands and engaging in activism or community organizing. A significant portion of users also turn to social media for entertainment, whether through short-form videos, memes, or livestreams, which has fundamentally changed how we consume content. What concerns me, however, is the growing tendency for people to curate highly idealized versions of their lives, which can create unrealistic standards and contribute to a pervasive sense of inadequacy among impressionable users.
+
+---</div>
+      </div>
+    </div>
+
+    <div class="topic-section" data-topic="23">
+      <h2 data-topic-num="23">23. Teachers</h2>
+      <div class="qa-block" data-qa="23-1">
+        <div class="question">Do you have a favorite teacher? (你有最喜欢的老师吗?)</div>
+        <div class="answer">Yes, without a doubt, my favorite teacher was my high school literature teacher, Dr. Chen, who had an extraordinary gift for making classic texts feel vividly alive and profoundly relevant to our modern lives. She didn't just teach us to analyze symbolism or memorise literary devices, she encouraged us to grapple with the moral and philosophical questions that great writers have been exploring for centuries. Her classes were the first time I truly fell in love with learning as an intellectual pursuit rather than merely a means to pass exams.</div>
+      </div>
+      <div class="qa-block" data-qa="23-2">
+        <div class="question">Do you want to be a teacher in the future? (你将来想成为一名老师吗?)</div>
+        <div class="answer">While I deeply respect the teaching profession and acknowledge its immense societal value, I don't see myself pursuing a traditional teaching role in a formal school setting. That said, I am quite drawn to the idea of mentoring or conducting workshops in my area of expertise later in my career, as there's something incredibly rewarding about helping others grasp a concept they've been struggling with. I suppose I prefer a more specialized, apprenticeship-style form of teaching over managing a full classroom of students with diverse needs.</div>
+      </div>
+      <div class="qa-block" data-qa="23-3">
+        <div class="question">Do you have a teacher from your past that you still remember? (你有没有一位至今仍然记得的过去的老师?)</div>
+        <div class="answer">There are several who left a lasting impression on me, but the one who stands out most vividly was my physics teacher in secondary school, a rather eccentric man who conducted dramatic experiments in nearly every lesson. He had this remarkable ability to explain abstract concepts like electromagnetism or thermodynamics through everyday analogies that made the subject accessible and genuinely exciting. Even though I didn't end up pursuing a career in the sciences, his infectious enthusiasm taught me that passion and curiosity are far more important than raw talent when it comes to mastering any subject.</div>
+      </div>
+      <div class="qa-block" data-qa="23-4">
+        <div class="question">Are you still in touch with your primary school teachers? (你还和小学老师保持联系吗?)</div>
+        <div class="answer">I'm afraid not, and that's something I feel a tinge of regret about, because several of them laid the foundational groundwork for my academic journey and personal development. We moved to a different city shortly after I finished primary school, and in an era before social media and instant messaging, maintaining those connections was genuinely difficult. I did manage to track down one of them through a mutual acquaintance a few years ago and sent a handwritten note expressing my gratitude, which felt like a small but meaningful gesture of closure.</div>
+      </div>
+      <div class="qa-block" data-qa="23-5">
+        <div class="question">In what way has your favourite teacher helped you? (你最喜欢的老师在哪些方面帮助过你?)</div>
+        <div class="answer">Dr. Chen helped me in ways that extended far beyond the curriculum, she fundamentally reshaped how I think, write, and engage with the world around me. She taught me to question assumptions, to construct arguments with evidence and nuance, and to appreciate the power of language as a tool for both self-expression and social change. Perhaps most importantly, she believed in my potential during a period when I lacked confidence in my own abilities, and that encouragement gave me the courage to pursue opportunities I would have otherwise dismissed as beyond my reach.</div>
+      </div>
+      <div class="qa-block" data-qa="23-6">
+        <div class="question">Do you like your primary school teachers more than your high school teachers? (你喜欢你的小学老师胜过高中老师吗?)</div>
+        <div class="answer">That's a difficult comparison to make because they served such different purposes at distinct stages of my development. My primary school teachers were wonderfully nurturing and patient, providing a safe and supportive environment where I could explore and make mistakes without fear of harsh judgment. On the other hand, my high school teachers challenged me intellectually and pushed me out of my comfort zone in ways that were uncomfortable at the time but ultimately transformative. I suppose I appreciate both groups immensely, just for profoundly different reasons that reflect the evolving needs of a growing student.
+
+---
+
+
+---</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "r1",
+    "date": "2026-07-20",
+    "city": "北京",
+    "venue": "国贸考点",
+    "subject": "speaking",
+    "content": "Part 1 考到 Morning routine、Public places；Part 2 描述一位鼓励你保护自然的人；Part 3 围绕环保意识与年轻人行动力展开。",
+    "difficulty": "中等"
+  },
+  {
+    "id": "r2",
+    "date": "2026-07-18",
+    "city": "上海",
+    "venue": "徐家汇考点",
+    "subject": "writing",
+    "content": "Task 1 柱状图对比三国可再生能源占比变化；Task 2 讨论政府是否应限制快餐广告，题型为 agree/disagree。",
+    "difficulty": "中等"
+  },
+  {
+    "id": "r3",
+    "date": "2026-07-15",
+    "city": "广州",
+    "venue": "天河考点",
+    "subject": "listening",
+    "content": "Section 1 租房咨询，Section 2 博物馆导览，Section 3 学术论文讨论，Section 4 海洋生态研究。整体语速正常，填空题有同义替换。",
+    "difficulty": "偏难"
+  },
+  {
+    "id": "r4",
+    "date": "2026-07-12",
+    "city": "成都",
+    "venue": "春熙路考点",
+    "subject": "reading",
+    "content": "Passage 1 城市绿化与心理健康；Passage 2 古代航海技术；Passage 3 人工智能与创意产业。判断题和匹配题较多。",
+    "difficulty": "中等"
+  },
+  {
+    "id": "r5",
+    "date": "2026-07-10",
+    "city": "深圳",
+    "venue": "南山考点",
+    "subject": "speaking",
+    "content": "Part 1 含 Social Media、Music；Part 2 描述一次禁用手机的场合；Part 3 讨论科技对人际关系的影响。",
+    "difficulty": "简单"
+  },
+  {
+    "id": "r6",
+    "date": "2026-07-08",
+    "city": "杭州",
+    "venue": "西湖考点",
+    "subject": "writing",
+    "content": "Task 1 流程图展示某种传统手工艺制作过程；Task 2 大学是否应强制所有专业学生学习一门商业课程。",
+    "difficulty": "偏难"
+  },
+  {
+    "id": "r7",
+    "date": "2026-07-05",
+    "city": "南京",
+    "venue": "鼓楼考点",
+    "subject": "listening",
+    "content": "Section 2 为公园活动介绍，含地图题；Section 4 关于睡眠与工作效率的研究报告，学术词汇较多。",
+    "difficulty": "中等"
+  },
+  {
+    "id": "r8",
+    "date": "2026-07-03",
+    "city": "武汉",
+    "venue": "光谷考点",
+    "subject": "reading",
+    "content": "三篇文章分别涉及蜜蜂生态、语言学习策略、博物馆数字化。List of headings 和 Summary Completion 是主要难点。",
+    "difficulty": "偏难"
+  }
+]
