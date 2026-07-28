@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { NAV_ITEMS, SITE } from '../data/site'
 
+const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo.jpg`
+
 export function Navbar() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState('hero')
@@ -11,16 +13,18 @@ export function Navbar() {
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
-          .filter((e) => e.isIntersecting)
+          .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
         if (visible?.target.id) setActive(visible.target.id)
       },
       { rootMargin: '-25% 0px -60% 0px', threshold: [0, 0.25] },
     )
+
     ids.forEach((id) => {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     })
+
     return () => observer.disconnect()
   }, [])
 
@@ -31,17 +35,14 @@ export function Navbar() {
 
   return (
     <header className="nav">
-      <div className="shell flex h-[72px] items-center justify-between">
-        <button type="button" onClick={() => scrollTo('hero')} className="flex items-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[17px] font-black text-[var(--ink)] shadow-[inset_0_-2px_0_rgba(23,23,23,0.12)]">
-            E
-          </span>
-          <span className="text-[18px] font-black text-[var(--ink)]">
-            {SITE.name}
-            <span className="ml-1 rounded-full bg-white px-2 py-0.5 text-[12px] ring-1 ring-black/10">
-              {SITE.cn}
-            </span>
-          </span>
+      <div className="shell flex h-[82px] items-center justify-between gap-4">
+        <button type="button" onClick={() => scrollTo('hero')} className="flex items-center gap-3">
+          <img
+            src={LOGO_SRC}
+            alt={`${SITE.name} logo`}
+            className="h-11 w-auto rounded-[10px] bg-white object-contain px-2 py-1 ring-1 ring-black/10"
+          />
+          <span className="hidden text-[14px] font-bold text-[var(--ink-3)] md:inline">{SITE.cn}</span>
         </button>
 
         <nav className="hidden items-center gap-1 lg:flex">
@@ -52,7 +53,7 @@ export function Navbar() {
                 key={item.id}
                 type="button"
                 onClick={() => scrollTo(item.id)}
-                className="relative rounded-full px-3.5 py-2 text-[14px] font-extrabold transition"
+                className="rounded-full px-4 py-2 text-[15px] font-extrabold transition"
                 style={{
                   color: on ? 'var(--ink)' : 'var(--ink-2)',
                   background: on ? '#fff' : 'transparent',
@@ -76,7 +77,7 @@ export function Navbar() {
           <button
             type="button"
             className="rounded-[8px] bg-white p-2.5 ring-1 ring-black/10 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen((value) => !value)}
             aria-label="菜单"
             style={{ color: 'var(--ink)' }}
           >

@@ -1,5 +1,7 @@
 import { NAV_ITEMS, SITE } from '../data/site'
 
+const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo.jpg`
+
 export function Footer() {
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -10,14 +12,13 @@ export function Footer() {
       <div className="shell py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-sm font-black text-[var(--ink)]">
-                E
-              </span>
-              <p className="text-[17px] font-black text-white">
-                {SITE.name}
-                <span className="ml-1 text-[var(--yellow)]">{SITE.cn}</span>
-              </p>
+            <div className="flex items-center gap-3">
+              <img
+                src={LOGO_SRC}
+                alt={`${SITE.name} logo`}
+                className="h-11 w-auto rounded-[10px] bg-white object-contain px-2 py-1 ring-1 ring-white/12"
+              />
+              <p className="text-[17px] font-black text-white">{SITE.tagline}</p>
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed">{SITE.description}</p>
           </div>
@@ -36,16 +37,16 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="text-xs font-black tracking-wide text-white/80">免责声明</p>
+            <p className="text-xs font-black tracking-wide text-white/80">说明</p>
             <p className="mt-4 text-sm leading-relaxed">
-              本站内容仅供备考参考，与 IELTS 官方无隶属关系。考点回忆来自考生整理，请以官方考试安排为准。
+              本站内容仅供备考参考，与 IELTS 官方无隶属关系。口语题库和高频题目为学习整理，请以官方考试安排和实际考试内容为准。
             </p>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 text-xs sm:flex-row">
           <p>© {new Date().getFullYear()} Edutoro. All rights reserved.</p>
-          <p className="text-white/35">做高效雅思备考工具，让提分路径更清楚</p>
+          <p className="text-white/35">做更清楚、更省时间的雅思备考前台</p>
         </div>
       </div>
     </footer>

@@ -30,13 +30,18 @@ export interface Teacher {
   name: string
   title: string
   price: string
-  avatarSeed: string
+  avatarTone: string
   strongestFeature: string
   subjects: string[]
   experience: string
   style: string[]
   bio: string
   highlights: string[]
+  serviceTags: string[]
+  detailCards: Array<{
+    title: string
+    body: string
+  }>
   caseStudy: {
     student: string
     result: string

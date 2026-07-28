@@ -26,9 +26,9 @@ export function ContactSection({ onContact }: ContactSectionProps) {
 
           <div className="space-y-4">
             {[
-              { icon: BookOpen, title: '领取真题资料', desc: '剑桥真题、当季口语题、写作范文' },
-              { icon: Users, title: '报名课程', desc: '一对一独立老师 / 多对一督学营' },
-              { icon: MessageCircle, title: '加入备考社群', desc: '考情交流、资料更新、备考答疑' },
+              { icon: BookOpen, title: '领取备考资料', desc: '当季口语题库、阅读思路资料、听力素材索引' },
+              { icon: Users, title: '预约老师试听', desc: '按价位和需求匹配独立老师，也可咨询督学营' },
+              { icon: MessageCircle, title: '加入备考社群', desc: '接收资料更新、上课信息和日常答疑' },
             ].map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex items-start gap-4 rounded-[8px] bg-white/7 p-5 ring-1 ring-white/10">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[var(--ink)]">

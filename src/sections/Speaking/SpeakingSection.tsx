@@ -1,13 +1,5 @@
 import { useMemo, useState } from 'react'
-import {
-  ArrowLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Search,
-  Shuffle,
-  Timer,
-} from 'lucide-react'
+import { ArrowLeft, ChevronRight, Eye, EyeOff, Search, Shuffle, Timer } from 'lucide-react'
 import { SectionHeader } from '../../components/SectionHeader'
 import speakingTopics from '../../data/speaking-topics.json'
 import type { SpeakingTopic, SpeakingView } from '../../types'
@@ -32,20 +24,13 @@ export function SpeakingSection() {
   const [search, setSearch] = useState('')
   const [practice, setPractice] = useState(() => pickRandomQuestion())
 
-  const selected = useMemo(
-    () => topics.find((t) => t.id === selectedId) ?? null,
-    [selectedId],
-  )
-
-  const totalQuestions = useMemo(
-    () => topics.reduce((sum, t) => sum + t.questionCount, 0),
-    [],
-  )
+  const selected = useMemo(() => topics.find((topic) => topic.id === selectedId) ?? null, [selectedId])
+  const totalQuestions = useMemo(() => topics.reduce((sum, topic) => sum + topic.questionCount, 0), [])
 
   const filteredTopics = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return topics
-    return topics.filter((t) => t.titleEn.toLowerCase().includes(q))
+    const query = search.trim().toLowerCase()
+    if (!query) return topics
+    return topics.filter((topic) => topic.titleEn.toLowerCase().includes(query))
   }, [search])
 
   const openTopic = (id: string) => {
@@ -66,8 +51,8 @@ export function SpeakingSection() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeader
             eyebrow="口语题库"
-            title="Part 1 新题 + 老题沿用，页面里直接练"
-            description={`${topics.length} 大话题 · ${totalQuestions}+ 真题。部分题目配 7.5+ 示例回答，PDF 新补题先提供练习提示。`}
+            title="Part 1 题库直练"
+            description={`${topics.length} 个话题 · ${totalQuestions}+ 真题。部分题目配 7.5+ 示例回答，新增题先给练习提示。`}
           />
           {view === 'list' && (
             <button type="button" onClick={startPractice} className="btn btn-dark shrink-0">
@@ -103,7 +88,7 @@ export function SpeakingSection() {
               <input
                 type="search"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder="搜索话题，如 History、Music"
                 className="w-full rounded-full bg-[var(--bg)] py-3.5 pl-11 pr-4 text-sm font-semibold outline-none"
                 style={{ border: '1px solid rgba(23,23,23,0.1)', boxShadow: 'var(--shadow-sm)' }}
@@ -122,9 +107,7 @@ export function SpeakingSection() {
                     <div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-[var(--yellow-soft)] text-[var(--ink)]">
                       <TopicIcon name={topic.icon} />
                     </div>
-                    <span className="pill bg-[var(--bg)] text-[var(--ink-3)]">
-                      #{String(topic.num).padStart(2, '0')}
-                    </span>
+                    <span className="pill bg-[var(--bg)] text-[var(--ink-3)]">#{String(topic.num).padStart(2, '0')}</span>
                   </div>
                   <h3 className="mt-5 text-[18px] font-black text-[var(--ink)]">{topic.titleEn}</h3>
                   <p className="mt-1 text-sm font-bold text-[var(--ink-3)]">{topic.questionCount} 道题目</p>
@@ -150,20 +133,20 @@ export function SpeakingSection() {
               </div>
             </div>
 
-            {selected.questions.map((q, idx) => {
-              const promptOnly = isPracticePrompt(q.modelAnswerEn)
+            {selected.questions.map((question, index) => {
+              const promptOnly = isPracticePrompt(question.modelAnswerEn)
               return (
-                <article key={q.id} className="card overflow-hidden">
+                <article key={question.id} className="card overflow-hidden">
                   <div className="p-6" style={{ borderLeft: '5px solid var(--yellow)' }}>
-                    <span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">Q{idx + 1}</span>
-                    <p className="mt-3 text-lg font-black leading-snug">{q.questionEn}</p>
-                    {q.questionZh && <p className="mt-2 text-sm text-[var(--ink-3)]">{q.questionZh}</p>}
+                    <span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">Q{index + 1}</span>
+                    <p className="mt-3 text-lg font-black leading-snug">{question.questionEn}</p>
+                    {question.questionZh && <p className="mt-2 text-sm text-[var(--ink-3)]">{question.questionZh}</p>}
                   </div>
                   <div className="px-6 py-5" style={{ background: 'var(--bg)', borderTop: '1px solid var(--line-2)' }}>
                     <p className="text-xs font-black tracking-wide text-[var(--teal)]">
                       {promptOnly ? 'PRACTICE PROMPT' : 'MODEL ANSWER'}
                     </p>
-                    <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{q.modelAnswerEn}</p>
+                    <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{question.modelAnswerEn}</p>
                   </div>
                 </article>
               )
@@ -187,10 +170,10 @@ export function SpeakingSection() {
                 </div>
                 <div className="mt-5 flex items-start gap-2 rounded-[8px] bg-white p-4 text-sm text-[var(--ink-2)] ring-1 ring-black/10">
                   <Timer size={16} className="mt-0.5 text-[var(--teal)]" />
-                  建议先用 20-30 秒组织思路，口头回答后再看示例或练习提示。
+                  建议先用 20 到 30 秒组织思路，口头回答后再看示例或练习提示。
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <button type="button" onClick={() => setShowAnswer((v) => !v)} className="btn btn-dark">
+                  <button type="button" onClick={() => setShowAnswer((value) => !value)} className="btn btn-dark">
                     {showAnswer ? <EyeOff size={16} /> : <Eye size={16} />}
                     {showAnswer ? '隐藏内容' : '查看提示'}
                   </button>
@@ -211,9 +194,7 @@ export function SpeakingSection() {
                     <p className="text-xs font-black text-[var(--teal)]">
                       {isPracticePrompt(practice.question.modelAnswerEn) ? 'PRACTICE PROMPT' : 'MODEL ANSWER · Band 7.5+'}
                     </p>
-                    <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">
-                      {practice.question.modelAnswerEn}
-                    </p>
+                    <p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{practice.question.modelAnswerEn}</p>
                   </div>
                 )}
               </div>
