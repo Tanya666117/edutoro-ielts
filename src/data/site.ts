@@ -21,8 +21,8 @@ export const SITE = {
   tagline: '口语题库 · 高频题目 · 独立老师 · 督学营',
   description:
     '面向中国雅思考生的一站式备考前台：当季口语题库、听阅写高频题目、独立老师匹配和督学营一起给到，先定位问题，再安排课程。',
-  staffName: '课程顾问 · Zoe',
+  staffName: '课程顾问 · 小星_',
   staffHint:
     '添加课程顾问微信，领取当季题库、阅读思路资料、虾家听力本月高频和老师试听信息；也可以直接预约试听或加入备考社群。',
-  wechatId: 'edutoro-ielts',
+  wechatId: 'Cloudtutor_',
 }

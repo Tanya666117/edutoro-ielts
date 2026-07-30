@@ -1,5 +1,7 @@
-import { X, MessageCircle, BookOpen, Users } from 'lucide-react'
+import { X, BookOpen, Users } from 'lucide-react'
 import { SITE } from '../data/site'
+
+const WECHAT_QR_SRC = `${import.meta.env.BASE_URL}wechat-cloudtutor.png`
 
 interface ContactModalProps {
   open: boolean
@@ -41,10 +43,8 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-2)]">{SITE.staffHint}</p>
 
         <div className="mt-7 flex justify-center">
-          <div className="flex h-48 w-48 flex-col items-center justify-center rounded-[8px] bg-[var(--bg)] ring-1 ring-black/10">
-            <MessageCircle size={30} className="text-[var(--teal)]" />
-            <p className="mt-2 text-sm font-black text-[var(--ink)]">{SITE.staffName}</p>
-            <p className="mt-1 text-[11px] text-[var(--ink-3)]">可替换为二维码图片</p>
+          <div className="w-full max-w-[300px] rounded-[8px] bg-white p-3 ring-1 ring-black/10">
+            <img src={WECHAT_QR_SRC} alt={`${SITE.staffName} 微信二维码`} className="w-full rounded-[6px] object-contain" />
           </div>
         </div>
 
