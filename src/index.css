@@ -258,3 +258,26 @@ input {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 217, 26, 0.9), transparent);
 }
+
+.testimonial-rail {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.42) transparent;
+}
+
+.testimonial-rail > * {
+  scroll-snap-align: start;
+}
+
+.testimonial-rail::-webkit-scrollbar {
+  height: 8px;
+}
+
+.testimonial-rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.testimonial-rail::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+}

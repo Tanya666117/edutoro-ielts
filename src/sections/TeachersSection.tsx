@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BadgeCheck, MessageCircle, ReceiptText, RotateCcw, SearchCheck, WalletCards, X } from 'lucide-react'
+import { BadgeCheck, Gift, MessageCircle, ReceiptText, X } from 'lucide-react'
 import { SectionHeader } from '../components/SectionHeader'
 import teachersData from '../data/teachers.json'
 import type { Teacher } from '../types'
@@ -37,23 +37,17 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
         <div className="shell">
           <SectionHeader
             eyebrow="找老师"
-            title="创始人 1v1 试听过的独立老师，按价位和需求匹配"
-            description="每一位老师我们都单独试听过，覆盖口语、写作、听力、阅读和全科规划。可以先看真实战绩和学生反馈，再联系试听；不满意可沟通退款。"
+            title="我们花一个月时间 1V1 试听，精心挑选了几位优秀的独立老师"
             align="center"
           />
-
-          <div className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-3">
-            {[
-              { icon: SearchCheck, title: '创始人试听筛选', desc: '先听课再入库' },
-              { icon: WalletCards, title: '覆盖不同价位', desc: '按预算匹配' },
-              { icon: RotateCcw, title: '试听后再决定', desc: '不合适可调整' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-[8px] bg-white p-5 text-center ring-1 ring-black/10">
-                <Icon size={22} className="mx-auto text-[var(--teal)]" />
-                <p className="mt-3 text-sm font-black text-[var(--ink)]">{title}</p>
-                <p className="mt-1 text-xs font-bold text-[var(--ink-3)]">{desc}</p>
-              </div>
-            ))}
+          <div className="mx-auto mt-5 max-w-3xl text-center">
+            <p className="text-[15px] font-black leading-relaxed text-[var(--ink-2)]">
+              每一位老师我们都单独试听，再挑选入库，覆盖不同学科和价位。可以先看老师资料和真实提分案例，再联系试听。匹配成功后，若上课中途不满意可联系退款。
+            </p>
+            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[var(--ink-2)] ring-1 ring-black/10">
+              <Gift size={16} className="text-[var(--red)]" />
+              有优秀老师推荐/自荐，也可以联系我们的顾问，推荐成功者有红包奖励
+            </p>
           </div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -85,7 +79,7 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
                   <p className="mt-4 text-sm leading-relaxed text-[var(--ink-2)]">{item.strongestFeature}</p>
 
                   <div className="mt-auto flex flex-wrap gap-1.5 pt-5">
-                    {item.serviceTags.map((tag) => (
+                    {item.serviceTags.filter((tag) => tag !== '可试听').map((tag) => (
                       <span key={tag} className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-[11px] font-black text-[var(--ink-2)]">
                         {tag}
                       </span>
@@ -108,7 +102,11 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
                   <p className="inline-flex rounded-full bg-[var(--yellow)] px-3 py-1 text-xs font-black text-[var(--ink)]">
                     {teacher.price}
                   </p>
-                  <h3 className="mt-3 text-3xl font-black">{teacher.name}</h3>
+                  <p className="mt-2 text-xs font-bold text-white/55">试听费请联系顾问</p>
+                  <h3 className="mt-3 flex flex-wrap items-center gap-2 text-3xl font-black">
+                    {teacher.name}
+                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-black text-white/72">老师</span>
+                  </h3>
                   <p className="mt-1 text-sm font-bold text-white/70">{teacher.title}</p>
                 </div>
               </div>
@@ -130,10 +128,11 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
             <div className="p-7 md:p-8">
               <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
                 <div>
-                  <p className="text-sm font-black text-[var(--teal)]">{teacher.experience}</p>
+                  <p className="text-sm font-black text-[var(--teal)]">教学经验</p>
                   <p className="mt-4 text-[15px] leading-relaxed text-[var(--ink-2)]">{teacher.bio}</p>
 
                   <div className="mt-6 flex flex-wrap gap-2">
+                    <span className="pill bg-white text-[var(--ink-2)] ring-1 ring-black/10">{teacher.experience}</span>
                     {teacher.subjects.map((subject) => (
                       <span key={subject} className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">
                         {subject}
@@ -143,16 +142,6 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
                       <span key={style} className="pill bg-[var(--teal-soft)] text-[var(--teal)]">
                         {style}
                       </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                    {teacher.detailCards.map((card) => (
-                      <div key={card.title} className="rounded-[8px] bg-[var(--bg)] p-4 ring-1 ring-black/10">
-                        <span className="block h-1.5 w-9 rounded-full bg-[var(--yellow)]" />
-                        <p className="mt-3 text-sm font-black text-[var(--ink)]">{card.title}</p>
-                        <p className="mt-2 text-xs leading-relaxed text-[var(--ink-3)]">{card.body}</p>
-                      </div>
                     ))}
                   </div>
                 </div>

@@ -57,7 +57,7 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
             <BookOpen className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} />
             <div>
               <p className="text-sm font-black">领取备考资料</p>
-              <p className="text-sm text-[var(--ink-2)]">口语题库、阅读资料、听力素材索引</p>
+              <p className="text-sm text-[var(--ink-2)]">口语题库、阅读资料、虾家听力本月高频</p>
             </div>
           </li>
           <li className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-4">

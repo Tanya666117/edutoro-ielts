@@ -1,11 +1,13 @@
 import { NAV_ITEMS, SITE } from '../data/site'
+import type { PageId } from '../data/site'
 
-const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo.jpg`
+const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo-transparent.png`
 
-export function Footer() {
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }
+interface FooterProps {
+  onNavigate: (page: PageId) => void
+}
+
+export function Footer({ onNavigate }: FooterProps) {
 
   return (
     <footer className="bg-[#101010] text-white/55">
@@ -16,7 +18,7 @@ export function Footer() {
               <img
                 src={LOGO_SRC}
                 alt={`${SITE.name} logo`}
-                className="h-11 w-auto rounded-[10px] bg-white object-contain px-2 py-1 ring-1 ring-white/12"
+                className="h-11 w-auto object-contain"
               />
               <p className="text-[17px] font-black text-white">{SITE.tagline}</p>
             </div>
@@ -28,7 +30,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               {NAV_ITEMS.map((item) => (
                 <li key={item.id}>
-                  <button type="button" onClick={() => scrollTo(item.id)} className="text-sm hover:text-white">
+                  <button type="button" onClick={() => onNavigate(item.id)} className="text-sm hover:text-white">
                     {item.label}
                   </button>
                 </li>

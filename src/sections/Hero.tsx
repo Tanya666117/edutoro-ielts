@@ -1,8 +1,9 @@
-import { ArrowRight, BookOpen, Check, FileText, Headphones, Sparkles, Star } from 'lucide-react'
+import { BookOpen, Check, FileText, Headphones, Sparkles, Star } from 'lucide-react'
 import { SITE } from '../data/site'
 
 interface HeroProps {
-  onContact: () => void
+  onNavigate: (page: 'services' | 'teachers' | 'speaking' | 'recalls' | 'contact') => void
+  onResource: () => void
 }
 
 const resourceModules = [
@@ -13,25 +14,21 @@ const resourceModules = [
   },
   {
     icon: Headphones,
-    title: '听力高频素材索引',
+    title: '虾家听力本月高频',
     desc: '场景词、题型训练和精听路径整理。',
   },
 ]
 
 const heroStats = [
-  { value: '42', label: '口语话题' },
-  { value: '239+', label: '真题题目' },
-  { value: '18+', label: '资料专题' },
+  { value: '239+', label: '资料总数' },
+  { value: '1000+', label: '教学经验' },
+  { value: '10+', label: '督学人数' },
 ]
 
-export function Hero({ onContact }: HeroProps) {
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }
-
+export function Hero({ onNavigate, onResource }: HeroProps) {
   return (
     <section id="hero" className="hero">
-      <div className="shell grid items-center gap-12 py-16 md:py-20 lg:min-h-[720px] lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
+      <div className="shell grid items-center gap-10 py-14 md:py-18 lg:min-h-[720px] lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
         <div className="fade-up">
           <span className="tag-yellow">
             <Sparkles size={15} style={{ color: 'var(--yellow-2)' }} />
@@ -54,9 +51,8 @@ export function Hero({ onContact }: HeroProps) {
                 <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--teal)]">Resource Pack</p>
                 <h3 className="mt-2 text-[24px] font-black leading-tight text-[var(--ink)]">备考资料统一领取入口</h3>
               </div>
-              <button type="button" onClick={onContact} className="btn btn-dark shrink-0 !px-5">
-                免费领取
-                <ArrowRight size={16} />
+              <button type="button" onClick={onResource} className="btn btn-dark shrink-0 !px-5">
+                雅思全套资料 →
               </button>
             </div>
 
@@ -73,25 +69,39 @@ export function Hero({ onContact }: HeroProps) {
             </div>
           </div>
 
-          <ul className="mt-8 grid gap-3 sm:grid-cols-3">
-            {['口语真题题库免费练', '按价格与需求匹配老师', '督学营每日跟进'].map((text) => (
-              <li key={text} className="flex items-center gap-2 text-[14px] font-bold text-[var(--ink-2)]">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--yellow)] text-[var(--ink)]">
-                  <Check size={12} strokeWidth={3} />
-                </span>
-                {text}
+          <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              { text: '口语真题题库免费练', target: 'speaking' as const },
+              { text: '按价格与需求匹配老师', target: 'teachers' as const },
+              { text: '督学营每日跟进', target: 'services' as const, isNew: true },
+            ].map((item) => (
+              <li key={item.text}>
+                <button
+                  type="button"
+                  onClick={() => onNavigate(item.target)}
+                  className="relative flex min-h-11 w-full items-center gap-2 rounded-[8px] bg-white px-3 py-2 text-left text-[14px] font-bold text-[var(--ink-2)] ring-1 ring-black/10"
+                >
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--yellow)] text-[var(--ink)]">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
+                  <span>{item.text}</span>
+                  {item.isNew && (
+                    <span className="absolute -right-1.5 -top-2 rounded-full bg-[var(--red)] px-2 py-0.5 text-[11px] font-black leading-none text-white shadow-sm">
+                      新
+                    </span>
+                  )}
+                </button>
               </li>
             ))}
           </ul>
 
           <div className="mt-9 flex flex-wrap gap-3">
-            <button type="button" onClick={() => scrollTo('speaking')} className="btn btn-yellow">
+            <button type="button" onClick={() => onNavigate('speaking')} className="btn btn-yellow">
               <BookOpen size={18} />
               先练口语题库
             </button>
-            <button type="button" onClick={onContact} className="btn btn-outline">
-              免费领取备考资料
-              <ArrowRight size={17} />
+            <button type="button" onClick={onResource} className="btn btn-outline">
+              雅思全套资料 →
             </button>
           </div>
         </div>
@@ -115,10 +125,11 @@ export function Hero({ onContact }: HeroProps) {
             </div>
 
             <div className="grid grid-cols-3 divide-x divide-black/10">
-              {heroStats.map((item) => (
+              {heroStats.map((item, index) => (
                 <div key={item.label} className="p-5 md:p-6">
-                  <p className="text-[2.9rem] font-black leading-none text-[var(--ink)] md:text-[3.3rem]">{item.value}</p>
+                  <p className="text-[1.45rem] font-black leading-none text-[var(--ink)] sm:text-[1.8rem] md:text-[2.4rem]">{item.value}</p>
                   <p className="mt-2 text-xs font-bold text-[var(--ink-3)] md:text-sm">{item.label}</p>
+                  {index === 0 && <p className="mt-2 text-[11px] font-bold text-[var(--ink-3)]">按原统计口径</p>}
                 </div>
               ))}
             </div>
