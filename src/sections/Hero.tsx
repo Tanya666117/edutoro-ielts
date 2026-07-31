@@ -21,7 +21,7 @@ const resourceModules = [
 
 const heroStats = [
   { value: '239+', label: '资料总数' },
-  { value: '1000+', label: '教学经验' },
+  { value: '1000+', label: '累计教学人次' },
   { value: '10+', label: '督学人数' },
 ]
 
@@ -52,7 +52,7 @@ export function Hero({ onNavigate, onResource }: HeroProps) {
                 <h3 className="mt-2 text-[24px] font-black leading-tight text-[var(--ink)]">备考资料统一领取入口</h3>
               </div>
               <button type="button" onClick={onResource} className="btn btn-dark shrink-0 !px-5">
-                雅思全套资料 →
+                微信学习社群入口 →
               </button>
             </div>
 
@@ -84,7 +84,7 @@ export function Hero({ onNavigate, onResource }: HeroProps) {
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--yellow)] text-[var(--ink)]">
                     <Check size={12} strokeWidth={3} />
                   </span>
-                  <span>{item.text}</span>
+                  <span className={item.text === '按价格与需求匹配老师' ? 'whitespace-nowrap' : undefined}>{item.text}</span>
                   {item.isNew && (
                     <span className="absolute -right-1.5 -top-2 rounded-full bg-[var(--red)] px-2 py-0.5 text-[11px] font-black leading-none text-white shadow-sm">
                       新
@@ -101,7 +101,7 @@ export function Hero({ onNavigate, onResource }: HeroProps) {
               先练口语题库
             </button>
             <button type="button" onClick={onResource} className="btn btn-outline">
-              雅思全套资料 →
+              微信学习社群入口 →
             </button>
           </div>
         </div>

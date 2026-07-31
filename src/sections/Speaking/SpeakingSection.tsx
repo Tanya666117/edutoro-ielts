@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { ArrowLeft, ChevronRight, Eye, EyeOff, Search, Shuffle, Timer } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowLeft, ChevronRight, Download, Eye, EyeOff, Mic, Search, Shuffle, Square, Timer } from 'lucide-react'
 import { SectionHeader } from '../../components/SectionHeader'
 import speakingTopics from '../../data/speaking-topics.json'
 import type { SpeakingTopic, SpeakingView } from '../../types'
@@ -23,6 +23,11 @@ export function SpeakingSection() {
   const [showAnswer, setShowAnswer] = useState(false)
   const [search, setSearch] = useState('')
   const [practice, setPractice] = useState(() => pickRandomQuestion())
+  const [recording, setRecording] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [recordingError, setRecordingError] = useState('')
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
   const selected = useMemo(() => topics.find((topic) => topic.id === selectedId) ?? null, [selectedId])
   const totalQuestions = useMemo(() => topics.reduce((sum, topic) => sum + topic.questionCount, 0), [])
@@ -43,6 +48,44 @@ export function SpeakingSection() {
     setPractice(pickRandomQuestion())
     setView('practice')
     setShowAnswer(false)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl)
+      recorderRef.current?.stream.getTracks().forEach((track) => track.stop())
+    }
+  }, [audioUrl])
+
+  const startRecording = async () => {
+    try {
+      setRecordingError('')
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl)
+        setAudioUrl(null)
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = new MediaRecorder(stream)
+      chunksRef.current = []
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data)
+      }
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' })
+        setAudioUrl(URL.createObjectURL(blob))
+        stream.getTracks().forEach((track) => track.stop())
+      }
+      recorderRef.current = recorder
+      recorder.start()
+      setRecording(true)
+    } catch {
+      setRecordingError('浏览器没有拿到麦克风权限，可以检查权限后再试一次。')
+    }
+  }
+
+  const stopRecording = () => {
+    recorderRef.current?.stop()
+    setRecording(false)
   }
 
   return (
@@ -171,6 +214,23 @@ export function SpeakingSection() {
                 <div className="mt-5 flex items-start gap-2 rounded-[8px] bg-white p-4 text-sm text-[var(--ink-2)] ring-1 ring-black/10">
                   <Timer size={16} className="mt-0.5 text-[var(--teal)]" />
                   建议先用 20 到 30 秒组织思路，口头回答后再看示例或练习提示。
+                </div>
+                <div className="mt-5 rounded-[8px] bg-[var(--bg)] p-4 ring-1 ring-black/10">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button type="button" onClick={recording ? stopRecording : startRecording} className="btn btn-yellow !min-h-0 !px-4 !py-2.5 text-sm">
+                      {recording ? <Square size={15} /> : <Mic size={15} />}
+                      {recording ? '停止录音' : '开始录音'}
+                    </button>
+                    {audioUrl && (
+                      <a href={audioUrl} download="ielts-speaking-practice.webm" className="btn btn-outline !min-h-0 !px-4 !py-2.5 text-sm">
+                        <Download size={15} />
+                        保存录音
+                      </a>
+                    )}
+                    <p className="text-xs font-bold text-[var(--ink-3)]">录音只保存在你的浏览器本地，不会上传。</p>
+                  </div>
+                  {audioUrl && <audio src={audioUrl} controls className="mt-4 w-full" />}
+                  {recordingError && <p className="mt-3 text-sm font-bold text-[var(--red)]">{recordingError}</p>}
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button type="button" onClick={() => setShowAnswer((value) => !value)} className="btn btn-dark">

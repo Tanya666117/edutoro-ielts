@@ -17,10 +17,17 @@ const SUBJECT_COLORS: Record<string, { bg: string; color: string }> = {
 
 export function RecallsSection() {
   const [subject, setSubject] = useState<(typeof SUBJECTS)[number]>('all')
+  const [city, setCity] = useState('all')
+  const cityOptions = useMemo(() => ['all', ...Array.from(new Set(recalls.map((item) => item.city).filter(Boolean)))], [])
 
   const filtered = useMemo(
-    () => recalls.filter((item) => subject === 'all' || item.subject === subject),
-    [subject],
+    () =>
+      recalls.filter((item) => {
+        const subjectMatch = subject === 'all' || item.subject === subject
+        const cityMatch = city === 'all' || item.city === city
+        return subjectMatch && cityMatch
+      }),
+    [city, subject],
   )
 
   return (
@@ -48,6 +55,27 @@ export function RecallsSection() {
                 }}
               >
                 {item === 'all' ? '全部科目' : SUBJECT_LABELS[item]}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {cityOptions.map((item) => {
+            const on = city === item
+            return (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setCity(item)}
+                className="rounded-full px-4 py-2 text-sm font-black transition"
+                style={{
+                  background: on ? 'var(--teal)' : '#fff',
+                  color: on ? '#fff' : 'var(--ink-2)',
+                  border: `1px solid ${on ? 'var(--teal)' : 'rgba(23,23,23,0.1)'}`,
+                }}
+              >
+                {item === 'all' ? '全部城市' : item}
               </button>
             )
           })}

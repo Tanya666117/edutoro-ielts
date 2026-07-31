@@ -6,7 +6,7 @@ export const NAV_ITEMS = [
   { id: 'contact', label: '了解团队' },
 ] as const
 
-export type PageId = 'hero' | 'cases' | (typeof NAV_ITEMS)[number]['id']
+export type PageId = 'hero' | 'cases' | 'supervision' | (typeof NAV_ITEMS)[number]['id']
 
 export const SUBJECT_LABELS: Record<string, string> = {
   listening: '听力',

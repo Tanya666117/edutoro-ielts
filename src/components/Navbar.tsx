@@ -3,14 +3,15 @@ import { Menu, X } from 'lucide-react'
 import { NAV_ITEMS, SITE, type PageId } from '../data/site'
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo-transparent.png`
+const MENU_ITEMS = [{ id: 'hero', label: '首页' }, ...NAV_ITEMS] as const
 
 interface NavbarProps {
   activePage: PageId
   onNavigate: (page: PageId) => void
-  onResource: () => void
+  onContact: () => void
 }
 
-export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
+export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
   const [open, setOpen] = useState(false)
 
   const navigate = (page: PageId) => {
@@ -18,9 +19,9 @@ export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
     onNavigate(page)
   }
 
-  const openResource = () => {
+  const openContact = () => {
     setOpen(false)
-    onResource()
+    onContact()
   }
 
   return (
@@ -36,7 +37,7 @@ export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
         </button>
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_ITEMS.map((item) => {
+          {MENU_ITEMS.map((item) => {
             const on = activePage === item.id
             return (
               <button
@@ -59,10 +60,10 @@ export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={openResource}
+            onClick={openContact}
             className="btn btn-dark hidden !min-h-0 !px-5 !py-2.5 text-[13px] sm:inline-flex"
           >
-            雅思全套资料 →
+            免费诊断咨询
           </button>
           <button
             type="button"
@@ -78,7 +79,7 @@ export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
 
       {open && (
         <nav className="border-t bg-white px-5 py-4 lg:hidden" style={{ borderColor: 'rgba(23,23,23,0.08)' }}>
-          {NAV_ITEMS.map((item) => (
+          {MENU_ITEMS.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -92,8 +93,8 @@ export function Navbar({ activePage, onNavigate, onResource }: NavbarProps) {
               {item.label}
             </button>
           ))}
-          <button type="button" onClick={openResource} className="btn btn-dark mt-2 w-full">
-            雅思全套资料 →
+          <button type="button" onClick={openContact} className="btn btn-dark mt-2 w-full">
+            免费诊断咨询
           </button>
         </nav>
       )}

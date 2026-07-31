@@ -114,9 +114,9 @@ export function TeachersSection({ onContact }: TeachersSectionProps) {
               <div className="mt-7 rounded-[8px] bg-white/6 p-5 ring-1 ring-white/10">
                 <p className="flex items-center gap-2 text-sm font-black text-[var(--yellow)]">
                   <BadgeCheck size={17} />
-                  最突出特点
+                  老师介绍
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-white/82">{teacher.strongestFeature}</p>
+                <p className="mt-3 text-sm leading-relaxed text-white/82">{teacher.bio}</p>
               </div>
 
               <button type="button" onClick={onContact} className="btn btn-yellow mt-7 w-full">

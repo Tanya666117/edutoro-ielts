@@ -16,7 +16,7 @@ export function ContactSection({ onContact }: ContactSectionProps) {
           <h2 className="mt-3 text-[clamp(28px,3.6vw,44px)] font-black leading-tight text-white">
             先了解我们，再决定怎么备考
           </h2>
-          <p className="mt-4 text-white/68">领资料 · 看案例 · 约试听 · 咨询督学营 · 问题反馈</p>
+          <p className="mt-4 text-white/68">领资料 · 看案例 · 约试听 · 查看督学营 · 问题反馈</p>
         </div>
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">

@@ -10,9 +10,10 @@ import { Hero } from './sections/Hero'
 import { RecallsSection } from './sections/RecallsSection'
 import { ServicesSection } from './sections/ServicesSection'
 import { SpeakingSection } from './sections/Speaking/SpeakingSection'
+import { SupervisionSection } from './sections/SupervisionSection'
 import { TeachersSection } from './sections/TeachersSection'
 
-const PAGE_IDS: PageId[] = ['hero', 'cases', ...NAV_ITEMS.map((item) => item.id)]
+const PAGE_IDS: PageId[] = ['hero', 'cases', 'supervision', ...NAV_ITEMS.map((item) => item.id)]
 
 export default function App() {
   const [activePage, setActivePage] = useState<PageId>('hero')
@@ -37,11 +38,12 @@ export default function App() {
 
   return (
     <>
-      <Navbar activePage={activePage} onNavigate={navigate} onResource={() => setResourceOpen(true)} />
+      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => setContactOpen(true)} />
       <main>
         {activePage === 'hero' && <Hero onNavigate={navigate} onResource={() => setResourceOpen(true)} />}
         {activePage === 'services' && <ServicesSection onContact={() => setContactOpen(true)} onNavigate={navigate} />}
         {activePage === 'cases' && <CasesSection />}
+        {activePage === 'supervision' && <SupervisionSection onContact={() => setContactOpen(true)} />}
         {activePage === 'teachers' && <TeachersSection onContact={() => setContactOpen(true)} />}
         {activePage === 'speaking' && <SpeakingSection />}
         {activePage === 'recalls' && <RecallsSection />}
