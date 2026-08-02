@@ -1,0 +1,73 @@
+{
+  "output": "data\\writing-calibration\\ielts_calibrator.joblib",
+  "sample_size": 9259,
+  "train_size": 7408,
+  "test_size": 1851,
+  "dataset_url": "data/writing-calibration/train.csv",
+  "target_min": 4.0,
+  "target_max": 9.0,
+  "metrics": {
+    "mae": 1.0824,
+    "within_half": 0.4722,
+    "bias": -0.0548
+  },
+  "selected_alpha": 128.0,
+  "candidates": [
+    {
+      "alpha": 4.0,
+      "metrics": {
+        "mae": 1.2674,
+        "within_half": 0.4306,
+        "bias": -0.0967
+      }
+    },
+    {
+      "alpha": 8.0,
+      "metrics": {
+        "mae": 1.242,
+        "within_half": 0.4371,
+        "bias": -0.0945
+      }
+    },
+    {
+      "alpha": 16.0,
+      "metrics": {
+        "mae": 1.2129,
+        "within_half": 0.4457,
+        "bias": -0.0891
+      }
+    },
+    {
+      "alpha": 32.0,
+      "metrics": {
+        "mae": 1.1721,
+        "within_half": 0.456,
+        "bias": -0.0754
+      }
+    },
+    {
+      "alpha": 64.0,
+      "metrics": {
+        "mae": 1.1286,
+        "within_half": 0.4679,
+        "bias": -0.0686
+      }
+    },
+    {
+      "alpha": 96.0,
+      "metrics": {
+        "mae": 1.1026,
+        "within_half": 0.4711,
+        "bias": -0.0648
+      }
+    },
+    {
+      "alpha": 128.0,
+      "metrics": {
+        "mae": 1.0824,
+        "within_half": 0.4722,
+        "bias": -0.0548
+      }
+    }
+  ]
+}

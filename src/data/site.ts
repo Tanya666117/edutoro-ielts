@@ -1,5 +1,6 @@
 export const NAV_ITEMS = [
   { id: 'services', label: '课程服务' },
+  { id: 'writing', label: '作文批改' },
   { id: 'teachers', label: '找老师' },
   { id: 'speaking', label: '口语题库' },
   { id: 'recalls', label: '高频题目' },

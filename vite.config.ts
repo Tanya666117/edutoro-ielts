@@ -4,4 +4,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/edutoro-ielts/',
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8787',
+    },
+  },
 })

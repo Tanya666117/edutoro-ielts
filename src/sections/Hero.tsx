@@ -1,8 +1,8 @@
-import { BookOpen, Check, FileText, Headphones, Sparkles, Star } from 'lucide-react'
+import { Check, FileText, Headphones, Sparkles, Star } from 'lucide-react'
 import { SITE } from '../data/site'
 
 interface HeroProps {
-  onNavigate: (page: 'services' | 'teachers' | 'speaking' | 'recalls' | 'contact') => void
+  onNavigate: (page: 'services' | 'writing' | 'teachers' | 'speaking' | 'recalls' | 'contact') => void
   onResource: () => void
 }
 
@@ -73,7 +73,7 @@ export function Hero({ onNavigate, onResource }: HeroProps) {
             {[
               { text: '口语真题题库免费练', target: 'speaking' as const },
               { text: '按价格与需求匹配老师', target: 'teachers' as const },
-              { text: '督学营每日跟进', target: 'services' as const, isNew: true },
+              { text: 'AI 作文批改报告', target: 'writing' as const, isNew: true },
             ].map((item) => (
               <li key={item.text}>
                 <button
@@ -96,9 +96,9 @@ export function Hero({ onNavigate, onResource }: HeroProps) {
           </ul>
 
           <div className="mt-9 flex flex-wrap gap-3">
-            <button type="button" onClick={() => onNavigate('speaking')} className="btn btn-yellow">
-              <BookOpen size={18} />
-              先练口语题库
+            <button type="button" onClick={() => onNavigate('writing')} className="btn btn-yellow">
+              <FileText size={18} />
+              先批改一篇作文
             </button>
             <button type="button" onClick={onResource} className="btn btn-outline">
               微信学习社群入口 →

@@ -12,6 +12,7 @@ import { ServicesSection } from './sections/ServicesSection'
 import { SpeakingSection } from './sections/Speaking/SpeakingSection'
 import { SupervisionSection } from './sections/SupervisionSection'
 import { TeachersSection } from './sections/TeachersSection'
+import { WritingReviewSection } from './sections/WritingReviewSection'
 
 const PAGE_IDS: PageId[] = ['hero', 'cases', 'supervision', ...NAV_ITEMS.map((item) => item.id)]
 
@@ -42,6 +43,7 @@ export default function App() {
       <main>
         {activePage === 'hero' && <Hero onNavigate={navigate} onResource={() => setResourceOpen(true)} />}
         {activePage === 'services' && <ServicesSection onContact={() => setContactOpen(true)} onNavigate={navigate} />}
+        {activePage === 'writing' && <WritingReviewSection />}
         {activePage === 'cases' && <CasesSection />}
         {activePage === 'supervision' && <SupervisionSection onContact={() => setContactOpen(true)} />}
         {activePage === 'teachers' && <TeachersSection onContact={() => setContactOpen(true)} />}
