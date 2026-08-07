@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "api": "node server/deepseek-writing-review.mjs",
+    "api:py": "python server/writing_review_api.py",
     "dev:full": "node server/dev-full.mjs",
+    "dev:full:py": "node server/dev-full-python.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "parse-speaking": "python3 scripts/parse_speaking_html.py"
