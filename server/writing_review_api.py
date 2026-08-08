@@ -8,22 +8,31 @@ the API key on the server and exposes only /api/writing-review to the frontend.
 
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 import os
 import re
 import subprocess
 import sys
+import threading
 import urllib.error
 import urllib.request
+import uuid
+from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 PORT = int(os.getenv("PORT", "8787"))
-MAX_BODY_BYTES = 180_000
+MAX_BODY_BYTES = 20_000_000
+RECORDINGS_DIR = ROOT_DIR / "data" / "speaking-recordings"
+RECORDINGS_INDEX = RECORDINGS_DIR / "index.json"
+RECORDINGS_LOCK = threading.Lock()
 
 SCORE_CALIBRATION = """
 校准参考来自项目本地《雅思写作官方题库范文大全》抽样：
@@ -82,12 +91,82 @@ def count_english_words(value: str) -> int:
     return len(re.findall(r"[A-Za-z]+(?:[-'][A-Za-z]+)*", value))
 
 
+def safe_user_id(value: Any) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9_-]+", "-", str(value or "edutoro")).strip("-")
+    return cleaned[:60] or "edutoro"
+
+
+def load_recordings() -> list[dict[str, Any]]:
+    if not RECORDINGS_INDEX.exists():
+        return []
+    try:
+        data = json.loads(RECORDINGS_INDEX.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except (OSError, json.JSONDecodeError):
+        return []
+
+
+def save_recordings(items: list[dict[str, Any]]) -> None:
+    RECORDINGS_DIR.mkdir(parents=True, exist_ok=True)
+    temporary = RECORDINGS_INDEX.with_suffix(".tmp")
+    temporary.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(RECORDINGS_INDEX)
+
+
+def recording_public_item(item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        **item,
+        "audioUrl": f"/api/speaking-recordings/{item['id']}",
+    }
+
+
+def create_recording(raw: dict[str, Any]) -> dict[str, Any]:
+    audio_value = str(raw.get("audioBase64") or "")
+    if not audio_value:
+        raise ApiError("录音内容为空，请先完成录音。", 400)
+    if len(audio_value) > 16_000_000:
+        raise ApiError("单条录音不能超过 12 MB。", 413)
+    try:
+        audio_bytes = base64.b64decode(audio_value, validate=True)
+    except (ValueError, binascii.Error) as error:
+        raise ApiError("录音数据格式不正确。", 400) from error
+    if len(audio_bytes) > 12_000_000:
+        raise ApiError("单条录音不能超过 12 MB。", 413)
+
+    mime_type = str(raw.get("mimeType") or "audio/webm").split(";", 1)[0]
+    extension = {"audio/webm": "webm", "audio/ogg": "ogg", "audio/mp4": "m4a", "audio/wav": "wav"}.get(mime_type, "webm")
+    recording_id = uuid.uuid4().hex
+    item = {
+        "id": recording_id,
+        "userId": safe_user_id(raw.get("userId")),
+        "topicId": clean_text(raw.get("topicId"), 120),
+        "question": clean_text(raw.get("question"), 1000),
+        "mimeType": mime_type,
+        "fileName": f"{recording_id}.{extension}",
+        "createdAt": datetime.now(timezone.utc).isoformat(),
+        "sizeBytes": len(audio_bytes),
+    }
+    RECORDINGS_DIR.mkdir(parents=True, exist_ok=True)
+    (RECORDINGS_DIR / item["fileName"]).write_bytes(audio_bytes)
+    with RECORDINGS_LOCK:
+        items = load_recordings()
+        items.insert(0, item)
+        save_recordings(items)
+    return recording_public_item(item)
+
+
+def list_recordings(user_id: str) -> list[dict[str, Any]]:
+    normalized = safe_user_id(user_id)
+    return [recording_public_item(item) for item in load_recordings() if item.get("userId") == normalized]
+
+
 def validate_input(raw: dict[str, Any]) -> tuple[list[str], list[str], dict[str, Any]]:
     errors: list[str] = []
     warnings: list[str] = []
     task_type = "Task 1" if raw.get("taskType") == "Task 1" else "Task 2"
     prompt = clean_text(raw.get("prompt"), 4_000)
     essay = clean_text(raw.get("essay"), 24_000)
+    chart_context = clean_text(raw.get("chartContext"), 6_000)
     word_count = count_english_words(essay)
 
     if len(prompt) < 20:
@@ -105,7 +184,7 @@ def validate_input(raw: dict[str, Any]) -> tuple[list[str], list[str], dict[str,
     if not re.search(r"[.!?]", essay):
         warnings.append("原文缺少明显英文句末标点，可能影响语法和连贯性判断。")
 
-    clean = {"taskType": task_type, "prompt": prompt, "essay": essay, "wordCount": word_count}
+    clean = {"taskType": task_type, "prompt": prompt, "essay": essay, "wordCount": word_count, "chartContext": chart_context}
     return errors, warnings, clean
 
 
@@ -119,6 +198,15 @@ def build_user_prompt(input_data: dict[str, Any]) -> str:
         else "\nLocal calibrator unavailable.\n"
     )
 
+    chart_context = input_data.get("chartContext")
+    chart_text = (
+        "\nTask 1 chart key nodes (use only these facts for the overview and comparisons; do not invent data):\n"
+        + str(chart_context)
+        + "\n"
+        if input_data.get("taskType") == "Task 1" and chart_context
+        else ""
+    )
+
     return f"""
 请批改这篇 IELTS {input_data.get("taskType") or "Writing"} 作文。
 
@@ -127,6 +215,8 @@ def build_user_prompt(input_data: dict[str, Any]) -> str:
 
 学生原文：
 {input_data.get("essay") or ""}
+
+{chart_text}
 
 {calibration_text}
 
@@ -294,7 +384,7 @@ class WritingReviewHandler(BaseHTTPRequestHandler):
     def end_headers(self) -> None:
         origin = self.headers.get("Origin")
         self.send_header("Access-Control-Allow-Origin", allowed_origin(origin))
-        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         super().end_headers()
 
@@ -308,6 +398,18 @@ class WritingReviewHandler(BaseHTTPRequestHandler):
         if status != HTTPStatus.NO_CONTENT:
             self.wfile.write(json.dumps(payload or {}, ensure_ascii=False).encode("utf-8"))
 
+    def send_audio(self, item: dict[str, Any]) -> None:
+        file_path = RECORDINGS_DIR / str(item.get("fileName") or "")
+        if not file_path.exists() or not file_path.is_file():
+            self.send_json(HTTPStatus.NOT_FOUND, {"error": "录音文件不存在。"})
+            return
+        payload = file_path.read_bytes()
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", str(item.get("mimeType") or "audio/webm"))
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
     def do_OPTIONS(self) -> None:
         self.send_json(HTTPStatus.NO_CONTENT)
 
@@ -315,10 +417,38 @@ class WritingReviewHandler(BaseHTTPRequestHandler):
         if self.path == "/healthz":
             self.send_json(HTTPStatus.OK, {"ok": True})
             return
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/speaking-recordings":
+            user_id = parse_qs(parsed.query).get("userId", ["edutoro"])[0]
+            self.send_json(HTTPStatus.OK, {"recordings": list_recordings(user_id)})
+            return
+        if parsed.path.startswith("/api/speaking-recordings/"):
+            recording_id = parsed.path.rsplit("/", 1)[-1]
+            item = next((entry for entry in load_recordings() if entry.get("id") == recording_id), None)
+            if item:
+                self.send_audio(item)
+                return
         self.send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
 
     def do_POST(self) -> None:
-        if self.path != "/api/writing-review":
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/speaking-recordings":
+            try:
+                length = int(self.headers.get("Content-Length") or "0")
+                if length > MAX_BODY_BYTES:
+                    raise ApiError("录音请求过大。", 413)
+                raw_input = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+                recording = create_recording(raw_input)
+                self.send_json(HTTPStatus.CREATED, {"recording": recording})
+            except json.JSONDecodeError:
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": "请求体不是合法 JSON。"})
+            except ApiError as error:
+                self.send_json(error.status, {"error": str(error)})
+            except Exception as error:
+                self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(error) or "录音保存失败。"})
+            return
+
+        if parsed.path != "/api/writing-review":
             self.send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
             return
 
@@ -343,6 +473,26 @@ class WritingReviewHandler(BaseHTTPRequestHandler):
             self.send_json(error.status, {"error": str(error)})
         except Exception as error:
             self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(error) or "批改失败，请稍后重试。"})
+
+
+    def do_DELETE(self) -> None:
+        parsed = urlparse(self.path)
+        if not parsed.path.startswith("/api/speaking-recordings/"):
+            self.send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
+            return
+        recording_id = parsed.path.rsplit("/", 1)[-1]
+        user_id = safe_user_id(parse_qs(parsed.query).get("userId", [""])[0])
+        with RECORDINGS_LOCK:
+            items = load_recordings()
+            target = next((item for item in items if item.get("id") == recording_id and item.get("userId") == user_id), None)
+            if not target:
+                self.send_json(HTTPStatus.NOT_FOUND, {"error": "录音不存在。"})
+                return
+            file_path = RECORDINGS_DIR / str(target.get("fileName") or "")
+            if file_path.exists():
+                file_path.unlink()
+            save_recordings([item for item in items if item.get("id") != recording_id])
+        self.send_json(HTTPStatus.OK, {"ok": True})
 
 
 def main() -> None:

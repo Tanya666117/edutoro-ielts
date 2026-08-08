@@ -1,13 +1,11 @@
 export const NAV_ITEMS = [
-  { id: 'services', label: '课程服务' },
+  { id: 'teachers', label: '老师' },
+  { id: 'supervision', label: '督学' },
   { id: 'writing', label: '作文批改' },
-  { id: 'teachers', label: '找老师' },
-  { id: 'speaking', label: '口语题库' },
-  { id: 'recalls', label: '高频题目' },
-  { id: 'contact', label: '了解团队' },
+  { id: 'speaking', label: '口语练习' },
 ] as const
 
-export type PageId = 'hero' | 'cases' | 'supervision' | (typeof NAV_ITEMS)[number]['id']
+export type PageId = 'hero' | 'teachers' | 'supervision' | 'writing' | 'speaking' | 'contact' | 'cases'
 
 export const SUBJECT_LABELS: Record<string, string> = {
   listening: '听力',
@@ -18,12 +16,11 @@ export const SUBJECT_LABELS: Record<string, string> = {
 
 export const SITE = {
   name: 'Edutoro',
-  cn: '雅思',
-  tagline: '口语题库 · 高频题目 · 独立老师 · 督学营',
+  cn: '雅思提分工作室',
+  tagline: '好老师讲对方法，真督学陪你做到。',
   description:
-    '面向中国雅思考生的一站式备考前台：当季口语题库、听阅写高频题目、独立老师匹配和督学营一起给到，先定位问题，再安排课程。',
-  staffName: '课程顾问 · 小星_',
-  staffHint:
-    '添加课程顾问微信，领取当季题库、阅读思路资料、虾家听力本月高频和老师试听信息；也可以直接预约试听或加入备考社群。',
+    '把最重要的投入放在老师和督学上：先定位，再匹配老师；把每天的任务拆清楚，让每一次练习都能留下进步。资料、口语题库和 AI 批改，都是让这条路更顺手的工具。',
+  staffName: 'Edutoro 学习顾问',
+  staffHint: '告诉我们目标分、考试日期和目前卡点，我们会先帮你判断适合老师还是督学方案。',
   wechatId: 'Cloudtutor_',
 }

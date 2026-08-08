@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "api": "node server/deepseek-writing-review.mjs",
+    "api:recordings": "node server/speaking-recordings.mjs",
     "api:py": "python server/writing_review_api.py",
     "dev:full": "node server/dev-full.mjs",
     "dev:full:py": "node server/dev-full-python.mjs",

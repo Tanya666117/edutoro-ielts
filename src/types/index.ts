@@ -29,10 +29,12 @@ export interface Teacher {
   id: string
   name: string
   title: string
+  image: string
+  subjects: Array<'writing' | 'speaking'>
+  focus: string
   price: string
   avatarTone: string
   strongestFeature: string
-  subjects: string[]
   experience: string
   style: string[]
   bio: string

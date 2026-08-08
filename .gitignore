@@ -7,3 +7,6 @@ __pycache__/
 *.local
 tmp/
 data/writing-calibration/train.csv
+data/speaking-recordings/
+/老师资料卡/
+/督学/

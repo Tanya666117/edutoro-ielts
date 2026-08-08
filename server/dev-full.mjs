@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 
 const processes = [
   spawn('npm', ['run', 'api'], { stdio: 'inherit', shell: true }),
+  spawn('npm', ['run', 'api:recordings'], { stdio: 'inherit', shell: true }),
   spawn('npm', ['run', 'dev'], { stdio: 'inherit', shell: true }),
 ]
 

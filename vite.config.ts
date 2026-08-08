@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      '/api/speaking-recordings': 'http://localhost:8788',
       '/api': 'http://localhost:8787',
     },
   },

@@ -73,6 +73,9 @@ function buildUserPrompt(input) {
   const localCalibration = input.localCalibration
     ? `\nLocal calibrator trained on IELTS dataset sample, for calibration only:\n${JSON.stringify(input.localCalibration, null, 2)}\n`
     : '\nLocal calibrator unavailable.\n'
+  const chartText = input.taskType === 'Task 1' && input.chartContext
+    ? `\nTask 1 chart key nodes (use only these facts for the overview and comparisons; do not invent data):\n${input.chartContext}\n`
+    : ''
 
   return `
 请批改这篇 IELTS ${input.taskType || 'Writing'} 作文。
@@ -82,6 +85,8 @@ ${input.prompt || '用户未提供题目'}
 
 学生原文：
 ${input.essay}
+
+${chartText}
 
 ${localCalibration}
 
@@ -138,6 +143,7 @@ function validateInput(input) {
   const taskType = input.taskType === 'Task 1' ? 'Task 1' : 'Task 2'
   const prompt = cleanText(input.prompt, { maxLength: 4000 })
   const essay = cleanText(input.essay, { maxLength: 24_000 })
+  const chartContext = cleanText(input.chartContext, { maxLength: 6000 })
   const wordCount = countEnglishWords(essay)
 
   if (prompt.length < 20) warnings.push('题目过短或未提供，跑题/任务回应评分可靠性会下降。')
@@ -152,7 +158,7 @@ function validateInput(input) {
   if (/[\u4e00-\u9fff]/.test(essay)) warnings.push('作文原文包含中文字符，请确认是否误粘贴中文说明。')
   if (!/[.!?]/.test(essay)) warnings.push('原文缺少明显英文句末标点，可能影响语法和连贯性判断。')
 
-  return { errors, warnings, clean: { taskType, prompt, essay, wordCount } }
+  return { errors, warnings, clean: { taskType, prompt, essay, wordCount, chartContext } }
 }
 
 function resolveDeepSeekModel() {
