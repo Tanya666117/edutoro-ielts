@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { ContactModal } from './components/ContactModal'
 import { Footer } from './components/Footer'
+import { LoginGate } from './components/LoginGate'
 import { Navbar } from './components/Navbar'
 import { ResourcePackModal } from './components/ResourcePackModal'
+import { AUTH_STORAGE_KEY, LOGIN_CREDENTIALS } from './data/auth'
 import { NAV_ITEMS, type PageId } from './data/site'
 import { ContactSection } from './sections/ContactSection'
 import { CasesSection } from './sections/CasesSection'
@@ -20,6 +22,8 @@ export default function App() {
   const [activePage, setActivePage] = useState<PageId>('hero')
   const [contactOpen, setContactOpen] = useState(false)
   const [resourceOpen, setResourceOpen] = useState(false)
+  const [isAuthed, setIsAuthed] = useState(() => window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true')
+  const [loginError, setLoginError] = useState<string | null>(null)
 
   useEffect(() => {
     const pageFromHash = window.location.hash.replace('#', '') as PageId
@@ -37,9 +41,38 @@ export default function App() {
     setContactOpen(true)
   }
 
+  const handleLogin = (username: string, password: string) => {
+    const ok = username === LOGIN_CREDENTIALS.username && password === LOGIN_CREDENTIALS.password
+    if (!ok) {
+      setLoginError('用户名或密码不正确')
+      return
+    }
+
+    window.localStorage.setItem(AUTH_STORAGE_KEY, 'true')
+    setIsAuthed(true)
+    setLoginError(null)
+  }
+
+  const handleLogout = () => {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY)
+    setIsAuthed(false)
+    setContactOpen(false)
+    setResourceOpen(false)
+    setLoginError(null)
+  }
+
+  if (!isAuthed) {
+    return <LoginGate error={loginError} onSubmit={handleLogin} />
+  }
+
   return (
     <>
-      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => setContactOpen(true)} />
+      <Navbar
+        activePage={activePage}
+        onNavigate={navigate}
+        onContact={() => setContactOpen(true)}
+        onLogout={handleLogout}
+      />
       <main>
         {activePage === 'hero' && <Hero onNavigate={navigate} onResource={() => setResourceOpen(true)} />}
         {activePage === 'services' && <ServicesSection onContact={() => setContactOpen(true)} onNavigate={navigate} />}

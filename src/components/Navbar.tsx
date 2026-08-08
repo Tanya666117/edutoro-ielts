@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import { NAV_ITEMS, SITE, type PageId } from '../data/site'
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}edutoro-logo-transparent.png`
@@ -9,9 +9,10 @@ interface NavbarProps {
   activePage: PageId
   onNavigate: (page: PageId) => void
   onContact: () => void
+  onLogout: () => void
 }
 
-export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
+export function Navbar({ activePage, onNavigate, onContact, onLogout }: NavbarProps) {
   const [open, setOpen] = useState(false)
 
   const navigate = (page: PageId) => {
@@ -22,6 +23,11 @@ export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
   const openContact = () => {
     setOpen(false)
     onContact()
+  }
+
+  const logout = () => {
+    setOpen(false)
+    onLogout()
   }
 
   return (
@@ -67,6 +73,14 @@ export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
           </button>
           <button
             type="button"
+            onClick={logout}
+            className="hidden items-center gap-2 rounded-[8px] bg-white px-4 py-2 text-[13px] font-extrabold text-[var(--ink)] ring-1 ring-black/10 transition hover:bg-[var(--yellow-soft)] sm:inline-flex"
+          >
+            <LogOut size={16} />
+            退出
+          </button>
+          <button
+            type="button"
             className="rounded-[8px] bg-white p-2.5 ring-1 ring-black/10 lg:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-label="菜单"
@@ -95,6 +109,14 @@ export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
           ))}
           <button type="button" onClick={openContact} className="btn btn-dark mt-2 w-full">
             免费诊断咨询
+          </button>
+          <button
+            type="button"
+            onClick={logout}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-white px-4 py-3 text-sm font-extrabold text-[var(--ink)] ring-1 ring-black/10"
+          >
+            <LogOut size={16} />
+            退出登录
           </button>
         </nav>
       )}
