@@ -28,9 +28,9 @@ export function CasesSection() {
       <section id="cases" className="section bg-[var(--bg)]">
         <div className="shell">
         <SectionHeader
-          eyebrow="真实案例"
-          title="一对一老师真实好评，左右滑动慢慢看"
-          description="主要展示一对一老师的提分反馈、续课反馈和推荐反馈。手机端可以直接横向滑动，点开任意截图可以放大查看。"
+          eyebrow="真实反馈"
+          title="看见真实反馈，再决定适合自己的老师"
+          description="这里整理学生的出分、续课与推荐反馈。先看整体风格，再点开截图查看细节。"
         />
 
         <div className="mt-10 overflow-hidden rounded-[8px] bg-[var(--charcoal)] py-6 text-white shadow-[var(--shadow)]">
@@ -40,7 +40,7 @@ export function CasesSection() {
                 <Images size={14} />
                 {CASE_IMAGES.length} 张真实反馈
               </p>
-              <h3 className="mt-3 text-2xl font-black">学生出分、续课和推荐反馈</h3>
+              <h3 className="mt-3 text-2xl font-black">学生的出分、续课与推荐</h3>
             </div>
           </div>
 
