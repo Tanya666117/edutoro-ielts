@@ -24,13 +24,13 @@ export function LoginGate({ error, onSubmit }: LoginGateProps) {
               <LockKeyhole size={20} />
             </div>
             <div>
-              <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-[var(--teal)]">Sign in</p>
-              <h1 className="mt-1 text-[26px] font-black leading-tight text-[var(--ink)]">Edutoro 登录</h1>
+              <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-[var(--teal)]">Edutoro IELTS</p>
+              <h1 className="mt-1 text-[26px] font-black leading-tight text-[var(--ink)]">进入你的备考工作台</h1>
             </div>
           </div>
 
           <p className="mb-6 text-[15px] leading-7 text-[var(--ink-2)]">
-            请输入用户名和密码后进入网站。这个登录页是前端门禁，用来做访问控制。
+            登录后即可继续使用老师资料、督学方案、作文批改和口语练习。
           </p>
 
           <form className="space-y-4" onSubmit={handleSubmit}>

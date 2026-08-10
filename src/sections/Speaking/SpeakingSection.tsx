@@ -51,7 +51,6 @@ export function SpeakingSection() {
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
-  const totalQuestions = useMemo(() => topics.reduce((sum, topic) => sum + topic.questionCount, 0), [])
   const filteredTopics = useMemo(() => {
     const query = search.trim().toLowerCase()
     return query ? topics.filter((topic) => `${topic.titleEn} ${topic.titleZh}`.toLowerCase().includes(query)) : topics
@@ -150,7 +149,7 @@ export function SpeakingSection() {
   }
 
   return <section id="speaking" className="section scroll-mt-24 bg-white"><div className="shell">
-    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"><SectionHeader eyebrow="口语练习" title="题库、高频题和录音复盘，放在一个练习台里" description={`${topics.length} 个主题、${totalQuestions}+ 道题，另有本季高频精选。每道题都可以直接开始练习并把录音存进自己的练习库。`} />{view === 'library' && <button type="button" onClick={() => startPractice(libraryTab === 'highFrequency')} className="btn btn-dark shrink-0"><Shuffle size={16} />随机练习</button>}</div>
+    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"><SectionHeader eyebrow="口语练习" title={'让每一次开口，\n都变成下一次更自然的回答'} description="完整题库和本季高频精选放在同一个练习台里。先看题，再录音，最后回听自己的表达变化。" />{view === 'library' && <button type="button" onClick={() => startPractice(libraryTab === 'highFrequency')} className="btn btn-dark shrink-0"><Shuffle size={16} />随机练习</button>}</div>
 
     {view !== 'library' && <button type="button" onClick={() => { setView('library'); setSelectedId(null); setPracticeHighFrequency(null); clearTake() }} className="mt-8 inline-flex items-center gap-1.5 text-sm font-black text-[var(--teal)]"><ArrowLeft size={16} />返回题库</button>}
 

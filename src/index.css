@@ -100,11 +100,17 @@ input {
 
 .heading {
   margin: 12px 0 0;
-  font-size: clamp(28px, 3.5vw, 44px);
+  font-size: 30px;
   font-weight: 900;
   line-height: 1.18;
   letter-spacing: 0;
   color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  .heading {
+    font-size: 44px;
+  }
 }
 
 .lede {

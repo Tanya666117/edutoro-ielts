@@ -19,7 +19,7 @@ export function SectionHeader({
       <p className="eyebrow" style={light ? { color: 'var(--yellow)' } : undefined}>
         {eyebrow}
       </p>
-      <h2 className="heading" style={light ? { color: '#fff' } : undefined}>
+      <h2 className="heading whitespace-pre-line" style={light ? { color: '#fff' } : undefined}>
         {title}
       </h2>
       {description && (

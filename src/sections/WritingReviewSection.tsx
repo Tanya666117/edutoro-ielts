@@ -159,8 +159,8 @@ export function WritingReviewSection() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <span className="eyebrow">作文批改</span>
-            <h1 className="heading">把一篇作文，拆成下一次能进步的动作</h1>
-            <p className="lede">AI 会输出四项评分、原文批注、修改建议和参考高分版本。Task 1 额外提供图表关键节点工作台。</p>
+            <h1 className="heading">让每一次批改，<br />都告诉你下一步怎么提分</h1>
+            <p className="lede">不只给一个分数。AI 会把任务回应、结构、词汇和语法拆开讲清楚，再给出可以马上执行的修改建议。</p>
           </div>
           <div className="rounded-[8px] bg-[var(--yellow-soft)] px-4 py-3 text-sm font-bold text-[var(--ink-2)]">AI 评分仅供备考参考</div>
         </div>

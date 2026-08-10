@@ -17,9 +17,9 @@ export const SUBJECT_LABELS: Record<string, string> = {
 export const SITE = {
   name: 'Edutoro',
   cn: '雅思提分工作室',
-  tagline: '好老师讲对方法，真督学陪你做到。',
+  tagline: '老师讲透方法，督学守住节奏，让每一分进步都有迹可循。',
   description:
-    '把最重要的投入放在老师和督学上：先定位，再匹配老师；把每天的任务拆清楚，让每一次练习都能留下进步。资料、口语题库和 AI 批改，都是让这条路更顺手的工具。',
+    '我们不贩卖焦虑，也不让你靠意志力硬撑。先定位问题、匹配老师，再由督学拆解计划、追踪执行；题库、资料和 AI 批改，只为让每一步更高效。',
   staffName: 'Edutoro 学习顾问',
   staffHint: '告诉我们目标分、考试日期和目前卡点，我们会先帮你判断适合老师还是督学方案。',
   wechatId: 'Cloudtutor_',

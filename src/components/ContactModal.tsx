@@ -17,8 +17,8 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
         <button type="button" onClick={onClose} className="absolute right-5 top-5 rounded-[8px] p-2 text-[var(--ink-3)] hover:bg-[var(--bg)]" aria-label="关闭">
           <X size={20} />
         </button>
-        <p className="eyebrow">Contact</p>
-        <h2 id="contact-title" className="mt-2 text-2xl font-black text-[var(--ink)]">添加学习顾问微信</h2>
+        <p className="eyebrow">联系顾问</p>
+        <h2 id="contact-title" className="mt-2 text-2xl font-black text-[var(--ink)]">先聊清目标，再安排下一步</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-2)]">{SITE.staffHint}</p>
         <div className="mt-7 flex justify-center">
           <div className="w-full max-w-[300px] rounded-[8px] bg-white p-3 ring-1 ring-black/10">
@@ -27,8 +27,8 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
         </div>
         <div className="mt-6 rounded-[8px] bg-[var(--yellow)] px-4 py-3 text-center text-sm font-bold text-[var(--ink)]">微信号：<span className="font-black">{SITE.wechatId}</span></div>
         <ul className="mt-6 space-y-3">
-          <li className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-4"><BookOpen className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} /><div><p className="text-sm font-black">领取备考资料</p><p className="text-sm text-[var(--ink-2)]">口语题库、阅读思路和本月高频资料。</p></div></li>
-          <li className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-4"><Users className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} /><div><p className="text-sm font-black">预约试听 / 督学咨询</p><p className="text-sm text-[var(--ink-2)]">先了解需求，再推荐老师或督学档位。</p></div></li>
+          <li className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-4"><BookOpen className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} /><div><p className="text-sm font-black">领取备考资料</p><p className="text-sm text-[var(--ink-2)]">获取口语题库、阅读思路和当季重点内容。</p></div></li>
+          <li className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-4"><Users className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} /><div><p className="text-sm font-black">预约试听或督学咨询</p><p className="text-sm text-[var(--ink-2)]">说说目标分和备考节奏，再匹配合适的服务。</p></div></li>
         </ul>
       </div>
     </div>
