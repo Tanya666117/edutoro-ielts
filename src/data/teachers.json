@@ -3,8 +3,24 @@
     "id": "tony",
     "name": "Tony",
     "title": "雅思写作高分突破导师",
-    "image": "/teachers/tony.png",
-    "subjects": ["writing"],
+    "image": "/teachers/tony.jpg",
+    "subjects": ["writing", "speaking"],
+    "subjectProfiles": [
+      {
+        "subject": "speaking",
+        "title": "雅思高分突破导师",
+        "focus": "口语 / 写作",
+        "price": "试听 59.9 元 / 30 分钟",
+        "sortOrder": 1
+      },
+      {
+        "subject": "writing",
+        "title": "雅思写作高分突破导师",
+        "focus": "写作",
+        "price": "试听 59.9 元 / 30 分钟",
+        "sortOrder": 2
+      }
+    ],
     "focus": "写作",
     "price": "试听 59.9 元 / 30 分钟",
     "avatarTone": "blue",
@@ -35,7 +51,23 @@
     "name": "Ciara",
     "title": "雅思口语高分精修导师",
     "image": "/teachers/ciara.png",
-    "subjects": ["speaking"],
+    "subjects": ["writing", "speaking"],
+    "subjectProfiles": [
+      {
+        "subject": "writing",
+        "title": "雅思写作高分精修导师",
+        "focus": "写作",
+        "price": "试听 80 元 / 30 分钟",
+        "sortOrder": 1
+      },
+      {
+        "subject": "speaking",
+        "title": "雅思口语高分精修导师",
+        "focus": "口语",
+        "price": "试听 80 元 / 30 分钟",
+        "sortOrder": 2
+      }
+    ],
     "focus": "口语",
     "price": "试听 80 元 / 30 分钟",
     "avatarTone": "violet",
@@ -65,8 +97,17 @@
     "id": "esme",
     "name": "Esme",
     "title": "短期型口语提分导师",
-    "image": "/teachers/esme.png",
+    "image": "/teachers/esme.jpg",
     "subjects": ["speaking"],
+    "subjectProfiles": [
+      {
+        "subject": "speaking",
+        "title": "短期型口语提分导师",
+        "focus": "口语",
+        "price": "试听 59.9 元 / 30 分钟",
+        "sortOrder": 3
+      }
+    ],
     "focus": "口语",
     "price": "试听 59.9 元 / 30 分钟",
     "avatarTone": "orange",
@@ -98,6 +139,15 @@
     "title": "雅思口语专项讲师",
     "image": "/teachers/aliyaa.jpg",
     "subjects": ["speaking"],
+    "subjectProfiles": [
+      {
+        "subject": "speaking",
+        "title": "雅思口语专项讲师",
+        "focus": "口语",
+        "price": "试听 59.9 元 / 30 分钟",
+        "sortOrder": 4
+      }
+    ],
     "focus": "口语",
     "price": "试听 59.9 元 / 30 分钟",
     "avatarTone": "green",

@@ -13,11 +13,16 @@ export function Footer({ onNavigate }: FooterProps) {
       <div className="shell py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <img src={LOGO_SRC} alt={`${SITE.name} logo`} className="h-11 w-auto object-contain" />
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <div className="flex items-center gap-2.5" aria-label={`${SITE.name} logo`}>
+                <span className="block h-11 w-[45px] shrink-0 overflow-hidden" aria-hidden="true">
+                  <img src={LOGO_SRC} alt="" className="h-11 w-auto max-w-none object-contain object-left" />
+                </span>
+                <span className="text-[30px] font-black leading-none text-white">Edutoro</span>
+              </div>
               <p className="text-[17px] font-black text-white">把方法讲清，把执行做实。</p>
             </div>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed">{SITE.description}</p>
+            <p className="mt-4 max-w-md whitespace-pre-line text-sm leading-relaxed">{SITE.description}</p>
           </div>
 
           <div>

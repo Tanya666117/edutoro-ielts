@@ -234,6 +234,32 @@ input {
   animation: fadeUp 0.7s ease both;
 }
 
+.hero-teacher-card {
+  animation: teacherSlide 0.42s ease both;
+  transform-style: preserve-3d;
+  will-change: transform;
+  box-shadow:
+    0 28px 70px -34px rgba(23, 23, 23, 0.46),
+    0 10px 24px -16px rgba(23, 23, 23, 0.28);
+  transition: transform 0.35s cubic-bezier(0.2, 0.78, 0.25, 1), box-shadow 0.35s ease;
+}
+
+.hero-card-stage {
+  perspective: 1200px;
+}
+
+.hero-teacher-card:hover {
+  transform: translateY(-8px) rotateX(1.2deg) rotateY(-1.4deg);
+  box-shadow:
+    18px 34px 82px -36px rgba(23, 23, 23, 0.52),
+    -8px 14px 30px -22px rgba(0, 139, 125, 0.34);
+}
+
+.hero-teacher-card:focus-visible {
+  outline: 3px solid var(--yellow-2);
+  outline-offset: 5px;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -242,6 +268,28 @@ input {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes teacherSlide {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-teacher-card {
+    animation: none;
+    transition: none;
+  }
+
+  .hero-teacher-card:hover {
+    transform: none;
   }
 }
 

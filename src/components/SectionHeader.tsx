@@ -24,7 +24,7 @@ export function SectionHeader({
       </h2>
       {description && (
         <p
-          className="lede"
+          className="lede whitespace-pre-line"
           style={{
             color: light ? 'rgba(255,255,255,0.7)' : undefined,
             marginInline: center ? 'auto' : undefined,

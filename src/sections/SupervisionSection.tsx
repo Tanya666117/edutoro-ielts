@@ -1,5 +1,4 @@
-import { ArrowRight, CalendarCheck, Check, ClipboardCheck, MessageCircle, ShieldCheck, Target } from 'lucide-react'
-import { SectionHeader } from '../components/SectionHeader'
+import { ArrowRight, CalendarCheck, Check, MessageCircle, Target, UsersRound } from 'lucide-react'
 
 interface SupervisionSectionProps {
   onContact: () => void
@@ -13,39 +12,67 @@ const plans = [
 ]
 
 const serviceSteps = [
-  { icon: Target, title: '先定目标', text: '结合目标分、考试日期和基础，确定每天最值得投入的任务。' },
-  { icon: CalendarCheck, title: '每天推进', text: '打卡、作业和资料使用都有记录，完成情况当天反馈。' },
-  { icon: ClipboardCheck, title: '每周复盘', text: '根据完成率和模考变化，及时调整下一周的科目比例与节奏。' },
-  { icon: ShieldCheck, title: '全程协作', text: '督学负责计划与推进，各科老师负责专业训练，信息始终同步。' },
+  {
+    icon: Target,
+    code: '01',
+    title: '入学诊断',
+    subtitle: '了解你的基础，找到提分重点',
+    text: '分析目标分、考试时间和当前水平，制定专属备考方向。',
+  },
+  {
+    icon: CalendarCheck,
+    code: '02',
+    title: '每日计划',
+    subtitle: '每天都有明确学习任务',
+    text: '根据备考阶段拆解任务，让学习更加高效。',
+  },
+  {
+    icon: MessageCircle,
+    code: '03',
+    title: '督学答疑',
+    subtitle: '陪你完成计划，解决学习难题',
+    text: '早中晚跟进进度，及时反馈学习情况。',
+  },
+  {
+    icon: UsersRound,
+    code: '04',
+    title: '中外教陪练',
+    subtitle: '提升技巧，也练真实表达',
+    text: '中教强化方法，外教模拟交流场景，提升口语实战能力。',
+  },
 ]
 
 export function SupervisionSection({ onContact }: SupervisionSectionProps) {
   return (
     <section id="supervision" className="section scroll-mt-24 bg-white">
       <div className="shell">
-        <div className="grid items-start gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
+        <div>
           <div>
-            <SectionHeader
-              eyebrow="督学"
-              title={`不是陪你打卡，\n而是陪你把目标做完`}
-              description="督学服务的重点，不是增加学习时长，而是让每一天都有明确任务、每一周都有复盘结果。我们会和各科老师协作，持续调整你的备考方案。"
-            />
-            <div className="mt-7 rounded-[8px] bg-[var(--charcoal)] p-6 text-white md:p-7">
-              <p className="text-xs font-black uppercase tracking-[0.15em] text-[var(--yellow)]">28-day learning management</p>
-              <p className="mt-3 text-2xl font-black leading-tight">每天一个可完成动作，28 天看见进度。</p>
-              <p className="mt-3 text-sm leading-7 text-white/70">适合计划总被拖延、自律性不足，或离考试只剩几周的同学。</p>
-              <button type="button" onClick={onContact} className="btn btn-yellow mt-6"><MessageCircle size={17} />预约一次免费诊断</button>
-            </div>
+            <p className="eyebrow">督学</p>
+            <h2 className="heading mt-3 lg:whitespace-nowrap">
+              <span className="block sm:inline">没有方向？总是拖延？</span>
+              <span className="block sm:inline">不知道如何做计划？</span>
+            </h2>
+            <p className="lede whitespace-pre-line">
+              {`很多同学不是不知道怎么学，而是坚持不到最后。\n我们帮你拆目标、排任务、记进度、动态调整，并同步安排中外教陪练。`}
+            </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {serviceSteps.map(({ icon: Icon, title, text }, index) => (
-              <div key={title} className="rounded-[8px] bg-[var(--bg)] p-5 ring-1 ring-black/10">
-                <div className="flex items-center justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-white text-[var(--teal)] ring-1 ring-black/10"><Icon size={21} /></span><span className="text-4xl font-black leading-none text-black/10">0{index + 1}</span></div>
-                <h3 className="mt-5 text-lg font-black text-[var(--ink)]">{title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{text}</p>
-              </div>
-            ))}
+          <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-[0.94fr_1.06fr] lg:gap-8">
+            <figure className="flex min-h-[260px] items-center overflow-hidden rounded-[8px] bg-[var(--bg)] p-3 shadow-[0_24px_70px_-42px_rgba(23,23,23,0.34)] ring-1 ring-black/10 sm:min-h-[360px] lg:min-h-[452px]">
+              <img src="/supervision/custom-plan-workspace.svg" alt="微信聊天、Excel 表格和 Word 文档组成的定制学习计划页面" className="block h-full w-full object-contain object-center" />
+            </figure>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {serviceSteps.map(({ icon: Icon, code, title, subtitle, text }) => (
+                <div key={title} className="min-h-[218px] rounded-[8px] border border-[#eadc9e] bg-[#fff8d9] p-5 shadow-[0_18px_42px_-32px_rgba(23,23,23,0.3)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#fff6cb] hover:shadow-[0_24px_48px_-32px_rgba(23,23,23,0.4)] md:p-6">
+                  <div className="flex items-center justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-white text-[var(--teal)] shadow-[0_8px_22px_-18px_rgba(15,143,124,0.7)] ring-1 ring-black/10"><Icon size={21} /></span><span className="text-4xl font-black leading-none text-[#cfc18a] opacity-70">{code}</span></div>
+                  <h3 className="mt-5 text-xl font-black text-[#151515]">{title}</h3>
+                  <p className="mt-2 text-sm font-black leading-6 text-[#252218]">{subtitle}</p>
+                  <p className="mt-3 text-[15px] leading-7 text-[#5b563f]">{text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -64,8 +91,7 @@ export function SupervisionSection({ onContact }: SupervisionSectionProps) {
           </div></div>
         </div>
 
-        <div className="mt-16 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-          <div className="grid gap-4 sm:grid-cols-2"><figure className="overflow-hidden rounded-[8px] bg-[var(--bg)] ring-1 ring-black/10 sm:row-span-2"><img src="/supervision/overview.jpg" alt="督学服务介绍" className="h-full w-full object-cover object-top" /></figure><figure className="overflow-hidden rounded-[8px] bg-[var(--bg)] ring-1 ring-black/10"><img src="/supervision/plans.png" alt="督学定价方案" className="h-full w-full object-cover object-top" /></figure><figure className="overflow-hidden rounded-[8px] bg-[var(--bg)] ring-1 ring-black/10"><img src="/supervision/policy.jpg" alt="退费与请假规则" className="h-full w-full object-cover object-top" /></figure></div>
+        <div className="mt-16">
           <div className="rounded-[8px] bg-[var(--charcoal)] p-6 text-white md:p-8"><p className="text-xs font-black uppercase tracking-[0.15em] text-[var(--yellow)]">Service promise</p><h2 className="mt-3 text-3xl font-black leading-tight">规则先讲清楚，学习才有安全感。</h2><div className="mt-7 space-y-4">{['购买后 7 天内支持无理由退款。', '特殊情况可申请累计最多 7 天暂停。', '已完成服务按实际完成部分正常结算。', '督学与老师协作，计划会随模考结果动态调整。'].map((item) => <p key={item} className="flex items-start gap-3 text-sm leading-7 text-white/78"><Check size={17} className="mt-1 shrink-0 text-[var(--yellow)]" strokeWidth={3} />{item}</p>)}</div><button type="button" onClick={onContact} className="btn btn-yellow mt-8">询问适合我的档位 <ArrowRight size={16} /></button></div>
         </div>
       </div>

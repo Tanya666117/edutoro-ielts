@@ -25,12 +25,21 @@ export interface ExamRecall {
   difficulty?: string
 }
 
+export interface TeacherSubjectProfile {
+  subject: 'writing' | 'speaking'
+  title: string
+  focus: string
+  price: string
+  sortOrder: number
+}
+
 export interface Teacher {
   id: string
   name: string
   title: string
   image: string
   subjects: Array<'writing' | 'speaking'>
+  subjectProfiles?: TeacherSubjectProfile[]
   focus: string
   price: string
   avatarTone: string

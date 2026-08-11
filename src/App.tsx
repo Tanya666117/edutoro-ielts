@@ -20,6 +20,7 @@ export default function App() {
   const [activePage, setActivePage] = useState<PageId>('hero')
   const [contactOpen, setContactOpen] = useState(false)
   const [resourceOpen, setResourceOpen] = useState(false)
+  const [featuredTeacherId, setFeaturedTeacherId] = useState<string | null>(null)
   const [isAuthed, setIsAuthed] = useState(() => window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true')
   const [loginError, setLoginError] = useState<string | null>(null)
 
@@ -29,9 +30,16 @@ export default function App() {
   }, [])
 
   const navigate = (page: PageId) => {
+    setContactOpen(false)
+    setResourceOpen(false)
     setActivePage(page)
     window.history.replaceState(null, '', `#${page}`)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const openFeaturedTeacher = (teacherId: string) => {
+    setFeaturedTeacherId(teacherId)
+    navigate('teachers')
   }
 
   const handleLogin = (username: string, password: string) => {
@@ -56,10 +64,10 @@ export default function App() {
 
   return (
     <>
-      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => setContactOpen(true)} onLogout={handleLogout} />
+      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => { setResourceOpen(false); setContactOpen(true) }} onLogout={handleLogout} />
       <main>
-        {activePage === 'hero' && <Hero onNavigate={navigate} onResource={() => setResourceOpen(true)} />}
-        {activePage === 'teachers' && <TeachersSection onContact={() => setContactOpen(true)} />}
+        {activePage === 'hero' && <Hero onNavigate={navigate} onTeacher={openFeaturedTeacher} onResource={() => { setContactOpen(false); setResourceOpen(true) }} onCommunity={() => { setResourceOpen(false); setContactOpen(true) }} />}
+        {activePage === 'teachers' && <TeachersSection onContact={() => setContactOpen(true)} initialTeacherId={featuredTeacherId} onInitialTeacherHandled={() => setFeaturedTeacherId(null)} />}
         {activePage === 'supervision' && <SupervisionSection onContact={() => setContactOpen(true)} />}
         {activePage === 'writing' && <WritingReviewSection />}
         {activePage === 'speaking' && <SpeakingSection />}
@@ -67,8 +75,8 @@ export default function App() {
         {activePage === 'contact' && <ContactSection onContact={() => setContactOpen(true)} />}
       </main>
       <Footer onNavigate={navigate} />
-      <ResourcePackModal open={resourceOpen} onClose={() => setResourceOpen(false)} onClaim={() => { setResourceOpen(false); setContactOpen(true) }} />
       <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      <ResourcePackModal open={resourceOpen} onClose={() => setResourceOpen(false)} />
     </>
   )
 }
