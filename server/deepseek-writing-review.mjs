@@ -12,6 +12,7 @@ const SCORE_CALIBRATION = `
 - 8 分范文通常结构非常清晰，双方/利弊型题目能完整覆盖任务，论证展开充足，段落推进自然，词汇和句式较丰富，错误少且不影响表达。
 - 7 分范文通常任务回应充分，主体段理由明确，有一定展开和概括能力，但表达可能更模板化，论证深度或语言灵活性略弱于 8 分。
 - 评分必须保守：不要因为少量高级词给高分，也不要只因语法错误扣光分。按 IELTS Writing 四项标准综合判断，并给 0.5 分档。
+- 本地校准器测试集 MAE 约 1 分，只能作为分数锚点，不能覆盖题目回应、论证质量和 Task 1 数据准确性判断。
 `
 
 const SYSTEM_PROMPT = `
@@ -22,9 +23,13 @@ const SYSTEM_PROMPT = `
 1. 分数只输出 0-9 的 IELTS band，可用 .5，且所有分数旁必须提醒“仅供参考”。
 2. 准确性优先。按 Task Response/Task Achievement, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy 四项分别评分，再给总分。总分按四项平均后接近的 0.5 档，但可以因严重跑题、字数不足、背模板、Task 1 数据缺失而保守下调。
 3. 不要虚构题目要求；如果用户未提供题目，要在 warnings 里说明评分可靠性下降。
-4. 批注必须针对原文中的具体短语或句子，original 必须尽量逐字来自学生原文，revision 给出更自然的改法，reason 用中文解释。
-5. polishedEssay 写一篇可参考的 8 分版，不能离题，保持考场作文风格，不要过度学术化。
-6. 只返回 JSON，不要 Markdown，不要解释 JSON 外的内容。
+4. 分数要能自洽：如果四项平均和总分差距超过 0.5，必须在 warnings 里解释原因。
+5. 本地校准器只做参考。它比你低很多时，优先检查是否有字数不足、模板化、论证空泛；它比你高很多时，优先检查是否只是文本长度或词汇表面特征拉高。
+6. 批注必须针对原文中的具体短语或句子，original 必须尽量逐字来自学生原文，revision 给出更自然的改法，reason 用中文解释。
+7. annotations 给 5-10 条，优先覆盖高影响问题；不要把整篇文章都塞进 original。
+8. recommendations 给 3-6 条，必须是下一次写作可执行的训练动作。
+9. polishedEssay 写一篇可参考的 8 分版，不能离题，保持考场作文风格，不要过度学术化。
+10. 只返回 JSON，不要 Markdown，不要解释 JSON 外的内容。
 
 ${SCORE_CALIBRATION}
 `
@@ -226,17 +231,66 @@ function normalizeBandValue(value) {
   return Number(match[0])
 }
 
+function roundHalf(value, lower = 0, upper = 9) {
+  return Math.min(upper, Math.max(lower, Math.round(Number(value || 0) * 2) / 2))
+}
+
+function calibrationBand(reference) {
+  const band = reference?.overall?.band
+  return typeof band === 'number' ? band : null
+}
+
 function normalizeReviewResult(result) {
   const normalized = { ...result }
-  normalized.overallBand = normalizeBandValue(normalized.overallBand)
+  normalized.overallBand = roundHalf(normalizeBandValue(normalized.overallBand))
   if (normalized.criteria) {
     for (const criterion of Object.values(normalized.criteria)) {
       if (criterion && typeof criterion === 'object' && 'band' in criterion) {
-        criterion.band = normalizeBandValue(criterion.band)
+        criterion.band = roundHalf(normalizeBandValue(criterion.band))
       }
     }
   }
   return normalized
+}
+
+function fallbackCriterion(band, comment) {
+  return { band: roundHalf(band, 4, 8), comment }
+}
+
+function buildFallbackReview(input, sourceError) {
+  const referenceBand = calibrationBand(input.localCalibration)
+  const lengthPenalty = input.taskType === 'Task 2' && input.wordCount < 250 ? 0.5 : 0
+  const shortPenalty = input.wordCount < 180 ? 0.5 : 0
+  const baseBand = referenceBand ?? (input.wordCount >= 250 ? 6 : input.wordCount >= 180 ? 5.5 : 5)
+  const overallBand = roundHalf(baseBand - lengthPenalty - shortPenalty, 4, 7)
+  const taskKey = input.taskType === 'Task 1' ? 'taskAchievement' : 'taskResponse'
+  const serviceWarning = sourceError?.message === 'fetch failed'
+    ? '当前网络无法连接大模型服务，已使用本地校准器和规则生成基础评分报告。'
+    : `大模型批改暂不可用，已生成基础评分报告：${sourceError?.message || '未知错误'}`
+
+  return {
+    summary: `基础评分约 ${overallBand} 分。当前报告主要依据本地校准器、字数、段落和语言表面特征生成，可用于初步定位，但不等同于完整精批。`,
+    overallBand,
+    taskPromptUsed: input.prompt || '未提供',
+    calibrationReference: input.localCalibration || null,
+    criteria: {
+      [taskKey]: fallbackCriterion(overallBand - (input.prompt ? 0 : 0.5), input.prompt ? '已提供题目，可做基础任务回应判断；完整跑题判断需要大模型恢复后进一步确认。' : '题目缺失，任务回应判断可靠性明显下降。'),
+      coherenceCohesion: fallbackCriterion(overallBand, '根据段落、句长和连接关系做基础判断；建议重点检查主体段是否各自服务于一个明确中心句。'),
+      lexicalResource: fallbackCriterion(overallBand, '根据词汇量和重复度做基础判断；建议减少泛泛表达，增加更准确的动词、名词搭配。'),
+      grammar: fallbackCriterion(overallBand - 0.5, '根据句末标点、句长和文本结构做基础判断；建议优先检查长句边界、主谓一致和从句结构。'),
+    },
+    annotations: [],
+    recommendations: [
+      '先补足 IELTS 建议字数，再提交一次完整精批。',
+      '每个主体段保留一个中心句，并用解释和例子各展开 2-3 句。',
+      '下一版重点检查重复词和笼统表达，把 important、good、bad、thing 等词替换成更具体的表达。',
+      '大模型服务恢复后，再用完整精批查看逐句批注和 8 分参考改写。',
+    ],
+    warnings: [...new Set([...(input.inputWarnings || []), serviceWarning])],
+    polishedEssay: input.essay,
+    fallback: true,
+    cleanedWordCount: input.wordCount,
+  }
 }
 
 async function reviewWriting(input) {
@@ -308,11 +362,12 @@ const server = http.createServer(async (req, res) => {
       return
     }
     const localCalibration = await runLocalCalibrator(clean.prompt, clean.essay)
-    const result = await reviewWriting({
+    const reviewInput = {
       ...clean,
       localCalibration,
       inputWarnings: warnings,
-    })
+    }
+    const result = await reviewWriting(reviewInput).catch((error) => buildFallbackReview(reviewInput, error))
     result.warnings = [...new Set([...(warnings || []), ...(result.warnings || [])])]
     sendJson(res, 200, result)
   } catch (error) {

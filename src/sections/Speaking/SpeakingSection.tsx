@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ChevronRight, Download, Eye, EyeOff, Library, Mic, Pause, Search, Shuffle, Trash2 } from 'lucide-react'
+import { ArrowLeft, Calendar, ChevronRight, Download, Eye, EyeOff, Library, MapPin, Mic, Pause, Search, Shuffle, Trash2 } from 'lucide-react'
 import { SectionHeader } from '../../components/SectionHeader'
+import recallsData from '../../data/recalls.json'
 import speakingTopics from '../../data/speaking-topics.json'
-import type { SpeakingQuestion, SpeakingTopic } from '../../types'
+import type { ExamRecall, SpeakingQuestion, SpeakingTopic } from '../../types'
 import { TopicIcon } from './TopicIcon'
 
 const topics = speakingTopics as SpeakingTopic[]
+const speakingRecalls = (recallsData as ExamRecall[]).filter((item) => item.subject === 'speaking')
 const highFrequencyQuestions = [
   { id: 'hf-1', title: 'Work or studies', question: 'Do you work or are you a student?', zh: '工作还是学习？' },
   { id: 'hf-2', title: 'Hometown', question: 'What do you like most about your hometown?', zh: '你最喜欢家乡的什么？' },
@@ -16,7 +18,7 @@ const highFrequencyQuestions = [
 ]
 
 type View = 'library' | 'topic' | 'practice'
-type LibraryTab = 'topics' | 'highFrequency'
+type LibraryTab = 'topics' | 'highFrequency' | 'recalls'
 interface Recording { id: string; topicId: string; question: string; createdAt: string; durationSeconds?: number; audioUrl: string }
 
 function pickQuestion(): { topic: SpeakingTopic; question: SpeakingQuestion } {
@@ -40,6 +42,7 @@ export function SpeakingSection() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showAnswer, setShowAnswer] = useState(false)
   const [search, setSearch] = useState('')
+  const [recallCity, setRecallCity] = useState('all')
   const [practice, setPractice] = useState(() => pickQuestion())
   const [practiceHighFrequency, setPracticeHighFrequency] = useState<(typeof highFrequencyQuestions)[number] | null>(null)
   const [recording, setRecording] = useState(false)
@@ -58,6 +61,20 @@ export function SpeakingSection() {
   const filteredHighFrequency = useMemo(() => {
     const query = search.trim().toLowerCase()
     return query ? highFrequencyQuestions.filter((item) => `${item.title} ${item.question}`.toLowerCase().includes(query)) : highFrequencyQuestions
+  }, [search])
+  const recallCities = useMemo(() => ['all', ...Array.from(new Set(speakingRecalls.map((item) => item.city).filter(Boolean)))], [])
+  const filteredRecalls = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    return speakingRecalls.filter((item) => {
+      const cityMatch = recallCity === 'all' || item.city === recallCity
+      const queryMatch = !query || `${item.city} ${item.venue} ${item.content}`.toLowerCase().includes(query)
+      return cityMatch && queryMatch
+    })
+  }, [recallCity, search])
+  const filteredRecallTopics = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return topics
+    return topics.filter((topic) => `${topic.titleEn} ${topic.titleZh} ${topic.questions.map((question) => `${question.questionEn} ${question.questionZh}`).join(' ')}`.toLowerCase().includes(query))
   }, [search])
   const activeQuestion = practiceHighFrequency ? practiceHighFrequency.question : practice.question.questionEn
   const activeTopicLabel = practiceHighFrequency ? '本季高频精选' : practice.topic.titleEn
@@ -153,8 +170,11 @@ export function SpeakingSection() {
 
     {view !== 'library' && <button type="button" onClick={() => { setView('library'); setSelectedId(null); setPracticeHighFrequency(null); clearTake() }} className="mt-8 inline-flex items-center gap-1.5 text-sm font-black text-[var(--teal)]"><ArrowLeft size={16} />返回题库</button>}
 
-    {view === 'library' && <><div className="mt-9 flex flex-wrap items-center justify-between gap-4"><div className="flex rounded-[8px] bg-[var(--bg)] p-1 ring-1 ring-black/10"><button type="button" onClick={() => setLibraryTab('topics')} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: libraryTab === 'topics' ? 'var(--charcoal)' : 'transparent', color: libraryTab === 'topics' ? '#fff' : 'var(--ink-2)' }}><Library size={15} className="mr-2 inline" />完整题库</button><button type="button" onClick={() => setLibraryTab('highFrequency')} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: libraryTab === 'highFrequency' ? 'var(--charcoal)' : 'transparent', color: libraryTab === 'highFrequency' ? '#fff' : 'var(--ink-2)' }}>本季高频</button></div><label className="relative block w-full max-w-sm"><Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-3)]" size={17} /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索主题或题目" className="w-full rounded-full border border-black/10 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--teal)]" /></label></div>
-      {libraryTab === 'topics' ? <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filteredTopics.map((topic) => <button key={topic.id} type="button" onClick={() => { setSelectedId(topic.id); setView('topic'); setShowAnswer(false) }} className="card card-lift group flex min-h-[176px] flex-col p-6 text-left"><div className="flex items-start justify-between"><div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-[var(--yellow-soft)] text-[var(--ink)]"><TopicIcon name={topic.icon} /></div><span className="pill bg-[var(--bg)] text-[var(--ink-3)]">#{String(topic.num).padStart(2, '0')}</span></div><h3 className="mt-5 text-[18px] font-black text-[var(--ink)]">{topic.titleEn}</h3><p className="mt-1 text-sm font-bold text-[var(--ink-3)]">{topic.questionCount} 道题目</p><span className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-black text-[var(--teal)]">进入练习 <ChevronRight size={16} className="transition group-hover:translate-x-0.5" /></span></button>)}</div> : <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filteredHighFrequency.map((item) => <button key={item.id} type="button" onClick={() => { setPracticeHighFrequency(item); setView('practice'); setShowAnswer(false); clearTake() }} className="card card-lift group min-h-[170px] p-6 text-left"><span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">高频精选</span><h3 className="mt-4 text-xl font-black">{item.title}</h3><p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">{item.question}</p><p className="mt-4 text-sm font-black text-[var(--teal)]">开始录音练习 <ChevronRight size={16} className="inline" /></p></button>)}</div>}</>}
+    {view === 'library' && <><div className="mt-9 flex flex-wrap items-center justify-between gap-4"><div className="flex flex-wrap rounded-[8px] bg-[var(--bg)] p-1 ring-1 ring-black/10"><button type="button" onClick={() => setLibraryTab('topics')} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: libraryTab === 'topics' ? 'var(--charcoal)' : 'transparent', color: libraryTab === 'topics' ? '#fff' : 'var(--ink-2)' }}><Library size={15} className="mr-2 inline" />完整题库</button><button type="button" onClick={() => setLibraryTab('highFrequency')} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: libraryTab === 'highFrequency' ? 'var(--charcoal)' : 'transparent', color: libraryTab === 'highFrequency' ? '#fff' : 'var(--ink-2)' }}>本季高频</button><button type="button" onClick={() => setLibraryTab('recalls')} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: libraryTab === 'recalls' ? 'var(--charcoal)' : 'transparent', color: libraryTab === 'recalls' ? '#fff' : 'var(--ink-2)' }}>考点回忆</button></div><label className="relative block w-full max-w-sm"><Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-3)]" size={17} /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={libraryTab === 'recalls' ? '搜索已录入回忆或题库' : '搜索主题或题目'} className="w-full rounded-full border border-black/10 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--teal)]" /></label></div>
+      {libraryTab === 'topics' && <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filteredTopics.map((topic) => <button key={topic.id} type="button" onClick={() => { setSelectedId(topic.id); setView('topic'); setShowAnswer(false) }} className="card card-lift group flex min-h-[176px] flex-col p-6 text-left"><div className="flex items-start justify-between"><div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-[var(--yellow-soft)] text-[var(--ink)]"><TopicIcon name={topic.icon} /></div><span className="pill bg-[var(--bg)] text-[var(--ink-3)]">#{String(topic.num).padStart(2, '0')}</span></div><h3 className="mt-5 text-[18px] font-black text-[var(--ink)]">{topic.titleEn}</h3><p className="mt-1 text-sm font-bold text-[var(--ink-3)]">{topic.questionCount} 道题目</p><span className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-black text-[var(--teal)]">进入练习 <ChevronRight size={16} className="transition group-hover:translate-x-0.5" /></span></button>)}</div>}
+      {libraryTab === 'highFrequency' && <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filteredHighFrequency.map((item) => <button key={item.id} type="button" onClick={() => { setPracticeHighFrequency(item); setView('practice'); setShowAnswer(false); clearTake() }} className="card card-lift group min-h-[170px] p-6 text-left"><span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">高频精选</span><h3 className="mt-4 text-xl font-black">{item.title}</h3><p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">{item.question}</p><p className="mt-4 text-sm font-black text-[var(--teal)]">开始录音练习 <ChevronRight size={16} className="inline" /></p></button>)}</div>}
+      {libraryTab === 'recalls' && <SpeakingRecalls recalls={filteredRecalls} topics={filteredRecallTopics} cities={recallCities} city={recallCity} onCity={setRecallCity} />}
+    </>}
 
     {view === 'topic' && selectedId && <TopicDetail topic={topics.find((topic) => topic.id === selectedId)!} onPractice={() => { setPracticeHighFrequency(null); setPractice(pickQuestion()); setView('practice'); clearTake() }} showAnswer={showAnswer} setShowAnswer={setShowAnswer} />}
     {view === 'practice' && <PracticePanel question={activeQuestion} topicLabel={activeTopicLabel} showAnswer={showAnswer} setShowAnswer={setShowAnswer} recording={recording} audioUrl={audioUrl} recordingError={recordingError} onStart={startRecording} onStop={stopRecording} onSave={saveRecording} onNext={() => startPractice(Boolean(practiceHighFrequency))} userId={userId} setUserId={setUserId} recordings={recordings} onDelete={deleteRecording} />}
@@ -163,6 +183,128 @@ export function SpeakingSection() {
 
 function TopicDetail({ topic, onPractice, showAnswer, setShowAnswer }: { topic: SpeakingTopic; onPractice: () => void; showAnswer: boolean; setShowAnswer: (value: boolean) => void }) {
   return <div className="mt-9 space-y-4"><div className="card flex flex-wrap items-center justify-between gap-4 p-6"><div className="flex items-center gap-4"><div className="flex h-12 w-12 items-center justify-center rounded-[8px] bg-[var(--yellow-soft)]"><TopicIcon name={topic.icon} /></div><div><p className="text-xs font-black text-[var(--teal)]">Topic {topic.num}</p><h3 className="text-xl font-black">{topic.titleEn}</h3></div></div><button type="button" onClick={onPractice} className="btn btn-yellow !min-h-0 !px-4 !py-2.5 text-sm"><Mic size={16} />随机录音练习</button></div>{topic.questions.map((question, index) => <article key={question.id} className="card overflow-hidden"><div className="p-6" style={{ borderLeft: '5px solid var(--yellow)' }}><span className="pill bg-[var(--yellow-soft)] text-[var(--ink)]">Q{index + 1}</span><p className="mt-3 text-lg font-black leading-snug">{question.questionEn}</p></div>{showAnswer && <div className="border-t border-black/8 bg-[var(--bg)] px-6 py-5"><p className="text-xs font-black tracking-wide text-[var(--teal)]">MODEL ANSWER</p><p className="mt-3 text-[15px] leading-[1.8] text-[var(--ink-2)]">{question.modelAnswerEn}</p></div>}</article>)}<button type="button" onClick={() => setShowAnswer(!showAnswer)} className="btn btn-outline"><Eye size={16} />{showAnswer ? '隐藏示例答案' : '显示示例答案'}</button></div>
+}
+
+function SpeakingRecalls({ recalls, topics: recallTopics, cities, city, onCity }: { recalls: ExamRecall[]; topics: SpeakingTopic[]; cities: string[]; city: string; onCity: (value: string) => void }) {
+  const totalQuestions = recallTopics.reduce((sum, topic) => sum + topic.questionCount, 0)
+
+  return (
+    <div className="mt-7">
+      <div className="rounded-[8px] bg-[var(--charcoal)] p-5 text-white shadow-[var(--shadow)] md:p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--yellow)]">Speaking Exam Recalls</p>
+            <h3 className="mt-2 text-2xl font-black">口语考点回忆</h3>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-white/68">城市区只展示已录入的真实考场反馈；完整本季 Part 1 题库独立放在下方，不和城市考点混在一起。</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white/80">{cities.length - 1} 个城市回忆</span>
+            <span className="rounded-full bg-[var(--yellow)] px-4 py-2 text-sm font-black text-[var(--ink)]">{recallTopics.length} 个主题 · {totalQuestions} 题</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-7 grid gap-5 rounded-[8px] border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] lg:grid-cols-[260px_minmax(0,1fr)] md:p-6">
+        <aside className="rounded-[8px] bg-[var(--bg)] p-4">
+          <h4 className="text-lg font-black text-[var(--ink)]">城市 / 考点</h4>
+          <p className="mt-1 text-xs font-bold leading-6 text-[var(--ink-3)]">当前只显示已录入真实口语回忆的城市。</p>
+          <div className="mt-4 grid gap-2">
+            {cities.map((item) => {
+              const on = city === item
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => onCity(item)}
+                  className="flex items-center justify-between rounded-[8px] px-4 py-3 text-left text-sm font-black transition"
+                  style={{
+                    background: on ? 'var(--teal)' : '#fff',
+                    color: on ? '#fff' : 'var(--ink-2)',
+                    border: `1px solid ${on ? 'var(--teal)' : 'rgba(23,23,23,0.1)'}`,
+                  }}
+                >
+                  <span>{item === 'all' ? '全部城市' : item}</span>
+                  <span className="text-xs opacity-75">{item === 'all' ? cities.length - 1 : '1'} 条</span>
+                </button>
+              )
+            })}
+          </div>
+        </aside>
+
+        <div>
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h4 className="text-lg font-black text-[var(--ink)]">{city === 'all' ? '全部城市考点回忆' : `${city}考点回忆`}</h4>
+              <p className="mt-1 text-sm leading-7 text-[var(--ink-2)]">按城市查看日期、考点和当次 Part 1 / Part 2 / Part 3 方向。</p>
+            </div>
+            <span className="rounded-full bg-[var(--teal-soft)] px-4 py-2 text-sm font-black text-[var(--teal)]">真实录入 {recalls.length} 条</span>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            {recalls.length ? recalls.map((recall) => (
+              <article key={recall.id} className="rounded-[8px] border border-black/8 bg-white p-5 shadow-[var(--shadow-sm)]">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="pill bg-[#ffe9e2] text-[#c63c23]">口语</span>
+                  {recall.difficulty && <span className="pill bg-[var(--bg)] text-[var(--ink-3)]">{recall.difficulty}</span>}
+                  <span className="pill bg-white text-[var(--ink-3)] ring-1 ring-black/10">真实回忆</span>
+                </div>
+                <div className="mt-4 grid gap-3 rounded-[8px] bg-[var(--bg)] p-3 text-sm font-bold text-[var(--ink-3)] md:grid-cols-2">
+                  <span className="inline-flex items-center gap-1.5"><Calendar size={14} className="text-[var(--teal)]" />{recall.date}</span>
+                  <span className="inline-flex items-center gap-1.5"><MapPin size={14} className="text-[var(--teal)]" />{recall.city} · {recall.venue}</span>
+                </div>
+                <p className="mt-4 text-[15px] leading-8 text-[var(--ink-2)]">{recall.content}</p>
+              </article>
+            )) : (
+              <div className="rounded-[8px] border border-black/8 bg-[var(--bg)] p-8 text-center">
+                <p className="text-lg font-black text-[var(--ink)]">暂时没有匹配的城市考点回忆</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">目前项目数据源里只录入了北京、深圳两条口语真实回忆。</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-9 flex flex-col gap-2 border-t border-black/10 pt-7 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h4 className="text-lg font-black text-[var(--ink)]">完整 Part 1 本季题库</h4>
+          <p className="mt-1 text-sm leading-7 text-[var(--ink-2)]">来自 ielts_speaking.html 的完整本季新题，包含主题、英文题目和中文释义。</p>
+        </div>
+        <span className="text-sm font-black text-[var(--teal)]">2026 年 5-8 月</span>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        {recallTopics.length ? recallTopics.map((topic) => (
+          <article key={topic.id} className="card overflow-hidden">
+            <div className="flex items-start justify-between gap-4 border-b border-black/8 bg-[var(--bg)] p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[var(--yellow)] font-black text-[var(--ink)]">{String(topic.num).padStart(2, '0')}</span>
+                <div>
+                  <h5 className="font-black text-[var(--ink)]">{topic.titleEn}</h5>
+                  <p className="text-xs font-bold text-[var(--ink-3)]">{topic.questionCount} 道 Part 1 题目</p>
+                </div>
+              </div>
+              <TopicIcon name={topic.icon} />
+            </div>
+            <div className="divide-y divide-black/8">
+              {topic.questions.map((question, index) => (
+                <div key={question.id} className="p-4">
+                  <p className="text-xs font-black text-[var(--teal)]">Q{index + 1}</p>
+                  <p className="mt-1 text-sm font-black leading-6 text-[var(--ink)]">{question.questionEn}</p>
+                  {question.questionZh && <p className="mt-1 text-xs font-bold leading-5 text-[var(--ink-3)]">{question.questionZh}</p>}
+                </div>
+              ))}
+            </div>
+          </article>
+        )) : (
+          <div className="card p-8 text-center lg:col-span-2">
+            <p className="text-lg font-black text-[var(--ink)]">暂时没有匹配的题库主题</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">换一个搜索关键词再试。</p>
+          </div>
+        )}
+      </div>
+
+    </div>
+  )
 }
 
 function PracticePanel({ question, topicLabel, showAnswer, setShowAnswer, recording, audioUrl, recordingError, onStart, onStop, onSave, onNext, userId, setUserId, recordings, onDelete }: { question: string; topicLabel: string; showAnswer: boolean; setShowAnswer: (value: boolean) => void; recording: boolean; audioUrl: string; recordingError: string; onStart: () => void; onStop: () => void; onSave: () => void; onNext: () => void; userId: string; setUserId: (value: string) => void; recordings: Recording[]; onDelete: (id: string) => void }) {

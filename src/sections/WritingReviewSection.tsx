@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
-import { AlertCircle, BarChart3, CheckCircle2, Download, FileText, ImagePlus, Loader2, Sparkles, Upload } from 'lucide-react'
+import { AlertCircle, ArrowLeft, BarChart3, CheckCircle2, Download, FileText, Gauge, ImagePlus, Loader2, PenLine, ShieldCheck, Sparkles, Upload } from 'lucide-react'
 import { Document, HeadingLevel, Packer, Paragraph, TextRun } from 'docx'
 
 type Criterion = { band: number; comment: string }
@@ -16,6 +16,7 @@ type ReviewResult = {
   polishedEssay?: string
   calibrationReference?: Record<string, { label: string; band: number }> | { unavailable: true; reason: string } | null
   cleanedWordCount?: number
+  fallback?: boolean
 }
 
 const taskOptions = ['Task 2', 'Task 1'] as const
@@ -35,6 +36,11 @@ const issueColors: Record<string, string> = {
   Style: 'bg-neutral-100 text-[var(--ink-2)]',
 }
 const severityLabels: Record<string, string> = { high: '优先修改', medium: '建议修改', low: '可优化' }
+const reviewHighlights = [
+  { icon: ShieldCheck, label: '四项评分', text: '任务回应、结构、词汇、语法分开判断' },
+  { icon: PenLine, label: '逐句批注', text: '定位原句，给出可直接替换的表达' },
+  { icon: Download, label: '报告下载', text: '生成后可导出 Word 留档复盘' },
+]
 
 const emptyChartFacts: ChartFacts = { chartType: '折线图', title: '', unit: '', overview: '', highest: '', lowest: '', trends: '', comparisons: '' }
 
@@ -98,6 +104,7 @@ export function WritingReviewSection() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [reportUrl, setReportUrl] = useState('')
+  const [view, setView] = useState<'form' | 'report'>('form')
 
   const wordCount = useMemo(() => countWords(essay), [essay])
 
@@ -148,26 +155,54 @@ export function WritingReviewSection() {
       setPrompt(cleanedPrompt)
       setEssay(cleanedEssay)
       setResult(payload)
+      setView('report')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : '批改失败，请稍后重试。')
     } finally { setLoading(false) }
   }
 
-  return (
-    <section className="section scroll-mt-24 bg-white">
-      <div className="shell">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <span className="eyebrow">作文批改</span>
-            <h1 className="heading">让每一次批改，<br />都告诉你下一步怎么提分</h1>
-            <p className="lede">不只给一个分数。AI 会把任务回应、结构、词汇和语法拆开讲清楚，再给出可以马上执行的修改建议。</p>
-          </div>
-          <div className="rounded-[8px] bg-[var(--yellow-soft)] px-4 py-3 text-sm font-bold text-[var(--ink-2)]">AI 评分仅供备考参考</div>
+  if (view === 'report' && result) {
+    return (
+      <section className="relative overflow-hidden scroll-mt-24 bg-white py-12 md:py-18">
+        <div className="absolute inset-x-0 top-0 h-[260px] bg-[linear-gradient(135deg,#171717_0%,#2a2a2a_48%,#0f8f7c_100%)]" />
+        <div className="shell">
+          <ReportHeader reportUrl={reportUrl} onBack={() => setView('form')} result={result} />
+          <ReviewReport result={result} prompt={prompt} essay={essay} />
         </div>
+      </section>
+    )
+  }
 
-        <form onSubmit={submit} className="mt-10">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
-            <div className="card p-5 md:p-6">
+  return (
+    <section className="relative overflow-hidden scroll-mt-24 bg-white py-16 md:py-24">
+      <div className="absolute inset-x-0 top-0 h-[360px] bg-[linear-gradient(135deg,#fff5b8_0%,#ffffff_48%,#e4f7f3_100%)]" />
+      <div className="absolute left-0 top-0 h-full w-full opacity-[0.28]" style={{ backgroundImage: 'linear-gradient(rgba(23,23,23,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(23,23,23,0.06) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
+      <div className="shell">
+        <div className="relative">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
+            <div>
+              <span className="eyebrow">作文批改</span>
+              <h1 className="mt-4 max-w-4xl text-[38px] font-black leading-[1.08] tracking-normal text-[var(--ink)] md:text-[62px]">把一篇作文，拆成一份清楚的提分报告</h1>
+              <p className="mt-5 max-w-2xl text-[17px] leading-8 text-[var(--ink-2)]">输入题目和原文后，系统会按 IELTS 四项标准给出参考分数、评分依据、原文批注和下一次训练动作。批改完成后会进入独立报告页，方便下载和复盘。</p>
+            </div>
+            <div className="rounded-[8px] border border-black/10 bg-[var(--charcoal)] p-5 text-white shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--yellow)]">Review Engine</p>
+                  <p className="mt-2 text-2xl font-black">IELTS Writing</p>
+                </div>
+                <span className="flex h-12 w-12 items-center justify-center rounded-[8px] bg-white/10 text-[var(--yellow)]"><Gauge size={26} /></span>
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+                {['Band', 'Notes', 'DOCX'].map((item) => <div key={item} className="rounded-[6px] bg-white/10 px-2 py-3 text-xs font-black text-white/78">{item}</div>)}
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={submit} className="mt-10">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(340px,0.88fr)]">
+              <div className="rounded-[8px] border border-black/10 bg-white p-5 shadow-[0_28px_80px_-45px_rgba(23,23,23,0.45)] md:p-7">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex rounded-[8px] bg-[var(--bg)] p-1 ring-1 ring-black/10">
                   {taskOptions.map((option) => <button key={option} type="button" onClick={() => setTaskType(option)} className="rounded-[6px] px-4 py-2 text-sm font-black" style={{ background: taskType === option ? 'var(--charcoal)' : 'transparent', color: taskType === option ? '#fff' : 'var(--ink-2)' }}>{option}</button>)}
@@ -209,25 +244,73 @@ export function WritingReviewSection() {
               <button type="submit" disabled={loading} className="btn btn-dark mt-5 w-full disabled:cursor-not-allowed disabled:opacity-60">{loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}{loading ? '正在分析…' : '生成分析报告'}</button>
             </div>
 
-            {!result ? <div className="card flex min-h-[620px] flex-col items-center justify-center p-8 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[var(--ink)]"><FileText size={26} /></span><h2 className="mt-5 text-2xl font-black text-[var(--ink)]">分析报告会显示在这里</h2><p className="mt-3 max-w-md text-sm leading-7 text-[var(--ink-2)]">先填写题目和原文。Task 1 再补齐图表关键节点，报告会把评分依据、批注和下一步训练分开呈现。</p></div> : <ReviewReport result={result} prompt={prompt} essay={essay} reportUrl={reportUrl} />}
-          </div>
-        </form>
+              <div className="space-y-4">
+                <div className="rounded-[8px] border border-black/10 bg-[var(--charcoal)] p-6 text-white shadow-[var(--shadow)]">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[var(--ink)]"><FileText size={25} /></span>
+                  <h2 className="mt-5 text-3xl font-black leading-tight">批改前检查</h2>
+                  <p className="mt-3 text-sm leading-7 text-white/68">题目、观点、主体段和字数越完整，评分依据越稳定。提交后系统会生成可下载的 Word 报告，方便后续复盘。</p>
+                  {result && <button type="button" onClick={() => setView('report')} className="btn btn-yellow mt-5 w-full">查看上一份报告</button>}
+                </div>
+                <div className="grid gap-3">
+                  {reviewHighlights.map(({ icon: Icon, label, text }) => (
+                    <div key={label} className="flex items-start gap-3 rounded-[8px] border border-black/8 bg-white p-4 shadow-[var(--shadow-sm)]">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--teal-soft)] text-[var(--teal)]"><Icon size={20} /></span>
+                      <div>
+                        <p className="font-black text-[var(--ink)]">{label}</p>
+                        <p className="mt-1 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">AI 评分仅供备考参考，正式成绩以 IELTS 官方评分为准。</div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   )
 }
 
-function ReviewReport({ result, prompt, essay, reportUrl }: { result: ReviewResult; prompt: string; essay: string; reportUrl: string }) {
-  return <div className="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+function ReportHeader({ reportUrl, onBack, result }: { reportUrl: string; onBack: () => void; result: ReviewResult }) {
+  return (
+    <div className="relative mb-6 rounded-[8px] border border-white/12 bg-white/10 p-5 text-white shadow-[var(--shadow)] backdrop-blur md:p-6">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--yellow)]">Writing Review Report</p>
+          <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">作文批改报告</h2>
+          <p className="mt-2 text-sm font-bold text-white/66">{result.fallback ? '基础评分模式' : 'AI 精批模式'} · {result.cleanedWordCount ? `约 ${result.cleanedWordCount} words` : 'IELTS Writing'}</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={onBack} className="btn btn-light w-fit"><ArrowLeft size={18} />返回修改</button>
+          {reportUrl ? <a href={reportUrl} download="edutoro-writing-report.docx" className="btn btn-yellow w-fit"><Download size={18} />下载 Word</a> : <span className="rounded-full bg-white/12 px-4 py-3 text-sm font-bold text-white/70">正在生成下载文件…</span>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ReviewReport({ result, prompt, essay }: { result: ReviewResult; prompt: string; essay: string }) {
+  return <div className="relative grid items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
     <aside className="space-y-4 lg:sticky lg:top-28">
-      <div className="rounded-[8px] bg-[var(--charcoal)] p-5 text-white shadow-[var(--shadow)]"><p className="text-xs font-black uppercase tracking-[0.13em] text-[var(--yellow)]">Your report</p><p className="mt-4 text-6xl font-black leading-none">{result.overallBand}</p><p className="mt-2 text-xs font-bold text-white/60">AI 参考分数</p>{reportUrl && <a href={reportUrl} download="edutoro-writing-report.docx" className="btn btn-yellow mt-5 w-full !px-3 text-sm"><Download size={16} />下载 Word</a>}</div>
-      <div className="rounded-[8px] bg-[var(--bg)] p-4 ring-1 ring-black/10"><p className="text-xs font-black text-[var(--teal)]">四项评分</p><div className="mt-3 space-y-3">{Object.entries(result.criteria || {}).map(([key, item]) => <div key={key}><div className="flex items-center justify-between gap-2 text-xs font-black"><span>{criteriaLabels[key] || key}</span><span>{item.band}</span></div><div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-[var(--teal)]" style={{ width: `${Math.min(100, Number(item.band) * 10)}%` }} /></div></div>)}</div></div>
+      <div className="rounded-[8px] bg-[var(--charcoal)] p-6 text-white shadow-[var(--shadow)]">
+        <p className="text-xs font-black uppercase tracking-[0.13em] text-[var(--yellow)]">Your report</p>
+        <p className="mt-4 text-7xl font-black leading-none">{result.overallBand}</p>
+        <p className="mt-2 text-xs font-bold text-white/60">{result.fallback ? '基础参考分数' : 'AI 参考分数'}</p>
+        {result.cleanedWordCount ? <p className="mt-4 rounded-[6px] bg-white/10 px-3 py-2 text-xs font-bold text-white/75">约 {result.cleanedWordCount} words</p> : null}
+      </div>
+      <div className="rounded-[8px] bg-white p-4 shadow-[var(--shadow-sm)] ring-1 ring-black/10"><p className="text-xs font-black text-[var(--teal)]">四项评分</p><div className="mt-3 space-y-3">{Object.entries(result.criteria || {}).map(([key, item]) => <div key={key}><div className="flex items-center justify-between gap-2 text-xs font-black"><span>{criteriaLabels[key] || key}</span><span>{item.band}</span></div><div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--bg)]"><div className="h-full rounded-full bg-[var(--teal)]" style={{ width: `${Math.min(100, Number(item.band) * 10)}%` }} /></div></div>)}</div></div>
     </aside>
     <div className="min-w-0 space-y-5">
+      {result.fallback ? <div className="rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">当前为基础评分报告：大模型服务不可用时，系统会先用本地校准器和规则给出可参考结果；恢复网络后可重新提交获取逐句精批和改写。</div> : null}
       <div className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7"><div className="flex items-center gap-2"><CheckCircle2 size={20} className="text-[var(--teal)]" /><h2 className="text-xl font-black">先看结论</h2></div><p className="mt-4 text-[16px] leading-8 text-[var(--ink-2)]">{result.summary}</p><div className="mt-5 rounded-[8px] bg-[var(--bg)] p-4 text-sm leading-7 text-[var(--ink-2)]"><p className="font-black text-[var(--ink)]">本次题目</p><p className="mt-1 whitespace-pre-wrap">{result.taskPromptUsed || prompt}</p></div></div>
       {result.warnings?.length ? <div className="rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">{result.warnings.join('；')}</div> : null}
       <div className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7"><h2 className="text-xl font-black">评分依据</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{Object.entries(result.criteria || {}).map(([key, item]) => <div key={key} className="rounded-[8px] bg-[var(--bg)] p-4"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-black">{criteriaLabels[key] || key}</h3><span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-sm font-black">{item.band}</span></div><p className="mt-3 text-sm leading-7 text-[var(--ink-2)]">{item.comment}</p></div>)}</div></div>
-      <div className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7"><h2 className="text-xl font-black">原文批注</h2><div className="mt-4 whitespace-pre-wrap rounded-[8px] bg-[var(--bg)] p-4 text-[15px] leading-8">{renderAnnotatedEssay(essay, result.annotations || [])}</div><div className="mt-5 grid gap-3">{(result.annotations || []).map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[8px] border border-black/8 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div></div>
+      <div className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7">
+        <h2 className="text-xl font-black">原文批注</h2>
+        <div className="mt-4 whitespace-pre-wrap rounded-[8px] bg-[var(--bg)] p-4 text-[15px] leading-8">{renderAnnotatedEssay(essay, result.annotations || [])}</div>
+        {result.annotations?.length ? <div className="mt-5 grid gap-3">{result.annotations.map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[8px] border border-black/8 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div> : <p className="mt-4 rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">基础评分报告暂不生成逐句批注；等大模型服务恢复后重新提交，就会显示逐句修改建议。</p>}
+      </div>
       <div className="grid gap-5 md:grid-cols-2"><div className="rounded-[8px] bg-[var(--charcoal)] p-5 text-white md:p-6"><h2 className="text-xl font-black">下一步训练</h2><ul className="mt-4 space-y-3">{(result.recommendations || []).map((item) => <li key={item} className="flex gap-3 text-sm leading-7 text-white/75"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--yellow)]" />{item}</li>)}</ul></div><div className="rounded-[8px] bg-[var(--teal-soft)] p-5 md:p-6"><h2 className="text-xl font-black text-[var(--ink)]">参考高分版本</h2><p className="mt-4 whitespace-pre-wrap text-[15px] leading-8 text-[var(--ink-2)]">{result.polishedEssay || essay}</p></div></div>
     </div>
   </div>
