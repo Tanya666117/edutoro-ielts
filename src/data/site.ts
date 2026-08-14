@@ -1,11 +1,10 @@
 export const NAV_ITEMS = [
-  { id: 'teachers', label: '一对一老师' },
-  { id: 'supervision', label: '定制化督学' },
   { id: 'writing', label: '作文批改' },
   { id: 'speaking', label: '口语练习' },
+  { id: 'coaching', label: '课程辅导' },
 ] as const
 
-export type PageId = 'hero' | 'teachers' | 'supervision' | 'writing' | 'speaking' | 'contact' | 'cases'
+export type PageId = 'hero' | 'coaching' | 'teachers' | 'supervision' | 'writing' | 'speaking' | 'contact' | 'cases'
 
 export const SUBJECT_LABELS: Record<string, string> = {
   listening: '听力',

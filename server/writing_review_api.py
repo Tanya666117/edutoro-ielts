@@ -51,7 +51,8 @@ SYSTEM_PROMPT = f"""
 3. 不要虚构题目要求；如果用户未提供题目，要在 warnings 里说明评分可靠性下降。
 4. 批注必须针对原文中的具体短语或句子，original 必须尽量逐字来自学生原文，revision 给出更自然的改法，reason 用中文解释。
 5. polishedEssay 写一篇可参考的 8 分版，不能离题，保持考场作文风格，不要过度学术化。
-6. 只返回 JSON，不要 Markdown，不要解释 JSON 外的内容。
+6. 除常规评分外，还要输出词汇替换、词伙、题型分析、问题统计和下一步训练，帮助学生复盘。
+7. 只返回 JSON，不要 Markdown，不要解释 JSON 外的内容。
 
 {SCORE_CALIBRATION}
 """
@@ -89,6 +90,40 @@ def clean_text(value: Any, max_length: int = 24_000) -> str:
 
 def count_english_words(value: str) -> int:
     return len(re.findall(r"[A-Za-z]+(?:[-'][A-Za-z]+)*", value))
+
+
+def analyze_essay_text(value: str) -> dict[str, Any]:
+    words = count_english_words(value)
+    sentences = len([item for item in re.split(r"[.!?]+", value) if len(item.strip()) > 8])
+    paragraphs = len([item for item in re.split(r"\n{2,}", value) if item.strip()]) or (1 if value.strip() else 0)
+    average_sentence_length = round(words / sentences, 1) if sentences else 0
+    return {
+        "words": words,
+        "sentences": sentences,
+        "paragraphs": paragraphs,
+        "averageSentenceLength": average_sentence_length,
+    }
+
+
+def issue_stats_from_annotations(annotations: Any) -> dict[str, int]:
+    stats = {"task": 0, "coherence": 0, "vocabulary": 0, "grammar": 0, "style": 0}
+    if not isinstance(annotations, list):
+        return stats
+    for annotation in annotations:
+        if not isinstance(annotation, dict):
+            continue
+        issue_type = str(annotation.get("issueType") or "")
+        if "Task" in issue_type:
+            stats["task"] += 1
+        elif issue_type == "Coherence":
+            stats["coherence"] += 1
+        elif issue_type == "Vocabulary":
+            stats["vocabulary"] += 1
+        elif issue_type == "Grammar":
+            stats["grammar"] += 1
+        else:
+            stats["style"] += 1
+    return stats
 
 
 def safe_user_id(value: Any) -> str:
@@ -232,6 +267,24 @@ def build_user_prompt(input_data: dict[str, Any]) -> str:
     "lexicalResource": {{"band": 6.5, "comment": "中文说明"}},
     "grammar": {{"band": 6.5, "comment": "中文说明"}}
   }},
+  "sentenceStats": {{
+    "words": 260,
+    "sentences": 13,
+    "paragraphs": 4,
+    "averageSentenceLength": 20
+  }},
+  "issueStats": {{
+    "task": 1,
+    "coherence": 2,
+    "vocabulary": 3,
+    "grammar": 2,
+    "style": 1
+  }},
+  "essayOutline": {{
+    "questionType": "观点表达 / 双边讨论 / 利弊分析 / 原因方案 / 图表描述",
+    "position": "学生立场是否清楚，以及是否与题目匹配",
+    "bodyLogic": "主体段推进逻辑，指出最主要的断点"
+  }},
   "annotations": [
     {{
       "original": "原文短语或句子",
@@ -241,12 +294,38 @@ def build_user_prompt(input_data: dict[str, Any]) -> str:
       "reason": "中文解释"
     }}
   ],
+  "vocabularyUpgrades": [
+    {{
+      "original": "原文里较普通或不自然的词/短语",
+      "upgrade": "更自然、更贴合 IELTS 的替换",
+      "context": "适合使用的上下文",
+      "reason": "中文说明为什么更好"
+    }}
+  ],
+  "collocations": [
+    {{
+      "phrase": "可复用词伙",
+      "example": "结合本题或同类题的英文例句",
+      "useCase": "适用题型或语境"
+    }}
+  ],
+  "improvementPlan": [
+    {{
+      "title": "下一次训练动作标题",
+      "priority": "high | medium | low",
+      "detail": "中文说明具体怎么练"
+    }}
+  ],
   "recommendations": ["3-6 条中文建议"],
   "warnings": ["影响评分可靠性的提醒，没有则空数组"],
   "polishedEssay": "8 分版参考作文"
 }}
 
-注意：如果本地校准器与 IELTS 规则判断冲突，以 IELTS 四项标准和题目回应为准；但需要在 warnings 中说明可能存在分歧。
+注意：
+- issueStats 必须与 annotations 的问题类型大致一致。
+- vocabularyUpgrades 选择 3-6 个真正值得替换的词或短语，不要堆砌生僻词。
+- improvementPlan 必须是学生下一次写作能直接执行的训练任务，不要写空泛鼓励。
+- 如果本地校准器与 IELTS 规则判断冲突，以 IELTS 四项标准和题目回应为准；但需要在 warnings 中说明可能存在分歧。
 """
 
 
@@ -307,6 +386,15 @@ def normalize_review_result(result: dict[str, Any]) -> dict[str, Any]:
         for item in criteria.values():
             if isinstance(item, dict) and "band" in item:
                 item["band"] = normalize_band_value(item.get("band"))
+    if not isinstance(normalized.get("sentenceStats"), dict):
+        normalized["sentenceStats"] = {}
+    if not isinstance(normalized.get("issueStats"), dict):
+        normalized["issueStats"] = issue_stats_from_annotations(normalized.get("annotations"))
+    for key in ("annotations", "recommendations", "warnings", "vocabularyUpgrades", "collocations", "improvementPlan"):
+        if not isinstance(normalized.get(key), list):
+            normalized[key] = []
+    if not isinstance(normalized.get("essayOutline"), dict):
+        normalized["essayOutline"] = None
     return normalized
 
 
@@ -366,6 +454,9 @@ def review_writing(input_data: dict[str, Any]) -> dict[str, Any]:
     result["calibrationReference"] = input_data.get("localCalibration") or None
     result["inputWarnings"] = input_data.get("inputWarnings") or []
     result["cleanedWordCount"] = input_data.get("wordCount")
+    text_stats = analyze_essay_text(str(input_data.get("essay") or ""))
+    result["sentenceStats"] = {**text_stats, **(result.get("sentenceStats") or {})}
+    result["issueStats"] = {**issue_stats_from_annotations(result.get("annotations")), **(result.get("issueStats") or {})}
     return result
 
 

@@ -2,6 +2,7 @@ import { ArrowRight, CalendarCheck, Check, MessageCircle, Target, UsersRound } f
 
 interface SupervisionSectionProps {
   onContact: () => void
+  compact?: boolean
 }
 
 const plans = [
@@ -42,9 +43,9 @@ const serviceSteps = [
   },
 ]
 
-export function SupervisionSection({ onContact }: SupervisionSectionProps) {
+export function SupervisionSection({ onContact, compact = false }: SupervisionSectionProps) {
   return (
-    <section id="supervision" className="section scroll-mt-24 bg-white">
+    <section id="supervision" className={`${compact ? 'pb-[82px] pt-10 md:pb-[104px] md:pt-14' : 'section'} scroll-mt-24 bg-white`}>
       <div className="shell">
         <div>
           <div>

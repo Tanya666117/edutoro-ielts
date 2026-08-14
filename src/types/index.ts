@@ -31,6 +31,19 @@ export interface TeacherSubjectProfile {
   focus: string
   price: string
   sortOrder: number
+  stats: string[]
+  aboutTeacher: string
+  aboutLesson: string
+  teachingFeatures: string[]
+  trainingFocus?: Array<{
+    label: string
+    body: string
+  }>
+  suitableStudents: string[]
+  trialNote: string
+  courseNote: string
+  extraGift?: string[]
+  caseHighlight: string
 }
 
 export interface Teacher {

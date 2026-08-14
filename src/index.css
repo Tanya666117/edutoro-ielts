@@ -62,9 +62,17 @@ input {
   margin-inline: auto;
 }
 
+.hero-shell {
+  width: min(1360px, calc(100% - 36px));
+}
+
 @media (min-width: 768px) {
   .shell {
     width: min(1180px, calc(100% - 64px));
+  }
+
+  .hero-shell {
+    width: min(1360px, calc(100% - 64px));
   }
 }
 
