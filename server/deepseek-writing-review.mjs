@@ -1,18 +1,24 @@
 import http from 'node:http'
 import { spawn } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto'
+import { URL } from 'node:url'
 
 loadDotEnv()
 
 const PORT = Number(process.env.PORT || 8787)
+const QWEN_OCR_BASE = process.env.QWEN_OCR_BASE_URL || process.env.QWEN_BASE_URL || ''
+const QWEN_OCR_KEY = process.env.QWEN_OCR_API_KEY || process.env.QWEN_API_KEY || ''
+const QWEN_OCR_MODEL = process.env.QWEN_OCR_MODEL || 'qwen-vl-ocr-latest'
+const USER_STORE_PATH = resolve(process.cwd(), 'data', 'writing-users.json')
+const FREE_WRITING_CREDITS = 2
 
 const SCORE_CALIBRATION = `
 校准参考来自项目本地《雅思写作官方题库范文大全》抽样：
 - 8 分范文通常结构非常清晰，双方/利弊型题目能完整覆盖任务，论证展开充足，段落推进自然，词汇和句式较丰富，错误少且不影响表达。
 - 7 分范文通常任务回应充分，主体段理由明确，有一定展开和概括能力，但表达可能更模板化，论证深度或语言灵活性略弱于 8 分。
 - 评分必须保守：不要因为少量高级词给高分，也不要只因语法错误扣光分。按 IELTS Writing 四项标准综合判断，并给 0.5 分档。
-- 本地校准器测试集 MAE 约 1 分，只能作为分数锚点，不能覆盖题目回应、论证质量和 Task 1 数据准确性判断。
 `
 
 const SYSTEM_PROMPT = `
@@ -24,7 +30,7 @@ const SYSTEM_PROMPT = `
 2. 准确性优先。按 Task Response/Task Achievement, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy 四项分别评分，再给总分。总分按四项平均后接近的 0.5 档，但可以因严重跑题、字数不足、背模板、Task 1 数据缺失而保守下调。
 3. 不要虚构题目要求；如果用户未提供题目，要在 warnings 里说明评分可靠性下降。
 4. 分数要能自洽：如果四项平均和总分差距超过 0.5，必须在 warnings 里解释原因。
-5. 本地校准器只做参考。它比你低很多时，优先检查是否有字数不足、模板化、论证空泛；它比你高很多时，优先检查是否只是文本长度或词汇表面特征拉高。
+5. 评分要保守稳定，优先检查字数不足、模板化、论证空泛或 Task 1 信息缺失等问题。
 6. 批注必须针对原文中的具体短语或句子，original 必须尽量逐字来自学生原文，revision 给出更自然的改法，reason 用中文解释。
 7. annotations 给 5-10 条，优先覆盖高影响问题；不要把整篇文章都塞进 original。
 8. recommendations 给 3-6 条，必须是下一次写作可执行的训练动作。
@@ -49,24 +55,108 @@ function loadDotEnv() {
   }
 }
 
+function ensureUserStore() {
+  const storeDir = dirname(USER_STORE_PATH)
+  if (!existsSync(storeDir)) mkdirSync(storeDir, { recursive: true })
+  if (!existsSync(USER_STORE_PATH)) {
+    writeFileSync(USER_STORE_PATH, JSON.stringify({ users: [], sessions: [] }, null, 2))
+  }
+}
+
+function readUserStore() {
+  ensureUserStore()
+  try {
+    const parsed = JSON.parse(readFileSync(USER_STORE_PATH, 'utf8'))
+    return {
+      users: Array.isArray(parsed?.users) ? parsed.users : [],
+      sessions: Array.isArray(parsed?.sessions) ? parsed.sessions : [],
+    }
+  } catch {
+    return { users: [], sessions: [] }
+  }
+}
+
+function writeUserStore(store) {
+  ensureUserStore()
+  const tempPath = `${USER_STORE_PATH}.tmp`
+  writeFileSync(tempPath, JSON.stringify(store, null, 2))
+  renameSync(tempPath, USER_STORE_PATH)
+}
+
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase()
+}
+
+function sanitizeDisplayName(value) {
+  return cleanText(value, { maxLength: 60 }) || 'Edutoro 学员'
+}
+
+function hashPassword(password, salt = randomBytes(16).toString('hex')) {
+  return {
+    salt,
+    hash: scryptSync(String(password), salt, 64).toString('hex'),
+  }
+}
+
+function verifyPassword(password, passwordHash, passwordSalt) {
+  if (!passwordHash || !passwordSalt) return false
+  const actual = Buffer.from(passwordHash, 'hex')
+  const expected = Buffer.from(scryptSync(String(password), passwordSalt, 64).toString('hex'), 'hex')
+  return actual.length === expected.length && timingSafeEqual(actual, expected)
+}
+
+function createSession(userId, store) {
+  const token = randomBytes(24).toString('hex')
+  store.sessions = store.sessions.filter((session) => session.userId !== userId)
+  store.sessions.push({ token, userId, createdAt: new Date().toISOString() })
+  return token
+}
+
+function publicUser(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    displayName: user.displayName,
+    writingCredits: Number(user.writingCredits || 0),
+    createdAt: user.createdAt,
+  }
+}
+
+function findUserByToken(token) {
+  if (!token) return null
+  const store = readUserStore()
+  const session = store.sessions.find((item) => item.token === token)
+  if (!session) return null
+  const user = store.users.find((item) => item.id === session.userId)
+  return user ? { store, user, session } : null
+}
+
+function extractTokenFromRequest(req, rawInput = {}) {
+  const authHeader = req.headers.authorization || ''
+  if (authHeader.toLowerCase().startsWith('bearer ')) return authHeader.slice(7).trim()
+  return cleanText(rawInput.authToken, { maxLength: 200 })
+}
+
 function sendJson(res, status, payload) {
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   })
   res.end(status === 204 ? undefined : JSON.stringify(payload))
 }
 
-function readBody(req) {
+function readBody(req, options = {}) {
+  const maxBytes = options.maxBytes || 180_000
+  const tooLargeMessage = options.tooLargeMessage || '作文内容过长，请控制在约 12000 字以内。'
   return new Promise((resolveBody, reject) => {
     let body = ''
     req.on('data', (chunk) => {
       body += chunk
-      if (body.length > 180_000) {
+      if (body.length > maxBytes) {
         req.destroy()
-        reject(new Error('作文内容过长，请控制在约 12000 字以内。'))
+        reject(new Error(tooLargeMessage))
       }
     })
     req.on('end', () => resolveBody(body))
@@ -75,9 +165,6 @@ function readBody(req) {
 }
 
 function buildUserPrompt(input) {
-  const localCalibration = input.localCalibration
-    ? `\nLocal calibrator trained on IELTS dataset sample, for calibration only:\n${JSON.stringify(input.localCalibration, null, 2)}\n`
-    : '\nLocal calibrator unavailable.\n'
   const chartText = input.taskType === 'Task 1' && input.chartContext
     ? `\nTask 1 chart key nodes (use only these facts for the overview and comparisons; do not invent data):\n${input.chartContext}\n`
     : ''
@@ -92,8 +179,6 @@ ${input.prompt || '用户未提供题目'}
 ${input.essay}
 
 ${chartText}
-
-${localCalibration}
 
 请返回以下 JSON 结构：
 {
@@ -121,7 +206,7 @@ ${localCalibration}
   "polishedEssay": "8 分版参考作文"
 }
 
-注意：如果本地校准器与 IELTS 规则判断冲突，以 IELTS 四项标准和题目回应为准；但需要在 warnings 中说明可能存在分歧。
+注意：如果题目、图表信息或作文原文不完整，需要在 warnings 中提醒评分可靠性下降。
 `
 }
 
@@ -178,18 +263,36 @@ function runLocalCalibrator(prompt, essay) {
   if (!existsSync(script)) return Promise.resolve(null)
 
   return new Promise((resolveScore) => {
-    const child = spawn('python', [script], {
-      cwd: process.cwd(),
-      env: process.env,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    })
+    let settled = false
+    const finish = (value) => {
+      if (settled) return
+      settled = true
+      resolveScore(value)
+    }
+
+    let child
+    try {
+      child = spawn('python', [script], {
+        cwd: process.cwd(),
+        env: process.env,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      })
+    } catch (error) {
+      finish({ unavailable: true, reason: error?.message || 'Local calibrator failed to start.' })
+      return
+    }
+
     let stdout = ''
     let stderr = ''
     const timeout = setTimeout(() => {
       child.kill('SIGTERM')
-      resolveScore({ unavailable: true, reason: 'Local calibrator timed out.' })
+      finish({ unavailable: true, reason: 'Local calibrator timed out.' })
     }, 15_000)
 
+    child.on('error', (error) => {
+      clearTimeout(timeout)
+      finish({ unavailable: true, reason: error?.message || 'Local calibrator failed to start.' })
+    })
     child.stdout.on('data', (chunk) => {
       stdout += chunk
     })
@@ -199,13 +302,13 @@ function runLocalCalibrator(prompt, essay) {
     child.on('close', (code) => {
       clearTimeout(timeout)
       if (code !== 0) {
-        resolveScore({ unavailable: true, reason: stderr.trim() || `Local calibrator exited with code ${code}.` })
+        finish({ unavailable: true, reason: stderr.trim() || `Local calibrator exited with code ${code}.` })
         return
       }
       try {
-        resolveScore(JSON.parse(stdout))
+        finish(JSON.parse(stdout))
       } catch {
-        resolveScore({ unavailable: true, reason: 'Local calibrator returned invalid JSON.' })
+        finish({ unavailable: true, reason: 'Local calibrator returned invalid JSON.' })
       }
     })
 
@@ -221,6 +324,119 @@ function parseModelJson(content) {
     const match = clean.match(/\{[\s\S]*\}/)
     if (!match) throw new Error('模型没有返回可解析的 JSON。')
     return JSON.parse(match[0])
+  }
+}
+
+function validateImageDataUrl(value) {
+  const match = String(value || '').match(/^data:(image\/[A-Za-z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/)
+  if (!match) return null
+  return { mimeType: match[1], base64: match[2] }
+}
+
+function sanitizeChartFacts(raw) {
+  const input = raw && typeof raw === 'object' ? raw : {}
+  const allowedChartTypes = new Set(['折线图', '柱状图', '饼图', '表格', '混合图', '流程图', '地图'])
+  const normalizedType = cleanText(input.chartType, { maxLength: 120 })
+  return {
+    chartType: allowedChartTypes.has(normalizedType) ? normalizedType : '柱状图',
+    title: cleanText(input.title, { maxLength: 300 }),
+    unit: cleanText(input.unit, { maxLength: 300 }),
+    overview: cleanText(input.overview, { maxLength: 800 }),
+    highest: cleanText(input.highest, { maxLength: 800 }),
+    lowest: cleanText(input.lowest, { maxLength: 800 }),
+    trends: cleanText(input.trends, { maxLength: 1200 }),
+    comparisons: cleanText(input.comparisons, { maxLength: 1200 }),
+  }
+}
+
+function buildChartExtractionPrompt(prompt) {
+  const taskPrompt = cleanText(prompt, { maxLength: 2000 })
+  return `
+You are helping with IELTS Academic Writing Task 1 chart extraction.
+
+Return JSON only. Do not include markdown.
+
+Extract only facts that are visible in the image. If something is unclear, mention that uncertainty briefly instead of inventing values.
+
+Use this JSON schema:
+{
+  "chartFacts": {
+    "chartType": "折线图 | 柱状图 | 饼图 | 表格 | 混合图 | 流程图 | 地图",
+    "title": "chart title or short topic",
+    "unit": "unit and/or time range",
+    "overview": "one-sentence overall trend or overall process/map summary",
+    "highest": "highest point / biggest item with value or stage if visible",
+    "lowest": "lowest point / smallest item with value or stage if visible",
+    "trends": "major trend or ordered process/map changes",
+    "comparisons": "key comparisons between groups, years, stages, or areas"
+  },
+  "confidence": 0.0,
+  "warnings": ["short notes about unclear labels, unreadable numbers, or assumptions"]
+}
+
+Requirements:
+- confidence must be between 0 and 1.
+- For pure pie charts without time points, leave "trends" empty and focus on overall distribution plus largest/smallest shares.
+- For mixed charts, identify both chart forms and summarize the relationship between them.
+- For process diagrams, use "trends" for ordered steps and "comparisons" for notable branch differences if any.
+- For map tasks, summarize major changes over time in "trends" and location-based contrasts in "comparisons".
+- Keep each field concise and useful for IELTS Task 1 writing.
+${taskPrompt ? `- The user also provided this task prompt. Use it only to disambiguate labels, never to invent missing facts:\n${taskPrompt}` : ''}
+`
+}
+
+async function extractTask1Chart(imageDataUrl, prompt) {
+  if (!QWEN_OCR_BASE || !QWEN_OCR_KEY) {
+    const error = new Error('Qwen OCR 尚未配置。请在 .env 中填写 QWEN_OCR_API_KEY 和 QWEN_OCR_BASE_URL。')
+    error.status = 500
+    throw error
+  }
+
+  const response = await fetch(`${QWEN_OCR_BASE.replace(/\/$/, '')}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${QWEN_OCR_KEY}`,
+    },
+    body: JSON.stringify({
+      model: QWEN_OCR_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: buildChartExtractionPrompt(prompt) },
+            { type: 'image_url', image_url: { url: imageDataUrl }, min_pixels: 3136, max_pixels: 1048576 },
+          ],
+        },
+      ],
+      stream: false,
+      temperature: 0.1,
+      max_tokens: 1200,
+    }),
+  })
+
+  const payload = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const message = payload?.error?.message || `Qwen OCR 请求失败：HTTP ${response.status}`
+    const error = new Error(message)
+    error.status = response.status
+    throw error
+  }
+
+  const content = payload?.choices?.[0]?.message?.content
+  if (!content) {
+    const error = new Error('Qwen OCR 未返回识别结果。')
+    error.status = 502
+    throw error
+  }
+
+  const result = parseModelJson(content)
+  const confidence = Math.max(0, Math.min(1, Number(result?.confidence ?? 0)))
+  return {
+    chartFacts: sanitizeChartFacts(result?.chartFacts),
+    confidence,
+    warnings: Array.isArray(result?.warnings) ? result.warnings.map((item) => cleanText(item, { maxLength: 240 })).filter(Boolean) : [],
+    model: QWEN_OCR_MODEL,
   }
 }
 
@@ -265,11 +481,11 @@ function buildFallbackReview(input, sourceError) {
   const overallBand = roundHalf(baseBand - lengthPenalty - shortPenalty, 4, 7)
   const taskKey = input.taskType === 'Task 1' ? 'taskAchievement' : 'taskResponse'
   const serviceWarning = sourceError?.message === 'fetch failed'
-    ? '当前网络无法连接大模型服务，已使用本地校准器和规则生成基础评分报告。'
-    : `大模型批改暂不可用，已生成基础评分报告：${sourceError?.message || '未知错误'}`
+    ? '当前网络暂时无法连接批改模型，已生成快速批改结果。'
+    : `当前已切换为快速批改结果：${sourceError?.message || '未知错误'}`
 
   return {
-    summary: `基础评分约 ${overallBand} 分。当前报告主要依据本地校准器、字数、段落和语言表面特征生成，可用于初步定位，但不等同于完整精批。`,
+    summary: `快速批改结果约 ${overallBand} 分。当前报告主要依据字数、段落、表达和任务完成度的基础特征生成，可用于先定位问题，再决定下一版重点修改方向。`,
     overallBand,
     taskPromptUsed: input.prompt || '未提供',
     calibrationReference: input.localCalibration || null,
@@ -342,9 +558,128 @@ async function reviewWriting(input) {
   }
 }
 
+async function handleRegister(req, res) {
+  const body = await readBody(req, { maxBytes: 20_000, tooLargeMessage: '注册信息过长，请检查后重试。' })
+  const rawInput = JSON.parse(body)
+  const email = normalizeEmail(rawInput.email)
+  const password = String(rawInput.password || '')
+  const displayName = sanitizeDisplayName(rawInput.displayName || email.split('@')[0])
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    sendJson(res, 400, { error: '请输入有效邮箱。' })
+    return
+  }
+  if (password.length < 6) {
+    sendJson(res, 400, { error: '密码至少需要 6 位。' })
+    return
+  }
+
+  const store = readUserStore()
+  if (store.users.some((user) => user.email === email)) {
+    sendJson(res, 409, { error: '这个邮箱已经注册过了，请直接登录。' })
+    return
+  }
+
+  const hashed = hashPassword(password)
+  const user = {
+    id: randomUUID(),
+    email,
+    displayName,
+    passwordHash: hashed.hash,
+    passwordSalt: hashed.salt,
+    writingCredits: FREE_WRITING_CREDITS,
+    createdAt: new Date().toISOString(),
+  }
+  store.users.push(user)
+  const token = createSession(user.id, store)
+  writeUserStore(store)
+  sendJson(res, 201, {
+    token,
+    user: publicUser(user),
+    promotion: `新用户已领取 ${FREE_WRITING_CREDITS} 次免费作文批改。`,
+  })
+}
+
+async function handleLogin(req, res) {
+  const body = await readBody(req, { maxBytes: 20_000, tooLargeMessage: '登录信息过长，请检查后重试。' })
+  const rawInput = JSON.parse(body)
+  const email = normalizeEmail(rawInput.email)
+  const password = String(rawInput.password || '')
+  const store = readUserStore()
+  const user = store.users.find((item) => item.email === email)
+  if (!user || !verifyPassword(password, user.passwordHash, user.passwordSalt)) {
+    sendJson(res, 401, { error: '邮箱或密码不正确。' })
+    return
+  }
+  const token = createSession(user.id, store)
+  user.lastLoginAt = new Date().toISOString()
+  writeUserStore(store)
+  sendJson(res, 200, { token, user: publicUser(user) })
+}
+
+function handleSession(req, res) {
+  const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`)
+  const token = cleanText(requestUrl.searchParams.get('token'), { maxLength: 200 })
+  const match = findUserByToken(token)
+  if (!match) {
+    sendJson(res, 401, { error: '登录状态已失效，请重新登录。' })
+    return
+  }
+  sendJson(res, 200, { user: publicUser(match.user) })
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     sendJson(res, 204, {})
+    return
+  }
+
+  if (req.method === 'POST' && req.url === '/api/auth/register') {
+    try {
+      await handleRegister(req, res)
+    } catch (error) {
+      sendJson(res, error.status || 500, { error: error.message || '注册失败，请稍后重试。' })
+    }
+    return
+  }
+
+  if (req.method === 'POST' && req.url === '/api/auth/login') {
+    try {
+      await handleLogin(req, res)
+    } catch (error) {
+      sendJson(res, error.status || 500, { error: error.message || '登录失败，请稍后重试。' })
+    }
+    return
+  }
+
+  if (req.method === 'GET' && req.url?.startsWith('/api/auth/session')) {
+    try {
+      handleSession(req, res)
+    } catch (error) {
+      sendJson(res, error.status || 500, { error: error.message || '读取登录状态失败。' })
+    }
+    return
+  }
+
+  if (req.method === 'POST' && req.url === '/api/task1/extract-chart') {
+    try {
+      const body = await readBody(req, {
+        maxBytes: 16_000_000,
+        tooLargeMessage: '图表图片过大，请压缩后重试。',
+      })
+      const rawInput = JSON.parse(body)
+      const imageDataUrl = cleanText(rawInput.imageDataUrl, { maxLength: 18_000_000 })
+      const prompt = cleanText(rawInput.prompt, { maxLength: 4000 })
+      const parsedImage = validateImageDataUrl(imageDataUrl)
+      if (!parsedImage) {
+        sendJson(res, 400, { error: '请上传 JPG、PNG 或 WebP 图表图片。' })
+        return
+      }
+      const result = await extractTask1Chart(imageDataUrl, prompt)
+      sendJson(res, 200, result)
+    } catch (error) {
+      sendJson(res, error.status || 500, { error: error.message || '图表识别失败，请稍后重试。' })
+    }
     return
   }
 
@@ -356,6 +691,16 @@ const server = http.createServer(async (req, res) => {
   try {
     const body = await readBody(req)
     const rawInput = JSON.parse(body)
+    const authToken = extractTokenFromRequest(req, rawInput)
+    const matchedUser = findUserByToken(authToken)
+    if (!matchedUser) {
+      sendJson(res, 401, { error: '请先登录，再提交作文批改。', code: 'AUTH_REQUIRED' })
+      return
+    }
+    if (Number(matchedUser.user.writingCredits || 0) <= 0) {
+      sendJson(res, 402, { error: '你的免费批改次数已用完，请添加小星微信领取或购买更多次数。', code: 'NO_CREDITS', user: publicUser(matchedUser.user) })
+      return
+    }
     const { errors, warnings, clean } = validateInput(rawInput)
     if (errors.length) {
       sendJson(res, 400, { error: errors.join('；') })
@@ -369,6 +714,14 @@ const server = http.createServer(async (req, res) => {
     }
     const result = await reviewWriting(reviewInput).catch((error) => buildFallbackReview(reviewInput, error))
     result.warnings = [...new Set([...(warnings || []), ...(result.warnings || [])])]
+    const store = matchedUser.store
+    const targetUser = store.users.find((item) => item.id === matchedUser.user.id)
+    if (targetUser) {
+      targetUser.writingCredits = Math.max(0, Number(targetUser.writingCredits || 0) - 1)
+      writeUserStore(store)
+      result.user = publicUser(targetUser)
+      result.remainingCredits = targetUser.writingCredits
+    }
     sendJson(res, 200, result)
   } catch (error) {
     sendJson(res, error.status || 500, { error: error.message || '批改失败，请稍后重试。' })

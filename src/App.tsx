@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { ContactModal } from './components/ContactModal'
 import { Footer } from './components/Footer'
-import { LoginGate } from './components/LoginGate'
 import { Navbar } from './components/Navbar'
 import { ResourcePackModal } from './components/ResourcePackModal'
-import { AUTH_STORAGE_KEY, LOGIN_CREDENTIALS } from './data/auth'
 import type { PageId } from './data/site'
 import { ContactSection } from './sections/ContactSection'
 import { CasesSection } from './sections/CasesSection'
@@ -21,8 +19,6 @@ export default function App() {
   const [resourceOpen, setResourceOpen] = useState(false)
   const [featuredTeacherId, setFeaturedTeacherId] = useState<string | null>(null)
   const [coachingMode, setCoachingMode] = useState<CoachingMode>('teachers')
-  const [isAuthed, setIsAuthed] = useState(() => window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true')
-  const [loginError, setLoginError] = useState<string | null>(null)
 
   useEffect(() => {
     const pageFromHash = window.location.hash.replace('#', '') as PageId
@@ -51,29 +47,9 @@ export default function App() {
     navigate('teachers')
   }
 
-  const handleLogin = (username: string, password: string) => {
-    if (username !== LOGIN_CREDENTIALS.username || password !== LOGIN_CREDENTIALS.password) {
-      setLoginError('用户名或密码不正确')
-      return
-    }
-    window.localStorage.setItem(AUTH_STORAGE_KEY, 'true')
-    setIsAuthed(true)
-    setLoginError(null)
-  }
-
-  const handleLogout = () => {
-    window.localStorage.removeItem(AUTH_STORAGE_KEY)
-    setIsAuthed(false)
-    setContactOpen(false)
-    setResourceOpen(false)
-    setLoginError(null)
-  }
-
-  if (!isAuthed) return <LoginGate error={loginError} onSubmit={handleLogin} />
-
   return (
     <>
-      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => { setResourceOpen(false); setContactOpen(true) }} onLogout={handleLogout} />
+      <Navbar activePage={activePage} onNavigate={navigate} onContact={() => { setResourceOpen(false); setContactOpen(true) }} />
       <main>
         {activePage === 'hero' && <Hero onNavigate={navigate} onTeacher={openFeaturedTeacher} onResource={() => { setContactOpen(false); setResourceOpen(true) }} onCommunity={() => { setResourceOpen(false); setContactOpen(true) }} />}
         {activePage === 'coaching' && <CoachingSection mode={coachingMode} onModeChange={setCoachingMode} onContact={() => setContactOpen(true)} initialTeacherId={featuredTeacherId} onInitialTeacherHandled={() => setFeaturedTeacherId(null)} />}

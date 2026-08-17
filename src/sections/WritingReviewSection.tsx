@@ -8,12 +8,15 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Download,
+  Gift,
   History,
   ImagePlus,
   Layers3,
   Lightbulb,
   ListChecks,
   Loader2,
+  LockKeyhole,
+  Mail,
   PenLine,
   Save,
   Sparkles,
@@ -23,7 +26,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { Document, HeadingLevel, Packer, Paragraph, TextRun } from 'docx'
+import { AlignmentType, Document, Header, HeadingLevel, Packer, Paragraph, TextRun } from 'docx'
 
 type TaskType = 'Task 2' | 'Task 1'
 type CheckStatus = 'good' | 'warn' | 'bad'
@@ -59,11 +62,17 @@ type ReviewHistoryItem = { id: string; createdAt: string; taskType: TaskType; pr
 type SavedVocabulary = VocabularyUpgrade & { id: string; savedAt: string }
 type SavedTraining = ImprovementItem & { id: string; savedAt: string; completed?: boolean }
 type EssayCheck = { label: string; detail: string; status: CheckStatus }
+type ChartExtractionPayload = { chartFacts?: Partial<ChartFacts>; confidence?: number; warnings?: string[]; error?: string }
+type ChartFieldKey = keyof ChartFacts
+type ChartFieldDefinition = { key: ChartFieldKey; label: string; placeholder: string; span?: 'full' }
+type WritingUser = { id: string; email: string; displayName: string; writingCredits: number; createdAt: string }
+type AuthPayload = { token?: string; user?: WritingUser; promotion?: string; error?: string }
 
 const taskOptions: TaskType[] = ['Task 2', 'Task 1']
 const HISTORY_STORAGE_KEY = 'edutoro-writing-review-history-v2'
 const VOCAB_STORAGE_KEY = 'edutoro-writing-vocabulary-v1'
 const TRAINING_STORAGE_KEY = 'edutoro-writing-training-v1'
+const AUTH_TOKEN_STORAGE_KEY = 'edutoro-writing-auth-token'
 
 const criteriaLabels: Record<string, string> = {
   taskResponse: '任务回应',
@@ -113,6 +122,79 @@ const task2Samples = [
 
 const emptyChartFacts: ChartFacts = { chartType: '折线图', title: '', unit: '', overview: '', highest: '', lowest: '', trends: '', comparisons: '' }
 const emptyIssueStats: IssueStats = { task: 0, coherence: 0, vocabulary: 0, grammar: 0, style: 0 }
+const task1ChartTypes = ['折线图', '柱状图', '饼图', '表格', '混合图', '流程图', '地图'] as const
+
+const chartTypeFieldDefinitions: Record<string, ChartFieldDefinition[]> = {
+  折线图: [
+    { key: 'title', label: '图表标题 / 对象', placeholder: '例如：不同国家手机用户数量变化', span: 'full' },
+    { key: 'unit', label: '单位 / 时间范围', placeholder: '例如：百分比，2000-2020' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '整体上升 / 波动 / 两组相反趋势', span: 'full' },
+    { key: 'highest', label: '最高点 / 峰值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'lowest', label: '最低点 / 谷值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'trends', label: '趋势节点', placeholder: '上升、下降、稳定或转折', span: 'full' },
+    { key: 'comparisons', label: '关键对比', placeholder: '两组或多个对象的差异', span: 'full' },
+  ],
+  柱状图: [
+    { key: 'title', label: '图表标题 / 对象', placeholder: '例如：三国学生支出对比', span: 'full' },
+    { key: 'unit', label: '单位 / 时间范围', placeholder: '例如：美元，2005 和 2015' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '哪组整体更高 / 哪类差距最明显', span: 'full' },
+    { key: 'highest', label: '最高柱 / 最大值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'lowest', label: '最低柱 / 最小值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'trends', label: '分组变化 / 排序', placeholder: '若有时间维度，写上升下降；若无，写整体排序', span: 'full' },
+    { key: 'comparisons', label: '关键对比', placeholder: '两组或多个对象差异最明显的点', span: 'full' },
+  ],
+  饼图: [
+    { key: 'title', label: '图表标题 / 对象', placeholder: '例如：家庭开支构成', span: 'full' },
+    { key: 'unit', label: '单位 / 时间范围', placeholder: '例如：百分比，2000 和 2020' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '最大/最小板块与整体分布特征', span: 'full' },
+    { key: 'highest', label: '最大占比', placeholder: '类别 + 占比' },
+    { key: 'lowest', label: '最小占比', placeholder: '类别 + 占比' },
+    { key: 'comparisons', label: '关键对比', placeholder: '相近板块、最大最小差距、前后变化', span: 'full' },
+  ],
+  表格: [
+    { key: 'title', label: '表格主题', placeholder: '例如：五国税收占 GDP 比例', span: 'full' },
+    { key: 'unit', label: '单位 / 时间范围', placeholder: '例如：百分比，1975-2005' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '谁整体最高 / 最低，是否普遍上升', span: 'full' },
+    { key: 'highest', label: '最高值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'lowest', label: '最低值', placeholder: '对象 + 数值 + 时间' },
+    { key: 'trends', label: '主要变化', placeholder: '增长、下降、持平、收敛', span: 'full' },
+    { key: 'comparisons', label: '关键对比', placeholder: '国家、年份或类别之间的显著差异', span: 'full' },
+  ],
+  混合图: [
+    { key: 'title', label: '混合图主题', placeholder: '例如：柱状图 + 折线图的组合信息', span: 'full' },
+    { key: 'unit', label: '单位 / 时间范围', placeholder: '分别写清两个维度的单位与时间' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '两种图形共同传达的整体特征', span: 'full' },
+    { key: 'highest', label: '关键最高点', placeholder: '最突出数值 / 峰值 / 最高类别' },
+    { key: 'lowest', label: '关键最低点', placeholder: '最小值 / 最弱类别 / 最低趋势点' },
+    { key: 'trends', label: '趋势与对应关系', placeholder: '折线走势、柱状增减、二者是否同向', span: 'full' },
+    { key: 'comparisons', label: '跨图对比', placeholder: '两种图形之间最值得比较的关系', span: 'full' },
+  ],
+  流程图: [
+    { key: 'title', label: '流程主题', placeholder: '例如：铝罐回收过程', span: 'full' },
+    { key: 'unit', label: '阶段数 / 特殊数据', placeholder: '例如：6 steps；74% recycled' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '线性 / 循环流程，起点终点是什么', span: 'full' },
+    { key: 'highest', label: '关键阶段 / 亮点', placeholder: '最重要或最特殊的一步' },
+    { key: 'lowest', label: '可省略细节 / 最末环节', placeholder: '如果无明显最低项，可写最终产出' },
+    { key: 'trends', label: '步骤顺序', placeholder: '按阶段写 Step 1 -> Step 2 -> Step 3', span: 'full' },
+    { key: 'comparisons', label: '分支 / 循环 / 对比', placeholder: '是否有并行步骤、回收闭环或输入输出差异', span: 'full' },
+  ],
+  地图: [
+    { key: 'title', label: '地图主题', placeholder: '例如：某城镇 1980 与 2020 的变化', span: 'full' },
+    { key: 'unit', label: '时间点 / 区域范围', placeholder: '例如：1980 vs 2010；north/south area' },
+    { key: 'overview', label: 'Overview 一句话', placeholder: '整体是更现代化、商业化还是住宅化', span: 'full' },
+    { key: 'highest', label: '最大变化', placeholder: '新增 / 拆除 / 扩建最明显的区域' },
+    { key: 'lowest', label: '最少变化', placeholder: '基本保持不变的区域' },
+    { key: 'trends', label: '变化脉络', placeholder: '新增、移除、改建、迁移的主线', span: 'full' },
+    { key: 'comparisons', label: '位置对比', placeholder: '北/南、东/西或前后两个时期的对比', span: 'full' },
+  ],
+}
+
+const chartTypeGuidance: Record<string, string> = {
+  饼图: '纯饼图重点看占比结构和最大/最小板块；如果没有时间维度，一般不需要写“趋势”。',
+  混合图: '混合图先识别两种图形各自表达什么，再抓它们之间的对应关系，不要只写其中一半。',
+  流程图: '流程图更重要的是步骤顺序、阶段分组和是否形成闭环，不需要硬写数值趋势。',
+  地图: '地图题重点是新增、移除、扩建和方位变化，语言上更像“变化描述”而不是“数据趋势”。',
+}
 
 function cleanInputText(value: string) {
   return value.normalize('NFKC').replace(/[\u0000-\u001F\u007F]/g, '').replace(/\r\n?/g, '\n').replace(/\n{4,}/g, '\n\n\n').trim()
@@ -137,8 +219,16 @@ function calculateSentenceStats(value: string): SentenceStats {
   return { words, sentences, paragraphs, averageSentenceLength: sentences ? Math.round((words / sentences) * 10) / 10 : 0 }
 }
 
+function getChartFieldDefinitions(chartType: string) {
+  return chartTypeFieldDefinitions[chartType] || chartTypeFieldDefinitions.柱状图
+}
+
+function getRelevantChartKeys(chartType: string) {
+  return getChartFieldDefinitions(chartType).map((item) => item.key)
+}
+
 function chartFactsToText(facts: ChartFacts) {
-  return Object.entries(facts).map(([key, value]) => `${key}: ${value || '未填写'}`).join('\n')
+  return getChartFieldDefinitions(facts.chartType).map(({ key, label }) => `${label}: ${facts[key] || '未填写'}`).join('\n')
 }
 
 function safeReadStorage<T>(key: string, fallback: T): T {
@@ -154,6 +244,27 @@ function makeId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
 
+function parseApiPayload(raw: string) {
+  const text = raw.trim()
+  if (!text) {
+    throw new Error('批改服务没有返回内容，请确认本地批改 API 已启动。')
+  }
+  try {
+    return JSON.parse(text) as ReviewResult & { error?: string }
+  } catch {
+    throw new Error(`批改服务返回了无法解析的内容：${text.slice(0, 120)}`)
+  }
+}
+
+async function fileToDataUrl(file: File) {
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result || ''))
+    reader.onerror = () => reject(new Error('读取图片失败，请重试。'))
+    reader.readAsDataURL(file)
+  })
+}
+
 function normalizeIssueStats(result: ReviewResult): IssueStats {
   if (result.issueStats) return { ...emptyIssueStats, ...result.issueStats }
   return (result.annotations || []).reduce<IssueStats>((stats, item) => {
@@ -166,7 +277,7 @@ function normalizeIssueStats(result: ReviewResult): IssueStats {
   }, { ...emptyIssueStats })
 }
 
-function buildChecks(taskType: TaskType, prompt: string, essay: string): EssayCheck[] {
+function buildChecks(taskType: TaskType, prompt: string, essay: string, chartFacts: ChartFacts): EssayCheck[] {
   const cleanedPrompt = cleanInputText(prompt)
   const cleanedEssay = cleanInputText(essay)
   const stats = calculateSentenceStats(cleanedEssay)
@@ -207,10 +318,17 @@ function buildChecks(taskType: TaskType, prompt: string, essay: string): EssayCh
     },
   ]
   if (taskType === 'Task 1') {
+    const fieldDefinitions = getChartFieldDefinitions(chartFacts.chartType)
+    const requiredKeys = fieldDefinitions.map((item) => item.key).filter((key) => !['highest', 'lowest'].includes(key))
+    const filledCount = requiredKeys.filter((key) => cleanInputText(chartFacts[key] || '').length > 0).length
+    const missingCoreLabels = fieldDefinitions
+      .filter((item) => requiredKeys.includes(item.key) && cleanInputText(chartFacts[item.key] || '').length === 0)
+      .map((item) => item.label)
+
     checks.push({
       label: '图表信息是否填写',
-      detail: '图片只作预览，批改会使用你手动填写的关键数据',
-      status: 'warn',
+      detail: missingCoreLabels.length === 0 ? `当前题型已填写 ${filledCount}/${requiredKeys.length} 个核心字段` : `仍缺少 ${missingCoreLabels.length} 个核心字段：${missingCoreLabels.slice(0, 2).join('、')}`,
+      status: missingCoreLabels.length === 0 ? 'good' : filledCount >= Math.max(2, requiredKeys.length - 1) ? 'warn' : 'bad',
     })
   }
   return checks
@@ -246,6 +364,14 @@ async function buildReportDocx(prompt: string, essay: string, result: ReviewResu
   const stats = result.sentenceStats || calculateSentenceStats(essay)
   const issueStats = normalizeIssueStats(result)
   const plan = result.improvementPlan || (result.recommendations || []).map((item) => ({ title: item, priority: 'medium', detail: item }))
+  const watermark = new Header({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: 'Edutoro', color: 'E6E1D2', size: 64, bold: true })],
+      }),
+    ],
+  })
   const paragraphs = [
     new Paragraph({ text: 'Edutoro IELTS 作文批改报告', heading: HeadingLevel.TITLE }),
     new Paragraph({ children: [new TextRun({ text: 'AI 结果仅供备考参考，正式成绩以 IELTS 官方评分为准。', bold: true })] }),
@@ -265,10 +391,10 @@ async function buildReportDocx(prompt: string, essay: string, result: ReviewResu
     ...(result.collocations || []).map((item) => new Paragraph(`${item.phrase}: ${item.example}`)),
     new Paragraph({ text: '下一步训练', heading: HeadingLevel.HEADING_1 }),
     ...plan.map((item) => new Paragraph(`${item.priority}: ${item.title}. ${item.detail}`)),
-    new Paragraph({ text: '参考高分版本', heading: HeadingLevel.HEADING_1 }),
+    new Paragraph({ text: '可复盘改写版本', heading: HeadingLevel.HEADING_1 }),
     new Paragraph(result.polishedEssay || essay),
   ]
-  return Packer.toBlob(new Document({ sections: [{ properties: {}, children: paragraphs }] }))
+  return Packer.toBlob(new Document({ sections: [{ properties: {}, headers: { default: watermark }, children: paragraphs }] }))
 }
 
 export function WritingReviewSection() {
@@ -280,6 +406,15 @@ export function WritingReviewSection() {
   const [ideaNotes, setIdeaNotes] = useState('')
   const [result, setResult] = useState<ReviewResult | null>(null)
   const [loading, setLoading] = useState(false)
+  const [extractingChart, setExtractingChart] = useState(false)
+  const [chartExtractionNote, setChartExtractionNote] = useState('')
+  const [authOpen, setAuthOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('register')
+  const [authLoading, setAuthLoading] = useState(false)
+  const [authError, setAuthError] = useState('')
+  const [authNotice, setAuthNotice] = useState('')
+  const [quotaModalOpen, setQuotaModalOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState<WritingUser | null>(null)
   const [error, setError] = useState('')
   const [reportUrl, setReportUrl] = useState('')
   const [view, setView] = useState<'form' | 'report'>('form')
@@ -290,13 +425,28 @@ export function WritingReviewSection() {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const liveStats = useMemo(() => calculateSentenceStats(essay), [essay])
-  const checks = useMemo(() => buildChecks(taskType, prompt, essay), [essay, prompt, taskType])
+  const checks = useMemo(() => buildChecks(taskType, prompt, essay, chartFacts), [chartFacts, essay, prompt, taskType])
   const highRiskCount = checks.filter((item) => item.status === 'bad').length
 
   useEffect(() => {
     setHistory(safeReadStorage<ReviewHistoryItem[]>(HISTORY_STORAGE_KEY, []))
     setSavedVocabulary(safeReadStorage<SavedVocabulary[]>(VOCAB_STORAGE_KEY, []))
     setSavedTraining(safeReadStorage<SavedTraining[]>(TRAINING_STORAGE_KEY, []))
+  }, [])
+
+  useEffect(() => {
+    const token = window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
+    if (!token) return
+    fetch(`/api/auth/session?token=${encodeURIComponent(token)}`)
+      .then(async (response) => {
+        const payload = parseApiPayload(await response.text()) as AuthPayload
+        if (!response.ok || !payload.user) throw new Error(payload.error || '登录状态已失效，请重新登录。')
+        setCurrentUser(payload.user)
+      })
+      .catch(() => {
+        window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        setCurrentUser(null)
+      })
   }, [])
 
   useEffect(() => {
@@ -335,7 +485,30 @@ export function WritingReviewSection() {
     window.localStorage.setItem(TRAINING_STORAGE_KEY, JSON.stringify(items))
   }
 
-  const handleChartUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAuthSubmit = async ({ displayName, email, password }: { displayName: string; email: string; password: string }) => {
+    setAuthLoading(true)
+    setAuthError('')
+    setAuthNotice('')
+    try {
+      const response = await fetch(authMode === 'register' ? '/api/auth/register' : '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName, email, password }),
+      })
+      const payload = parseApiPayload(await response.text()) as AuthPayload
+      if (!response.ok || !payload.token || !payload.user) throw new Error(payload.error || '登录失败，请稍后重试。')
+      window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, payload.token)
+      setCurrentUser(payload.user)
+      setAuthNotice(payload.promotion || '')
+      setAuthOpen(false)
+    } catch (authRequestError) {
+      setAuthError(authRequestError instanceof Error ? authRequestError.message : '登录失败，请稍后重试。')
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  const handleChartUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) {
@@ -343,9 +516,30 @@ export function WritingReviewSection() {
       return
     }
     setError('')
-    const reader = new FileReader()
-    reader.onload = () => setChartPreview(String(reader.result))
-    reader.readAsDataURL(file)
+    setChartExtractionNote('')
+    setExtractingChart(true)
+    try {
+      const imageDataUrl = await fileToDataUrl(file)
+      setChartPreview(imageDataUrl)
+      const response = await fetch('/api/task1/extract-chart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageDataUrl, prompt: cleanInputText(prompt) }),
+      })
+      const payload = parseApiPayload(await response.text()) as ChartExtractionPayload
+      if (!response.ok) throw new Error(payload.error || '图表识别失败，请稍后重试。')
+      if (payload.chartFacts) {
+        setChartFacts((current) => ({ ...current, ...payload.chartFacts }))
+      }
+      const confidence = typeof payload.confidence === 'number' ? `${Math.round(payload.confidence * 100)}%` : '未知'
+      const warnings = payload.warnings?.filter(Boolean) || []
+      setChartExtractionNote(warnings.length ? `已自动提取图表信息，识别置信度约 ${confidence}。请重点核对：${warnings.join('；')}` : `已自动提取图表信息，识别置信度约 ${confidence}。提交前可继续手动微调。`)
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : '图表识别失败，请稍后重试。')
+    } finally {
+      setExtractingChart(false)
+      event.target.value = ''
+    }
   }
 
   const readUploadedFile = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -363,6 +557,16 @@ export function WritingReviewSection() {
     event.preventDefault()
     const cleanedPrompt = cleanInputText(prompt)
     const cleanedEssay = cleanInputText(essay)
+    if (!currentUser) {
+      setAuthMode('register')
+      setAuthError('')
+      setAuthOpen(true)
+      return
+    }
+    if (currentUser.writingCredits <= 0) {
+      setQuotaModalOpen(true)
+      return
+    }
     if (cleanedEssay.length < 80) {
       setError('请至少提交 80 个字符以上的英文作文原文。')
       return
@@ -380,14 +584,28 @@ export function WritingReviewSection() {
     setError('')
     setResult(null)
     try {
+      const authToken = window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY) || ''
       const response = await fetch('/api/writing-review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskType, prompt: cleanedPrompt, essay: cleanedEssay, chartContext: taskType === 'Task 1' ? chartFactsToText(chartFacts) : '' }),
+        body: JSON.stringify({ authToken, taskType, prompt: cleanedPrompt, essay: cleanedEssay, chartContext: taskType === 'Task 1' ? chartFactsToText(chartFacts) : '' }),
       })
-      const payload = await response.json()
+      const payload = parseApiPayload(await response.text()) as ReviewResult & { error?: string; user?: WritingUser }
+      if (response.status === 401) {
+        window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        setCurrentUser(null)
+        setAuthMode('login')
+        setAuthOpen(true)
+        throw new Error(payload.error || '登录状态已失效，请重新登录。')
+      }
+      if (response.status === 402) {
+        if (payload.user) setCurrentUser(payload.user)
+        setQuotaModalOpen(true)
+        throw new Error(payload.error || '你的批改次数已用完。')
+      }
       if (!response.ok) throw new Error(payload.error || '批改失败，请稍后重试。')
       const normalizedResult: ReviewResult = { ...payload, sentenceStats: payload.sentenceStats || calculateSentenceStats(cleanedEssay) }
+      if (payload.user) setCurrentUser(payload.user)
       setPrompt(cleanedPrompt)
       setEssay(cleanedEssay)
       setResult(normalizedResult)
@@ -473,6 +691,8 @@ export function WritingReviewSection() {
           <div>
             <p className="text-xs font-black uppercase text-[var(--teal)]">IELTS Writing Practice</p>
             <h1 className="mt-1 text-2xl font-black leading-tight text-[var(--ink)]">作文在线练习与批改</h1>
+            <p className="mt-2 text-sm font-bold text-[var(--ink-3)]">{currentUser ? `${currentUser.displayName} · 剩余 ${currentUser.writingCredits} 次批改` : '新用户注册即送 2 次免费作文批改，提交时再登录即可。'}</p>
+            {authNotice ? <p className="mt-2 text-sm font-black text-[var(--teal)]">{authNotice}</p> : null}
           </div>
           <UtilityToolbar
             historyCount={history.length}
@@ -504,7 +724,7 @@ export function WritingReviewSection() {
                   ))}
                 </div>
                 <div className="mt-4 space-y-2 text-xs font-bold leading-5 text-[var(--ink-3)]">
-                  <p>模式参考 IELTS9：先选任务，再放题目，最后输入作文并获得即时统计。</p>
+                  <p>先选任务，再放题目，最后输入作文并获得即时统计与完整报告。</p>
                   <p>历史、词汇本、训练清单保存在当前浏览器。</p>
                 </div>
               </div>
@@ -525,6 +745,8 @@ export function WritingReviewSection() {
                   <ChartFactsPanel
                     chartFacts={chartFacts}
                     chartPreview={chartPreview}
+                    chartExtractionNote={chartExtractionNote}
+                    extractingChart={extractingChart}
                     onChange={setChartFacts}
                     onUpload={handleChartUpload}
                   />
@@ -537,8 +759,8 @@ export function WritingReviewSection() {
                 <label className="text-base font-black text-[var(--ink)]" htmlFor="writing-essay">作文内容</label>
                 <div className="flex flex-wrap gap-2">
                   <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[6px] border border-black/10 bg-white px-3 text-sm font-black text-[var(--ink-2)] transition hover:bg-[var(--yellow-soft)]">
-                    <ImagePlus size={17} />图片转文字
-                    <input type="file" accept="image/*" className="hidden" onChange={() => setError('图片转文字入口已保留，当前版本请先手动粘贴识别后的文本。')} />
+                    <ImagePlus size={17} />{extractingChart ? '识图中...' : '图片转文字'}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleChartUpload} disabled={extractingChart} />
                   </label>
                   <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]">
                     <Upload size={17} />上传文本
@@ -588,6 +810,20 @@ export function WritingReviewSection() {
         onClose={() => setDrawerOpen(false)}
         onLoadHistory={loadHistoryItem}
         onPanelChange={setSidePanel}
+      />
+      <WritingAuthModal
+        error={authError}
+        loading={authLoading}
+        mode={authMode}
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onModeChange={setAuthMode}
+        onSubmit={handleAuthSubmit}
+      />
+      <QuotaPlansModal
+        open={quotaModalOpen}
+        remainingCredits={currentUser?.writingCredits || 0}
+        onClose={() => setQuotaModalOpen(false)}
       />
     </section>
   )
@@ -666,12 +902,16 @@ function TaskPromptPanel({ taskType, prompt, ideaNotes, onPromptChange, onSample
   )
 }
 
-function ChartFactsPanel({ chartFacts, chartPreview, onChange, onUpload }: {
+function ChartFactsPanel({ chartFacts, chartPreview, chartExtractionNote, extractingChart, onChange, onUpload }: {
   chartFacts: ChartFacts
   chartPreview: string
+  chartExtractionNote: string
+  extractingChart: boolean
   onChange: (facts: ChartFacts) => void
   onUpload: (event: ChangeEvent<HTMLInputElement>) => void
 }) {
+  const fieldDefinitions = getChartFieldDefinitions(chartFacts.chartType)
+  const guidance = chartTypeGuidance[chartFacts.chartType]
   return (
     <details className="mt-4 rounded-[6px] border border-yellow-300/60 bg-[var(--yellow-soft)] p-4">
       <summary className="flex cursor-pointer list-none items-center gap-3 text-sm font-black text-[var(--ink)]">
@@ -679,26 +919,152 @@ function ChartFactsPanel({ chartFacts, chartPreview, onChange, onUpload }: {
         Task 1 图表信息
         <span className="ml-auto text-xs font-bold text-[var(--ink-3)]">点击填写</span>
       </summary>
-      <p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">当前批改以手动填写的关键数据为准，图片仅用于预览。</p>
+      <p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">上传图表后会自动提取关键信息；提交批改前你仍然可以手动修正。</p>
+      {guidance ? <div className="mt-3 rounded-[6px] bg-white px-4 py-3 text-sm font-bold leading-7 text-[var(--ink-2)] ring-1 ring-black/10">{guidance}</div> : null}
       <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-black/10 bg-white px-3 py-3 text-sm font-black text-[var(--teal)]">
-        <ImagePlus size={17} />上传图表预览
-        <input type="file" accept="image/*" className="hidden" onChange={onUpload} />
+        <ImagePlus size={17} />{extractingChart ? '正在识别图表...' : '上传图表并自动提取'}
+        <input type="file" accept="image/*" className="hidden" onChange={onUpload} disabled={extractingChart} />
       </label>
       {chartPreview && <img src={chartPreview} alt="Task 1 图表预览" className="mt-3 max-h-52 w-full rounded-[6px] bg-white object-contain ring-1 ring-black/10" />}
+      {chartExtractionNote && <div className="mt-3 rounded-[6px] bg-white px-4 py-3 text-sm font-bold leading-7 text-[var(--ink-2)] ring-1 ring-black/10">{chartExtractionNote}</div>}
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <label className="text-xs font-black text-[var(--ink-2)]">图表类型<select value={chartFacts.chartType} onChange={(event) => onChange({ ...chartFacts, chartType: event.target.value })} className="mt-1 w-full rounded-[6px] border border-black/10 bg-white px-3 py-2 text-sm font-semibold"><option>折线图</option><option>柱状图</option><option>饼图</option><option>表格</option><option>流程图 / 地图</option></select></label>
+        <label className="text-xs font-black text-[var(--ink-2)]">图表类型<select value={chartFacts.chartType} onChange={(event) => onChange({ ...chartFacts, chartType: event.target.value })} className="mt-1 w-full rounded-[6px] border border-black/10 bg-white px-3 py-2 text-sm font-semibold">{task1ChartTypes.map((option) => <option key={option}>{option}</option>)}</select></label>
         <label className="text-xs font-black text-[var(--ink-2)]">单位 / 时间范围<input value={chartFacts.unit} onChange={(event) => onChange({ ...chartFacts, unit: event.target.value })} placeholder="例如：百分比，2000-2020" className="mt-1 w-full rounded-[6px] border border-black/10 bg-white px-3 py-2 text-sm" /></label>
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {([
-          ['overview', 'Overview 一句话', '整体上升 / 波动 / 两组相反趋势'],
-          ['highest', '最高点 / 最大值', '对象 + 数值 + 时间'],
-          ['lowest', '最低点 / 最小值', '对象 + 数值 + 时间'],
-          ['trends', '趋势节点', '上升、下降、稳定或转折'],
-          ['comparisons', '关键对比', '两组或多个对象的差异'],
-        ] as const).map(([key, label, placeholder]) => <label key={key} className={`text-xs font-black text-[var(--ink-2)] ${key === 'overview' ? 'sm:col-span-2' : ''}`}>{label}<input value={chartFacts[key]} onChange={(event) => onChange({ ...chartFacts, [key]: event.target.value })} placeholder={placeholder} className="mt-1 w-full rounded-[6px] border border-black/10 bg-white px-3 py-2 text-sm" /></label>)}
+        {fieldDefinitions
+          .filter((item) => item.key !== 'unit')
+          .map(({ key, label, placeholder, span }) => (
+            <label key={key} className={`text-xs font-black text-[var(--ink-2)] ${span === 'full' ? 'sm:col-span-2' : ''}`}>
+              {label}
+              <input value={chartFacts[key]} onChange={(event) => onChange({ ...chartFacts, [key]: event.target.value })} placeholder={placeholder} className="mt-1 w-full rounded-[6px] border border-black/10 bg-white px-3 py-2 text-sm" />
+            </label>
+          ))}
       </div>
     </details>
+  )
+}
+
+function WritingAuthModal({ open, mode, loading, error, onClose, onModeChange, onSubmit }: {
+  open: boolean
+  mode: 'login' | 'register'
+  loading: boolean
+  error: string
+  onClose: () => void
+  onModeChange: (mode: 'login' | 'register') => void
+  onSubmit: (input: { displayName: string; email: string; password: string }) => void
+}) {
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/45 px-4 py-6">
+      <div className="w-full max-w-[520px] rounded-[8px] bg-white p-5 shadow-[0_18px_48px_rgba(23,23,23,0.22)] md:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase text-[var(--teal)]">Edutoro Writing</p>
+            <h2 className="mt-1 text-2xl font-black text-[var(--ink)]">{mode === 'register' ? '注册后开始批改' : '登录后继续批改'}</h2>
+            <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-2)]">{mode === 'register' ? '新用户免费送 2 次作文批改，注册后立即到账。' : '登录后即可继续使用剩余批改次数。'}</p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-[6px] p-2 text-[var(--ink-3)] hover:bg-[var(--bg)]"><X size={18} /></button>
+        </div>
+        <div className="mt-4 flex gap-2">
+          <button type="button" onClick={() => onModeChange('register')} className={`rounded-full px-4 py-2 text-sm font-black ${mode === 'register' ? 'bg-[var(--yellow)] text-[var(--ink)]' : 'bg-[var(--bg)] text-[var(--ink-3)]'}`}>注册</button>
+          <button type="button" onClick={() => onModeChange('login')} className={`rounded-full px-4 py-2 text-sm font-black ${mode === 'login' ? 'bg-[var(--yellow)] text-[var(--ink)]' : 'bg-[var(--bg)] text-[var(--ink-3)]'}`}>登录</button>
+        </div>
+        <form
+          className="mt-5 space-y-4"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onSubmit({ displayName, email, password })
+          }}
+        >
+          {mode === 'register' ? (
+            <label className="block">
+              <span className="mb-2 block text-sm font-black text-[var(--ink-2)]">昵称</span>
+              <div className="flex items-center gap-3 rounded-[8px] border border-black/10 bg-white px-4 py-3">
+                <Gift size={18} className="text-[var(--ink-3)]" />
+                <input value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="例如：Luna" className="w-full border-0 bg-transparent text-[15px] outline-none" />
+              </div>
+            </label>
+          ) : null}
+          <label className="block">
+            <span className="mb-2 block text-sm font-black text-[var(--ink-2)]">邮箱</span>
+            <div className="flex items-center gap-3 rounded-[8px] border border-black/10 bg-white px-4 py-3">
+              <Mail size={18} className="text-[var(--ink-3)]" />
+              <input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="请输入常用邮箱" className="w-full border-0 bg-transparent text-[15px] outline-none" />
+            </div>
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-black text-[var(--ink-2)]">密码</span>
+            <div className="flex items-center gap-3 rounded-[8px] border border-black/10 bg-white px-4 py-3">
+              <LockKeyhole size={18} className="text-[var(--ink-3)]" />
+              <input type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="至少 6 位" className="w-full border-0 bg-transparent text-[15px] outline-none" />
+            </div>
+          </label>
+          {error ? <div className="rounded-[8px] bg-red-50 px-4 py-3 text-sm font-bold text-[var(--red)]">{error}</div> : null}
+          <button type="submit" disabled={loading} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[6px] bg-[var(--yellow)] px-5 text-sm font-black text-[var(--ink)] transition hover:brightness-95 disabled:opacity-60">
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+            {loading ? '提交中...' : mode === 'register' ? '注册并领取 2 次免费批改' : '登录并继续批改'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function QuotaPlansModal({ open, remainingCredits, onClose }: { open: boolean; remainingCredits: number; onClose: () => void }) {
+  const wechatQrSrc = `${import.meta.env.BASE_URL}wechat-cloudtutor.png`
+  const packages = [
+    '单次补充：1 元 = 1 次',
+    '入门包：10 元 = 12 次',
+    '强化包：20 元 = 26 次',
+    '冲刺包：30 元 = 42 次',
+    '考前包：50 元 = 75 次',
+  ]
+  if (!open) return null
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/45 px-4 py-6">
+      <div className="w-full max-w-[860px] rounded-[8px] bg-white p-5 shadow-[0_18px_48px_rgba(23,23,23,0.22)] md:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase text-[var(--teal)]">写作批改次数</p>
+            <h2 className="mt-1 text-2xl font-black text-[var(--ink)]">当前额度不足</h2>
+            <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-2)]">你当前还剩 {remainingCredits} 次批改。新会员先送 2 次，想要更多次数可以直接加小星微信。</p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-[6px] p-2 text-[var(--ink-3)] hover:bg-[var(--bg)]"><X size={18} /></button>
+        </div>
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-[8px] border border-black/10 bg-[#fffdf4] p-5">
+            <div className="rounded-[8px] bg-[var(--yellow)] px-4 py-3 text-sm font-black text-[var(--ink)]">新会员赠送 2 次免费批改</div>
+            <div className="mt-4 rounded-[8px] bg-white p-4 ring-1 ring-black/10">
+              <p className="text-sm font-black text-[var(--ink)]">选以下任意一种方式都行</p>
+              <div className="mt-3 space-y-3 text-sm font-bold leading-7 text-[var(--ink-2)]">
+                <div className="rounded-[6px] bg-[var(--bg)] p-3">
+                  <p className="font-black text-[var(--ink)]">A. 宣传领取 10 次</p>
+                  <p>朋友圈保留 24 小时并截图发给小星，审核后到账 10 次作文批改。</p>
+                </div>
+                <div className="rounded-[6px] bg-[var(--bg)] p-3">
+                  <p className="font-black text-[var(--ink)]">B. 按次充值</p>
+                  <ul className="mt-2 space-y-1">
+                    {packages.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-[8px] border border-black/10 bg-white p-5">
+            <p className="text-sm font-black text-[var(--ink)]">添加小星微信</p>
+            <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-2)]">告诉我们你想领宣传次数还是直接充值。到账后我们会在后台手动补上你的批改额度。</p>
+            <img src={wechatQrSrc} alt="Edutoro 微信二维码" className="mt-4 w-full rounded-[8px] ring-1 ring-black/10" />
+            <div className="mt-4 rounded-[8px] bg-[var(--yellow-soft)] px-4 py-3 text-center text-sm font-black text-[var(--ink)]">微信号：Cloudtutor_</div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -875,7 +1241,7 @@ function ReportHeader({ reportUrl, onBack, result, historyCount, savedVocabulary
           <span className="h-6 w-px bg-black/10" />
           <div>
             <p className="text-sm font-black text-[var(--ink)]">作文批改报告</p>
-            <p className="mt-0.5 text-xs font-bold text-[var(--ink-3)]">{result.fallback ? '基础评分模式' : 'AI 精批模式'}{words ? ` · ${words} words` : ''}</p>
+            <p className="mt-0.5 text-xs font-bold text-[var(--ink-3)]">AI 批改报告{words ? ` · ${words} words` : ''}</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -906,7 +1272,7 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
         <div className="border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
           <p className="text-xs font-black text-[var(--ink-3)]">批改结果</p>
           <p className="mt-3 text-7xl font-black leading-none text-[var(--teal)]">{result.overallBand}</p>
-          <p className="mt-2 text-xs font-bold text-[var(--ink-3)]">{result.fallback ? '基础参考分数' : 'AI 参考分数'}</p>
+          <p className="mt-2 text-xs font-bold text-[var(--ink-3)]">AI 分数判断</p>
           <div className="mt-5 border-t border-black/10 pt-5">
             <p className="text-sm font-black text-[var(--ink)]">四项评分</p>
             <div className="mt-4 space-y-4">{Object.entries(result.criteria || {}).map(([key, item]) => <ScoreBar key={key} label={criteriaLabels[key] || key} band={item.band} />)}</div>
@@ -922,7 +1288,7 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
     </div>
 
     <div className="min-w-0 space-y-5">
-      {result.fallback ? <div className="rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">当前为基础评分报告：大模型服务不可用时，系统会先用本地校准器和规则给出可参考结果；恢复网络后可重新提交获取逐句精批和改写。</div> : null}
+      {result.fallback ? <div className="rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">当前为快速批改报告：本次结果以结构、字数、表达和任务完成度的基础分析为主；稍后可重新提交获取更完整的逐句精批。</div> : null}
       <section className="border border-black/10 bg-white p-5 md:p-7">
         <div className="flex items-center gap-2"><CheckCircle2 size={20} className="text-[var(--teal)]" /><h2 className="text-xl font-black">先看结论</h2></div>
         <p className="mt-4 text-[16px] leading-8 text-[var(--ink-2)]">{result.summary}</p>
@@ -941,12 +1307,12 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
 
       <section className="border border-black/10 bg-white p-5 md:p-7">
         <h2 className="text-xl font-black">优先修改</h2>
-        <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-3)]">问题越多的部分越值得先处理，修改时可以从数量最高的项目开始。</p>
+        <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-3)]">问题越多的部分越值得先处理，以下数字表示对应问题条数。</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-5">
           {(Object.entries(issueStats) as [keyof IssueStats, number][]).map(([key, value]) => (
             <div key={key} className="rounded-[6px] bg-[var(--bg)] p-3">
               <p className="text-xs font-black text-[var(--ink-3)]">{issueLabels[key]}</p>
-              <p className="mt-2 text-3xl font-black text-[var(--ink)]">{value}</p>
+              <p className="mt-2 text-3xl font-black text-[var(--ink)]">{value}<span className="ml-1 text-sm font-bold text-[var(--ink-3)]">条</span></p>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white">
                 <div className="h-full rounded-full bg-[var(--teal)]" style={{ width: `${(value / maxIssueCount) * 100}%` }} />
               </div>
@@ -963,7 +1329,7 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
       <section className="border border-black/10 bg-white p-5 md:p-7">
         <h2 className="text-xl font-black">原文批注</h2>
         <div className="mt-4 whitespace-pre-wrap rounded-[6px] bg-[var(--bg)] p-4 text-[15px] leading-8">{renderAnnotatedEssay(essay, result.annotations || [])}</div>
-        {result.annotations?.length ? <div className="mt-5 grid gap-3">{result.annotations.map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[6px] border border-black/10 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div> : <p className="mt-4 rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">基础评分报告暂不生成逐句批注；等大模型服务恢复后重新提交，就会显示逐句修改建议。</p>}
+        {result.annotations?.length ? <div className="mt-5 grid gap-3">{result.annotations.map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[6px] border border-black/10 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div> : <p className="mt-4 rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">本次结果暂未生成逐句批注，你可以稍后重新提交获取更完整的句级修改建议。</p>}
       </section>
 
       <section className="grid gap-5 lg:grid-cols-2">
@@ -974,7 +1340,7 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
       <TrainingReport items={plan} savedTraining={savedTraining} onSave={onSaveTraining} />
 
       <section className="border border-[var(--teal)]/15 bg-[var(--teal-soft)] p-5 md:p-7">
-        <h2 className="text-xl font-black text-[var(--ink)]">参考高分版本</h2>
+        <h2 className="text-xl font-black text-[var(--ink)]">可复盘改写版本</h2>
         <p className="mt-4 whitespace-pre-wrap text-[15px] leading-8 text-[var(--ink-2)]">{result.polishedEssay || essay}</p>
       </section>
     </div>

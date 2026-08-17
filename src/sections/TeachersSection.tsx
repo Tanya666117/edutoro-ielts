@@ -179,7 +179,7 @@ export function TeachersSection({ onContact, initialTeacherId, onInitialTeacherH
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <SectionHeader
             eyebrow="老师"
-            title="像选 Superprof 老师一样，先看清课程是否适合你"
+            title="先看清课程是否适合你，再决定跟哪位老师学"
             description={`这里不是简单的老师名单。\n每位老师都有完整资料页：背景、课程方式、适合学生、试听说明和真实提分反馈，先了解清楚，再预约试听。`}
           />
           <div className="flex shrink-0 items-center gap-1 rounded-[8px] bg-white p-1.5 shadow-[var(--shadow-sm)] ring-1 ring-black/10">

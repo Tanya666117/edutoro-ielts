@@ -1,4 +1,4 @@
-import { LogOut, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { NAV_ITEMS, SITE, type PageId } from '../data/site'
 
@@ -9,14 +9,12 @@ interface NavbarProps {
   activePage: PageId
   onNavigate: (page: PageId) => void
   onContact: () => void
-  onLogout: () => void
 }
 
-export function Navbar({ activePage, onNavigate, onContact, onLogout }: NavbarProps) {
+export function Navbar({ activePage, onNavigate, onContact }: NavbarProps) {
   const [open, setOpen] = useState(false)
   const navigate = (page: PageId) => { setOpen(false); onNavigate(page) }
   const openContact = () => { setOpen(false); onContact() }
-  const logout = () => { setOpen(false); onLogout() }
 
   return (
     <header className="nav">
@@ -35,7 +33,6 @@ export function Navbar({ activePage, onNavigate, onContact, onLogout }: NavbarPr
 
         <div className="flex items-center gap-2">
           <button type="button" onClick={openContact} className="btn btn-dark hidden !min-h-0 !px-5 !py-2.5 text-[13px] sm:inline-flex">免费诊断咨询</button>
-          <button type="button" onClick={logout} className="hidden items-center gap-2 rounded-[8px] bg-white px-4 py-2 text-[13px] font-extrabold text-[var(--ink)] ring-1 ring-black/10 transition hover:bg-[var(--yellow-soft)] sm:inline-flex"><LogOut size={16} />退出</button>
           <button type="button" className="rounded-[8px] bg-white p-2.5 ring-1 ring-black/10 lg:hidden" onClick={() => setOpen((value) => !value)} aria-label="菜单" style={{ color: 'var(--ink)' }}>{open ? <X size={22} /> : <Menu size={22} />}</button>
         </div>
       </div>
@@ -43,7 +40,6 @@ export function Navbar({ activePage, onNavigate, onContact, onLogout }: NavbarPr
       {open && <nav className="border-t bg-white px-5 py-4 lg:hidden" style={{ borderColor: 'rgba(23,23,23,0.08)' }} aria-label="移动端主导航">
         {MENU_ITEMS.map((item) => <button key={item.id} type="button" onClick={() => navigate(item.id)} className="mb-1 block w-full rounded-[8px] px-4 py-3 text-left text-sm font-extrabold" style={{ background: activePage === item.id ? 'var(--yellow-soft)' : 'transparent', color: activePage === item.id ? 'var(--ink)' : 'var(--ink-2)' }}>{item.label}</button>)}
         <button type="button" onClick={openContact} className="btn btn-dark mt-2 w-full">免费诊断咨询</button>
-        <button type="button" onClick={logout} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-white px-4 py-3 text-sm font-extrabold text-[var(--ink)] ring-1 ring-black/10"><LogOut size={16} />退出登录</button>
       </nav>}
     </header>
   )

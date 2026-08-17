@@ -12,5 +12,6 @@ __pycache__/
 tmp/
 data/writing-calibration/train.csv
 data/speaking-recordings/
+data/writing-users.json
 /老师资料卡/
 /督学/

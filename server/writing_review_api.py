@@ -325,7 +325,7 @@ def build_user_prompt(input_data: dict[str, Any]) -> str:
 - issueStats 必须与 annotations 的问题类型大致一致。
 - vocabularyUpgrades 选择 3-6 个真正值得替换的词或短语，不要堆砌生僻词。
 - improvementPlan 必须是学生下一次写作能直接执行的训练任务，不要写空泛鼓励。
-- 如果本地校准器与 IELTS 规则判断冲突，以 IELTS 四项标准和题目回应为准；但需要在 warnings 中说明可能存在分歧。
+- 如果题目、图表信息或作文原文不完整，需要在 warnings 中提醒评分可靠性下降。
 """
 
 
