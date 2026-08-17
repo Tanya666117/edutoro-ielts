@@ -66,12 +66,21 @@ const VOCAB_STORAGE_KEY = 'edutoro-writing-vocabulary-v1'
 const TRAINING_STORAGE_KEY = 'edutoro-writing-training-v1'
 
 const criteriaLabels: Record<string, string> = {
-  taskResponse: '任务回应 / 完成度',
+  taskResponse: '任务回应',
   taskAchievement: '任务完成度',
   coherenceCohesion: '连贯与衔接',
   lexicalResource: '词汇资源',
   grammar: '语法多样性与准确性',
 }
+
+const issueLabels: Record<keyof IssueStats, string> = {
+  task: '任务回应',
+  coherence: '结构连贯',
+  vocabulary: '词汇表达',
+  grammar: '语法准确',
+  style: '表达自然',
+}
+
 const issueColors: Record<string, string> = {
   'Task Response': 'bg-[var(--yellow-soft)] text-[var(--ink)]',
   'Task Achievement': 'bg-[var(--yellow-soft)] text-[var(--ink)]',
@@ -80,14 +89,8 @@ const issueColors: Record<string, string> = {
   Grammar: 'bg-red-50 text-[var(--red)]',
   Style: 'bg-neutral-100 text-[var(--ink-2)]',
 }
+
 const severityLabels: Record<string, string> = { high: '优先修改', medium: '建议修改', low: '可优化' }
-const issueLabels: Record<keyof IssueStats, string> = {
-  task: '任务回应',
-  coherence: '连贯结构',
-  vocabulary: '词汇表达',
-  grammar: '语法准确',
-  style: '风格自然',
-}
 
 const task2Samples = [
   {
@@ -215,7 +218,7 @@ function buildChecks(taskType: TaskType, prompt: string, essay: string): EssayCh
 
 function buildIdeaNotes(prompt: string) {
   const lower = prompt.toLowerCase()
-  if (!prompt.trim()) return '先粘贴题目，我会根据题型给你拆立场、主体段和例子方向。'
+  if (!prompt.trim()) return '先粘贴题目，我会根据题型拆立场、主体段和例子方向。'
   if (lower.includes('discuss both')) return '题型：双边讨论。建议结构：第一主体段解释保守选择的安全感和效率，第二主体段解释尝试新事物带来的成长，结论给出你的倾向。'
   if (lower.includes('advantages') || lower.includes('disadvantages')) return '题型：利弊分析。建议先判断哪一边更强，再让两个主体段分别承接好处和代价，结论不要写成五五开。'
   if (lower.includes('why') || lower.includes('reasons') || lower.includes('solutions')) return '题型：原因 / 方案。主体段一集中解释成因，主体段二给可执行方案，避免每段同时塞多个未展开观点。'
@@ -249,19 +252,19 @@ async function buildReportDocx(prompt: string, essay: string, result: ReviewResu
     new Paragraph({ text: '题目', heading: HeadingLevel.HEADING_1 }),
     new Paragraph(prompt || result.taskPromptUsed || '未提供题目'),
     new Paragraph({ text: '总体判断', heading: HeadingLevel.HEADING_1 }),
-    new Paragraph(`参考分数：${result.overallBand}（仅供参考）`),
+    new Paragraph(`参考分数：${result.overallBand}`),
     new Paragraph(result.summary || '暂无总结'),
     new Paragraph(`文本统计：${stats.words} words，${stats.sentences} 个句子，${stats.paragraphs} 个段落，平均句长 ${stats.averageSentenceLength} words。`),
     new Paragraph(`问题分布：任务回应 ${issueStats.task}，连贯结构 ${issueStats.coherence}，词汇 ${issueStats.vocabulary}，语法 ${issueStats.grammar}，风格 ${issueStats.style}。`),
     new Paragraph({ text: '四项评分', heading: HeadingLevel.HEADING_1 }),
-    ...Object.entries(result.criteria || {}).map(([key, item]) => new Paragraph(`${criteriaLabels[key] || key}：${item.band}。${item.comment}`)),
+    ...Object.entries(result.criteria || {}).map(([key, item]) => new Paragraph(`${criteriaLabels[key] || key}: ${item.band}. ${item.comment}`)),
     new Paragraph({ text: '原文批注', heading: HeadingLevel.HEADING_1 }),
-    ...(result.annotations || []).map((item, index) => new Paragraph(`${index + 1}. ${item.issueType}｜${item.original} -> ${item.revision}。${item.reason}`)),
+    ...(result.annotations || []).map((item, index) => new Paragraph(`${index + 1}. ${item.issueType}: ${item.original} -> ${item.revision}. ${item.reason}`)),
     new Paragraph({ text: '高分词与词伙', heading: HeadingLevel.HEADING_1 }),
-    ...(result.vocabularyUpgrades || []).map((item) => new Paragraph(`${item.original} -> ${item.upgrade}：${item.reason}`)),
-    ...(result.collocations || []).map((item) => new Paragraph(`${item.phrase}：${item.example}`)),
+    ...(result.vocabularyUpgrades || []).map((item) => new Paragraph(`${item.original} -> ${item.upgrade}: ${item.reason || item.context}`)),
+    ...(result.collocations || []).map((item) => new Paragraph(`${item.phrase}: ${item.example}`)),
     new Paragraph({ text: '下一步训练', heading: HeadingLevel.HEADING_1 }),
-    ...plan.map((item) => new Paragraph(`${item.priority}｜${item.title}：${item.detail}`)),
+    ...plan.map((item) => new Paragraph(`${item.priority}: ${item.title}. ${item.detail}`)),
     new Paragraph({ text: '参考高分版本', heading: HeadingLevel.HEADING_1 }),
     new Paragraph(result.polishedEssay || essay),
   ]
@@ -388,8 +391,7 @@ export function WritingReviewSection() {
       setPrompt(cleanedPrompt)
       setEssay(cleanedEssay)
       setResult(normalizedResult)
-      const newHistory = [{ id: makeId('review'), createdAt: new Date().toISOString(), taskType, prompt: cleanedPrompt, essay: cleanedEssay, result: normalizedResult }, ...history].slice(0, 8)
-      persistHistory(newHistory)
+      persistHistory([{ id: makeId('review'), createdAt: new Date().toISOString(), taskType, prompt: cleanedPrompt, essay: cleanedEssay, result: normalizedResult }, ...history].slice(0, 8))
       setView('report')
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (requestError) {
@@ -465,10 +467,13 @@ export function WritingReviewSection() {
   }
 
   return (
-    <section className="relative scroll-mt-24 bg-[#fffdf8] py-8 md:py-12">
+    <section className="relative scroll-mt-24 bg-[#f7f3e8] py-6 md:py-10">
       <div className="shell">
-        <div className="mb-5 flex flex-col gap-4 border-b border-black/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-3xl text-[15px] font-bold leading-7 text-[var(--ink-2)]">按 IELTS 四项标准批改作文，并生成逐句建议、词汇提升和训练计划。</p>
+        <div className="mb-4 flex flex-col gap-4 border border-black/10 bg-white px-4 py-3 shadow-[var(--shadow-sm)] md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase text-[var(--teal)]">IELTS Writing Practice</p>
+            <h1 className="mt-1 text-2xl font-black leading-tight text-[var(--ink)]">作文在线练习与批改</h1>
+          </div>
           <UtilityToolbar
             historyCount={history.length}
             savedTrainingCount={savedTraining.length}
@@ -477,78 +482,92 @@ export function WritingReviewSection() {
           />
         </div>
 
-        <form onSubmit={submit} className="grid items-start gap-6 md:grid-cols-[minmax(0,1.38fr)_minmax(280px,1fr)]">
-          <div className="min-w-0 rounded-[8px] border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-7">
-            <div className="flex flex-col gap-4 border-b border-black/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex w-fit rounded-[8px] bg-[var(--bg)] p-1 ring-1 ring-black/10">
-                {taskOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => {
-                      setTaskType(option)
-                      setError('')
-                    }}
-                    className={`min-h-10 rounded-[6px] px-5 text-sm font-black transition ${taskType === option ? 'bg-[var(--yellow)] text-[var(--ink)] shadow-sm' : 'text-[var(--ink-2)] hover:bg-white'}`}
-                  >
-                    {option}
-                  </button>
-                ))}
+        <form onSubmit={submit} className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
+          <div className="min-w-0 border border-black/10 bg-white shadow-[var(--shadow-sm)]">
+            <div className="grid border-b border-black/10 md:grid-cols-[220px_minmax(0,1fr)]">
+              <div className="border-b border-black/10 bg-[#fbf7e8] p-4 md:border-b-0 md:border-r">
+                <p className="text-xs font-black text-[var(--ink-3)]">写作任务</p>
+                <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-1">
+                  {taskOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => {
+                        setTaskType(option)
+                        setError('')
+                      }}
+                      className={`flex min-h-11 items-center justify-between rounded-[6px] px-3 text-sm font-black transition ${taskType === option ? 'bg-[var(--yellow)] text-[var(--ink)] shadow-sm' : 'bg-white text-[var(--ink-2)] ring-1 ring-black/10 hover:bg-[var(--yellow-soft)]'}`}
+                    >
+                      {option}
+                      <span className="text-[11px]">{option === 'Task 2' ? '250+' : '150+'}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 space-y-2 text-xs font-bold leading-5 text-[var(--ink-3)]">
+                  <p>模式参考 IELTS9：先选任务，再放题目，最后输入作文并获得即时统计。</p>
+                  <p>历史、词汇本、训练清单保存在当前浏览器。</p>
+                </div>
               </div>
-              <span className="text-xs font-bold text-[var(--ink-3)]">{taskType === 'Task 2' ? '建议至少 250 words' : '建议至少 150 words'}</span>
+
+              <div className="p-4 md:p-5">
+                <TaskPromptPanel
+                  ideaNotes={ideaNotes}
+                  prompt={prompt}
+                  taskType={taskType}
+                  onGenerateIdeas={() => setIdeaNotes(buildIdeaNotes(prompt))}
+                  onPromptChange={setPrompt}
+                  onSample={(samplePrompt) => {
+                    setPrompt(samplePrompt)
+                    setIdeaNotes('')
+                  }}
+                />
+                {taskType === 'Task 1' && (
+                  <ChartFactsPanel
+                    chartFacts={chartFacts}
+                    chartPreview={chartPreview}
+                    onChange={setChartFacts}
+                    onUpload={handleChartUpload}
+                  />
+                )}
+              </div>
             </div>
 
-            <TaskPromptPanel
-              ideaNotes={ideaNotes}
-              prompt={prompt}
-              taskType={taskType}
-              onGenerateIdeas={() => setIdeaNotes(buildIdeaNotes(prompt))}
-              onPromptChange={setPrompt}
-              onSample={(samplePrompt) => {
-                setPrompt(samplePrompt)
-                setIdeaNotes('')
-              }}
-            />
-
-            {taskType === 'Task 1' && (
-              <ChartFactsPanel
-                chartFacts={chartFacts}
-                chartPreview={chartPreview}
-                onChange={setChartFacts}
-                onUpload={handleChartUpload}
-              />
-            )}
-
-            <div className="mt-6 border-t border-black/10 pt-6">
+            <div className="p-4 md:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <label className="text-base font-black text-[var(--ink)]" htmlFor="writing-essay">作文原文</label>
-                <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[8px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]">
-                  <Upload size={17} />上传文本
-                  <input type="file" accept=".txt,.md,text/plain,text/markdown" className="hidden" onChange={readUploadedFile} />
-                </label>
+                <label className="text-base font-black text-[var(--ink)]" htmlFor="writing-essay">作文内容</label>
+                <div className="flex flex-wrap gap-2">
+                  <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[6px] border border-black/10 bg-white px-3 text-sm font-black text-[var(--ink-2)] transition hover:bg-[var(--yellow-soft)]">
+                    <ImagePlus size={17} />图片转文字
+                    <input type="file" accept="image/*" className="hidden" onChange={() => setError('图片转文字入口已保留，当前版本请先手动粘贴识别后的文本。')} />
+                  </label>
+                  <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]">
+                    <Upload size={17} />上传文本
+                    <input type="file" accept=".txt,.md,text/plain,text/markdown" className="hidden" onChange={readUploadedFile} />
+                  </label>
+                </div>
               </div>
               <textarea
                 id="writing-essay"
                 value={essay}
                 onChange={(event) => setEssay(event.target.value)}
                 placeholder={taskType === 'Task 1' ? '在这里粘贴至少 150 words 的小作文。' : '在这里粘贴至少 250 words 的大作文。'}
-                className="mt-3 min-h-[430px] w-full resize-y rounded-[8px] border border-black/10 bg-[#fffef7] p-4 text-[15px] leading-7 outline-none transition focus:border-[var(--teal)] focus:bg-white focus:ring-2 focus:ring-[var(--teal-soft)]"
+                className="mt-3 min-h-[460px] w-full resize-y rounded-[6px] border border-black/10 bg-[#fffef8] p-4 font-mono text-[15px] leading-7 outline-none transition focus:border-[var(--teal)] focus:bg-white focus:ring-2 focus:ring-[var(--teal-soft)]"
                 required
               />
-              <div className="mt-3 flex flex-col gap-2">
-                <div className="grid w-full grid-cols-3 gap-2">
-                  <StatPill label="words" value={liveStats.words} />
-                  <StatPill label="sentences" value={liveStats.sentences} />
-                  <StatPill label="paragraphs" value={liveStats.paragraphs} />
-                </div>
-                <span className="text-xs font-bold text-[var(--ink-3)]">题目和原文只会用于本次分析；历史仅保存在当前浏览器</span>
+              <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                <StatPill label="words" value={liveStats.words} />
+                <StatPill label="sentences" value={liveStats.sentences} />
+                <StatPill label="paragraphs" value={liveStats.paragraphs} />
+                <StatPill label="avg / sentence" value={liveStats.averageSentenceLength} />
               </div>
-              {error && <div className="mt-4 flex items-start gap-2 rounded-[8px] bg-red-50 p-3 text-sm font-bold leading-6 text-[var(--red)]"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span>{error}</span></div>}
-              <button type="submit" disabled={loading} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[8px] bg-[var(--yellow)] px-5 text-sm font-black text-[var(--ink)] transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">
-                {loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                {loading ? '正在批改...' : '开始批改'}
-              </button>
-              {result && <button type="button" onClick={() => setView('report')} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] border border-[var(--teal)]/40 bg-white px-4 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]"><History size={17} />查看上一份报告</button>}
+              {error && <div className="mt-4 flex items-start gap-2 rounded-[6px] bg-red-50 p-3 text-sm font-bold leading-6 text-[var(--red)]"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span>{error}</span></div>}
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <button type="submit" disabled={loading} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-[6px] bg-[var(--yellow)] px-5 text-sm font-black text-[var(--ink)] transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">
+                  {loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                  {loading ? '正在批改...' : '开始批改'}
+                </button>
+                {result && <button type="button" onClick={() => setView('report')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] border border-[var(--teal)]/40 bg-white px-4 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]"><History size={17} />查看上一份报告</button>}
+              </div>
             </div>
           </div>
 
@@ -591,7 +610,7 @@ function UtilityToolbar({ historyCount, savedVocabularyCount, savedTrainingCount
           key={id}
           type="button"
           onClick={() => onOpen(id as 'history' | 'vocab' | 'training')}
-          className="relative flex h-10 w-10 items-center justify-center rounded-[8px] border border-black/10 bg-white text-[var(--ink-2)] transition hover:border-[var(--teal)]/40 hover:bg-[var(--teal-soft)] hover:text-[var(--teal)]"
+          className="relative flex h-10 w-10 items-center justify-center rounded-[6px] border border-black/10 bg-white text-[var(--ink-2)] transition hover:border-[var(--teal)]/40 hover:bg-[var(--teal-soft)] hover:text-[var(--teal)]"
           aria-label={label}
           title={label}
         >
@@ -612,32 +631,37 @@ function TaskPromptPanel({ taskType, prompt, ideaNotes, onPromptChange, onSample
   onGenerateIdeas: () => void
 }) {
   return (
-    <div className="pt-6">
-      <label className="text-base font-black text-[var(--ink)]" htmlFor="writing-prompt">作文题目</label>
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <label className="text-base font-black text-[var(--ink)]" htmlFor="writing-prompt">作文题目</label>
+        {taskType === 'Task 2' && (
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => onSample(task2Samples[Math.floor(Math.random() * task2Samples.length)].prompt)} className="inline-flex min-h-9 items-center gap-2 rounded-[6px] border border-black/10 bg-white px-3 text-xs font-black text-[var(--ink-2)] transition hover:bg-[var(--yellow-soft)]">
+              <Sparkles size={15} />随机题目
+            </button>
+            <button type="button" onClick={onGenerateIdeas} className="inline-flex min-h-9 items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-xs font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]">
+              <Wand2 size={15} />观点提示
+            </button>
+          </div>
+        )}
+      </div>
       <textarea
         id="writing-prompt"
         value={prompt}
         onChange={(event) => onPromptChange(event.target.value)}
-        placeholder={taskType === 'Task 1' ? '粘贴 Task 1 图表题目和题干。' : '粘贴完整 Task 2 题目，或从右上角随机示例题开始。'}
-        className="mt-3 min-h-[118px] w-full resize-y rounded-[8px] border border-black/10 bg-[#fffef7] p-4 text-[15px] leading-7 outline-none transition focus:border-[var(--teal)] focus:bg-white focus:ring-2 focus:ring-[var(--teal-soft)]"
+        placeholder={taskType === 'Task 1' ? '粘贴 Task 1 图表题目和题干。' : '粘贴完整 Task 2 题目，或点击随机题目开始。'}
+        className="mt-3 min-h-[116px] w-full resize-y rounded-[6px] border border-black/10 bg-[#fffef8] p-4 text-[15px] leading-7 outline-none transition focus:border-[var(--teal)] focus:bg-white focus:ring-2 focus:ring-[var(--teal-soft)]"
       />
       {taskType === 'Task 2' && (
-        <div className="mt-3">
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => onSample(task2Samples[Math.floor(Math.random() * task2Samples.length)].prompt)}
-              className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border border-black/10 bg-white px-3 text-sm font-black text-[var(--ink-2)] transition hover:bg-[var(--yellow-soft)]"
-            >
-              <Sparkles size={16} />随机题目
+        <div className="mt-3 flex flex-wrap gap-2">
+          {task2Samples.map((sample) => (
+            <button key={sample.label} type="button" onClick={() => onSample(sample.prompt)} className="rounded-full border border-black/10 bg-white px-3 py-1.5 text-xs font-black text-[var(--ink-2)] transition hover:bg-[var(--yellow-soft)]">
+              {sample.label}
             </button>
-            <button type="button" onClick={onGenerateIdeas} className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]">
-              <Wand2 size={16} />观点提示
-            </button>
-          </div>
-          {ideaNotes && <div className="mt-3 rounded-[8px] bg-[var(--teal-soft)] px-4 py-3 text-sm font-bold leading-7 text-[var(--ink-2)]">{ideaNotes}</div>}
+          ))}
         </div>
       )}
+      {ideaNotes && <div className="mt-3 rounded-[6px] bg-[var(--teal-soft)] px-4 py-3 text-sm font-bold leading-7 text-[var(--ink-2)]">{ideaNotes}</div>}
     </div>
   )
 }
@@ -649,14 +673,14 @@ function ChartFactsPanel({ chartFacts, chartPreview, onChange, onUpload }: {
   onUpload: (event: ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
-    <details className="mt-4 rounded-[8px] border border-yellow-300/60 bg-[var(--yellow-soft)] p-4">
+    <details className="mt-4 rounded-[6px] border border-yellow-300/60 bg-[var(--yellow-soft)] p-4">
       <summary className="flex cursor-pointer list-none items-center gap-3 text-sm font-black text-[var(--ink)]">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-white text-[var(--teal)]"><BarChart3 size={18} /></span>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] bg-white text-[var(--teal)]"><BarChart3 size={18} /></span>
         Task 1 图表信息
         <span className="ml-auto text-xs font-bold text-[var(--ink-3)]">点击填写</span>
       </summary>
-      <p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">不支持自动识别，请手动填写关键数据。图片只用于预览，批改会根据最高值、最低值、趋势和对比进行判断。</p>
-      <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-black/10 bg-white px-3 py-3 text-sm font-black text-[var(--teal)]">
+      <p className="mt-3 text-sm font-bold leading-7 text-[var(--ink-2)]">当前批改以手动填写的关键数据为准，图片仅用于预览。</p>
+      <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-black/10 bg-white px-3 py-3 text-sm font-black text-[var(--teal)]">
         <ImagePlus size={17} />上传图表预览
         <input type="file" accept="image/*" className="hidden" onChange={onUpload} />
       </label>
@@ -691,20 +715,20 @@ function ControlPanel({ checks, highRiskCount, taskType }: {
   const secondaryChecks = checks.filter((item) => !primaryLabels.includes(item.label))
   const highlights = [
     { title: '四项评分', text: '任务回应、连贯、词汇、语法分别判断', icon: ClipboardCheck },
-    { title: '逐句批注', text: '定位原句，并给出可以直接替换的表达', icon: PenLine },
-    { title: 'Word 报告', text: '批改完成后生成可下载的复盘文档', icon: Download },
+    { title: '逐句批注', text: '定位原句并给出可替换表达', icon: PenLine },
+    { title: 'Word 报告', text: '批改完成后可下载复盘文档', icon: Download },
   ]
   return (
-    <aside className="space-y-3 md:sticky md:top-28 md:self-start">
-      <div className="rounded-[8px] border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
+    <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+      <div className="border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-black text-[var(--teal)]">提交前确认</p>
             <h2 className="mt-1 text-2xl font-black text-[var(--ink)]">批改前检查</h2>
           </div>
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] bg-[var(--yellow)] text-[var(--ink)]"><ClipboardCheck size={22} /></span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[6px] bg-[var(--yellow)] text-[var(--ink)]"><ClipboardCheck size={22} /></span>
         </div>
-        <div className={`mt-4 rounded-[8px] px-4 py-3 text-sm font-black ${highRiskCount ? 'bg-[var(--yellow-soft)] text-[var(--ink)]' : 'bg-[var(--teal-soft)] text-[var(--teal)]'}`}>
+        <div className={`mt-4 rounded-[6px] px-4 py-3 text-sm font-black ${highRiskCount ? 'bg-[var(--yellow-soft)] text-[var(--ink)]' : 'bg-[var(--teal-soft)] text-[var(--teal)]'}`}>
           {highRiskCount ? `还需补充 ${highRiskCount} 项` : '可以提交'}
         </div>
         <div className="mt-4"><CheckList checks={primaryChecks} /></div>
@@ -716,8 +740,8 @@ function ControlPanel({ checks, highRiskCount, taskType }: {
         )}
       </div>
       {highlights.map(({ title, text, icon: Icon }) => (
-        <div key={title} className="flex items-start gap-3 rounded-[8px] border border-black/10 bg-white p-4 shadow-[var(--shadow-sm)]">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--teal-soft)] text-[var(--teal)]"><Icon size={19} /></span>
+        <div key={title} className="flex items-start gap-3 border border-black/10 bg-white p-4 shadow-[var(--shadow-sm)]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[6px] bg-[var(--teal-soft)] text-[var(--teal)]"><Icon size={19} /></span>
           <div className="min-w-0">
             <p className="text-sm font-black text-[var(--ink)]">{title}</p>
             <p className="mt-1 text-xs font-bold leading-5 text-[var(--ink-3)]">{text}</p>
@@ -753,14 +777,14 @@ function SavedItemsDrawer({ open, panel, history, savedVocabulary, savedTraining
       <aside role="dialog" aria-modal="true" aria-label={activeTab.label} className="absolute inset-y-0 right-0 flex w-full max-w-[390px] flex-col border-l border-black/10 bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[var(--teal-soft)] text-[var(--teal)]"><ActiveIcon size={19} /></span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[var(--teal-soft)] text-[var(--teal)]"><ActiveIcon size={19} /></span>
             <h2 className="text-lg font-black text-[var(--ink)]">{activeTab.label}</h2>
           </div>
-          <button type="button" onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-black/10 text-[var(--ink-2)] transition hover:bg-[var(--bg)]" aria-label="关闭" title="关闭"><X size={19} /></button>
+          <button type="button" onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-[6px] border border-black/10 text-[var(--ink-2)] transition hover:bg-[var(--bg)]" aria-label="关闭" title="关闭"><X size={19} /></button>
         </div>
         <div className="grid grid-cols-3 gap-2 border-b border-black/10 p-3">
           {tabs.map(({ id, label, icon: Icon }) => (
-            <button key={id} type="button" onClick={() => onPanelChange(id)} className={`flex min-h-10 items-center justify-center gap-1.5 rounded-[8px] px-2 text-xs font-black transition ${panel === id ? 'bg-[var(--yellow)] text-[var(--ink)]' : 'bg-[var(--bg)] text-[var(--ink-2)] hover:bg-[var(--yellow-soft)]'}`}><Icon size={15} />{label}</button>
+            <button key={id} type="button" onClick={() => onPanelChange(id)} className={`flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] px-2 text-xs font-black transition ${panel === id ? 'bg-[var(--yellow)] text-[var(--ink)]' : 'bg-[var(--bg)] text-[var(--ink-2)] hover:bg-[var(--yellow-soft)]'}`}><Icon size={15} />{label}</button>
           ))}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
@@ -777,8 +801,8 @@ function CheckList({ checks }: { checks: EssayCheck[] }) {
   return <div className="space-y-3">{checks.map((item) => {
     const Icon = item.status === 'good' ? CheckCircle2 : item.status === 'warn' ? AlertCircle : XCircle
     const color = item.status === 'good' ? 'text-[var(--teal)] bg-[var(--teal-soft)]' : item.status === 'warn' ? 'text-[var(--ink)] bg-[var(--yellow-soft)]' : 'text-[var(--red)] bg-red-50'
-    return <div key={item.label} className="flex items-start gap-3 rounded-[8px] bg-[var(--bg)] p-3">
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] ${color}`}><Icon size={18} /></span>
+    return <div key={item.label} className="flex items-start gap-3 rounded-[6px] bg-[var(--bg)] p-3">
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] ${color}`}><Icon size={18} /></span>
       <div>
         <p className="text-sm font-black text-[var(--ink)]">{item.label}</p>
         <p className="mt-1 text-xs font-bold leading-6 text-[var(--ink-3)]">{item.detail}</p>
@@ -791,7 +815,7 @@ function HistoryPanel({ history, onLoadHistory, onClearHistory }: { history: Rev
   if (!history.length) return <EmptyPanel icon={History} title="还没有批改记录" text="生成报告后，最近 8 份会保存在当前浏览器。" />
   return <div className="space-y-3">
     {history.map((item) => (
-      <button key={item.id} type="button" onClick={() => onLoadHistory(item)} className="block w-full rounded-[8px] border border-black/10 bg-white p-3 text-left transition hover:bg-[var(--bg)]">
+      <button key={item.id} type="button" onClick={() => onLoadHistory(item)} className="block w-full rounded-[6px] border border-black/10 bg-white p-3 text-left transition hover:bg-[var(--bg)]">
         <div className="flex items-center justify-between gap-2">
           <span className="rounded-full bg-[var(--yellow-soft)] px-2.5 py-1 text-xs font-black text-[var(--ink)]">{item.taskType}</span>
           <span className="text-xs font-bold text-[var(--ink-3)]">{new Date(item.createdAt).toLocaleDateString()}</span>
@@ -800,14 +824,14 @@ function HistoryPanel({ history, onLoadHistory, onClearHistory }: { history: Rev
         <p className="mt-1 text-xs font-bold text-[var(--teal)]">Band {item.result.overallBand}</p>
       </button>
     ))}
-    <button type="button" onClick={onClearHistory} className="inline-flex min-h-10 items-center gap-2 rounded-[8px] px-2 text-xs font-black text-[var(--red)] transition hover:bg-red-50"><Trash2 size={14} />清空本地记录</button>
+    <button type="button" onClick={onClearHistory} className="inline-flex min-h-10 items-center gap-2 rounded-[6px] px-2 text-xs font-black text-[var(--red)] transition hover:bg-red-50"><Trash2 size={14} />清空本地记录</button>
   </div>
 }
 
 function SavedVocabularyPanel({ items }: { items: SavedVocabulary[] }) {
   if (!items.length) return <EmptyPanel icon={BookMarked} title="词汇本为空" text="在报告里的高分词替换处点击保存，就会收进这里。" />
   return <div className="space-y-3">{items.map((item) => (
-    <div key={item.id} className="rounded-[8px] bg-[var(--bg)] p-3">
+    <div key={item.id} className="rounded-[6px] bg-[var(--bg)] p-3">
       <p className="text-sm font-black text-[var(--ink)]">{item.original} {'->'} <span className="text-[var(--teal)]">{item.upgrade}</span></p>
       <p className="mt-1 text-xs font-bold leading-6 text-[var(--ink-3)]">{item.reason || item.context}</p>
     </div>
@@ -817,7 +841,7 @@ function SavedVocabularyPanel({ items }: { items: SavedVocabulary[] }) {
 function SavedTrainingPanel({ items }: { items: SavedTraining[] }) {
   if (!items.length) return <EmptyPanel icon={ListChecks} title="训练清单为空" text="在报告里的下一步训练处点击保存，就会成为复盘待办。" />
   return <div className="space-y-3">{items.map((item) => (
-    <div key={item.id} className="rounded-[8px] bg-[var(--bg)] p-3">
+    <div key={item.id} className="rounded-[6px] bg-[var(--bg)] p-3">
       <span className="rounded-full bg-white px-2.5 py-1 text-xs font-black text-[var(--teal)] ring-1 ring-black/10">{item.priority}</span>
       <p className="mt-2 text-sm font-black text-[var(--ink)]">{item.title}</p>
       <p className="mt-1 text-xs font-bold leading-6 text-[var(--ink-3)]">{item.detail}</p>
@@ -826,8 +850,8 @@ function SavedTrainingPanel({ items }: { items: SavedTraining[] }) {
 }
 
 function EmptyPanel({ icon: Icon, title, text }: { icon: typeof History; title: string; text: string }) {
-  return <div className="rounded-[8px] bg-[var(--bg)] p-5 text-center">
-    <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-[8px] bg-white text-[var(--teal)] ring-1 ring-black/10"><Icon size={22} /></span>
+  return <div className="rounded-[6px] bg-[var(--bg)] p-5 text-center">
+    <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-[6px] bg-white text-[var(--teal)] ring-1 ring-black/10"><Icon size={22} /></span>
     <p className="mt-3 font-black text-[var(--ink)]">{title}</p>
     <p className="mt-1 text-sm font-bold leading-6 text-[var(--ink-3)]">{text}</p>
   </div>
@@ -844,10 +868,10 @@ function ReportHeader({ reportUrl, onBack, result, historyCount, savedVocabulary
 }) {
   const words = result.sentenceStats?.words || result.cleanedWordCount
   return (
-    <div className="mb-6 rounded-[8px] border border-black/10 bg-white p-4 shadow-[var(--shadow-sm)] md:px-5">
+    <div className="mb-6 border border-black/10 bg-white p-4 shadow-[var(--shadow-sm)] md:px-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <button type="button" onClick={onBack} className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]"><ArrowLeft size={17} />返回修改</button>
+          <button type="button" onClick={onBack} className="inline-flex h-10 items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-sm font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)]"><ArrowLeft size={17} />返回修改</button>
           <span className="h-6 w-px bg-black/10" />
           <div>
             <p className="text-sm font-black text-[var(--ink)]">作文批改报告</p>
@@ -856,7 +880,7 @@ function ReportHeader({ reportUrl, onBack, result, historyCount, savedVocabulary
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <UtilityToolbar historyCount={historyCount} savedTrainingCount={savedTrainingCount} savedVocabularyCount={savedVocabularyCount} onOpen={onOpenUtility} />
-          {reportUrl ? <a href={reportUrl} download="edutoro-writing-report.docx" className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[var(--yellow)] px-4 text-sm font-black text-[var(--ink)] transition hover:brightness-95"><Download size={17} />下载 Word</a> : <span className="inline-flex h-10 items-center rounded-[8px] bg-[var(--bg)] px-3 text-xs font-bold text-[var(--ink-3)]">正在准备文件...</span>}
+          {reportUrl ? <a href={reportUrl} download="edutoro-writing-report.docx" className="inline-flex h-10 items-center gap-2 rounded-[6px] bg-[var(--yellow)] px-4 text-sm font-black text-[var(--ink)] transition hover:brightness-95"><Download size={17} />下载 Word</a> : <span className="inline-flex h-10 items-center rounded-[6px] bg-[var(--bg)] px-3 text-xs font-bold text-[var(--ink-3)]">正在准备文件...</span>}
         </div>
       </div>
     </div>
@@ -878,29 +902,28 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
   const maxIssueCount = Math.max(1, ...Object.values(issueStats))
   return <div className="space-y-6">
     <div className="grid items-start gap-6 md:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
-    <aside>
-      <div className="rounded-[8px] border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
-        <p className="text-xs font-black text-[var(--ink-3)]">批改结果</p>
-        <p className="mt-3 text-7xl font-black leading-none text-[var(--teal)]">{result.overallBand}</p>
-        <p className="mt-2 text-xs font-bold text-[var(--ink-3)]">{result.fallback ? '基础参考分数' : 'AI 参考分数'}</p>
-        <div className="mt-5 border-t border-black/10 pt-5">
-          <p className="text-sm font-black text-[var(--ink)]">四项评分</p>
-          <div className="mt-4 space-y-4">{Object.entries(result.criteria || {}).map(([key, item]) => <ScoreBar key={key} label={criteriaLabels[key] || key} band={item.band} />)}</div>
+      <aside>
+        <div className="border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
+          <p className="text-xs font-black text-[var(--ink-3)]">批改结果</p>
+          <p className="mt-3 text-7xl font-black leading-none text-[var(--teal)]">{result.overallBand}</p>
+          <p className="mt-2 text-xs font-bold text-[var(--ink-3)]">{result.fallback ? '基础参考分数' : 'AI 参考分数'}</p>
+          <div className="mt-5 border-t border-black/10 pt-5">
+            <p className="text-sm font-black text-[var(--ink)]">四项评分</p>
+            <div className="mt-4 space-y-4">{Object.entries(result.criteria || {}).map(([key, item]) => <ScoreBar key={key} label={criteriaLabels[key] || key} band={item.band} />)}</div>
+          </div>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+            <MiniStat label="words" value={stats.words} />
+            <MiniStat label="sentences" value={stats.sentences} />
+            <MiniStat label="paras" value={stats.paragraphs} />
+          </div>
         </div>
-        <div className="mt-5 grid grid-cols-3 gap-2 text-center">
-          <MiniStat label="words" value={stats.words} />
-          <MiniStat label="sentences" value={stats.sentences} />
-          <MiniStat label="paras" value={stats.paragraphs} />
-        </div>
-      </div>
-    </aside>
-
-    <DetailedFeedbackOverview result={result} />
+      </aside>
+      <DetailedFeedbackOverview result={result} />
     </div>
 
     <div className="min-w-0 space-y-5">
-      {result.fallback ? <div className="rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">当前为基础评分报告：大模型服务不可用时，系统会先用本地校准器和规则给出可参考结果；恢复网络后可重新提交获取逐句精批和改写。</div> : null}
-      <section className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7">
+      {result.fallback ? <div className="rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">当前为基础评分报告：大模型服务不可用时，系统会先用本地校准器和规则给出可参考结果；恢复网络后可重新提交获取逐句精批和改写。</div> : null}
+      <section className="border border-black/10 bg-white p-5 md:p-7">
         <div className="flex items-center gap-2"><CheckCircle2 size={20} className="text-[var(--teal)]" /><h2 className="text-xl font-black">先看结论</h2></div>
         <p className="mt-4 text-[16px] leading-8 text-[var(--ink-2)]">{result.summary}</p>
         {result.essayOutline && <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -908,20 +931,20 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
           <ReportFact icon={Lightbulb} label="立场" value={result.essayOutline.position} />
           <ReportFact icon={Layers3} label="主体逻辑" value={result.essayOutline.bodyLogic} />
         </div>}
-        <div className="mt-5 rounded-[8px] bg-[var(--bg)] p-4 text-sm leading-7 text-[var(--ink-2)]">
+        <div className="mt-5 rounded-[6px] bg-[var(--bg)] p-4 text-sm leading-7 text-[var(--ink-2)]">
           <p className="font-black text-[var(--ink)]">本次题目</p>
           <p className="mt-1 whitespace-pre-wrap">{result.taskPromptUsed || prompt}</p>
         </div>
       </section>
 
-      {result.warnings?.length ? <div className="rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">{result.warnings.join('；')}</div> : null}
+      {result.warnings?.length ? <div className="rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">{result.warnings.join('；')}</div> : null}
 
-      <section className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7">
+      <section className="border border-black/10 bg-white p-5 md:p-7">
         <h2 className="text-xl font-black">优先修改</h2>
         <p className="mt-2 text-sm font-bold leading-7 text-[var(--ink-3)]">问题越多的部分越值得先处理，修改时可以从数量最高的项目开始。</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-5">
           {(Object.entries(issueStats) as [keyof IssueStats, number][]).map(([key, value]) => (
-            <div key={key} className="rounded-[8px] bg-[var(--bg)] p-3">
+            <div key={key} className="rounded-[6px] bg-[var(--bg)] p-3">
               <p className="text-xs font-black text-[var(--ink-3)]">{issueLabels[key]}</p>
               <p className="mt-2 text-3xl font-black text-[var(--ink)]">{value}</p>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white">
@@ -932,15 +955,15 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
         </div>
       </section>
 
-      <section className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7">
+      <section className="border border-black/10 bg-white p-5 md:p-7">
         <h2 className="text-xl font-black">评分依据</h2>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">{Object.entries(result.criteria || {}).map(([key, item]) => <div key={key} className="rounded-[8px] bg-[var(--bg)] p-4"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-black">{criteriaLabels[key] || key}</h3><span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-sm font-black">{item.band}</span></div><p className="mt-3 text-sm leading-7 text-[var(--ink-2)]">{item.comment}</p></div>)}</div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">{Object.entries(result.criteria || {}).map(([key, item]) => <div key={key} className="rounded-[6px] bg-[var(--bg)] p-4"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-black">{criteriaLabels[key] || key}</h3><span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-sm font-black">{item.band}</span></div><p className="mt-3 text-sm leading-7 text-[var(--ink-2)]">{item.comment}</p></div>)}</div>
       </section>
 
-      <section className="rounded-[8px] border border-black/10 bg-white p-5 md:p-7">
+      <section className="border border-black/10 bg-white p-5 md:p-7">
         <h2 className="text-xl font-black">原文批注</h2>
-        <div className="mt-4 whitespace-pre-wrap rounded-[8px] bg-[var(--bg)] p-4 text-[15px] leading-8">{renderAnnotatedEssay(essay, result.annotations || [])}</div>
-        {result.annotations?.length ? <div className="mt-5 grid gap-3">{result.annotations.map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[8px] border border-black/8 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div> : <p className="mt-4 rounded-[8px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">基础评分报告暂不生成逐句批注；等大模型服务恢复后重新提交，就会显示逐句修改建议。</p>}
+        <div className="mt-4 whitespace-pre-wrap rounded-[6px] bg-[var(--bg)] p-4 text-[15px] leading-8">{renderAnnotatedEssay(essay, result.annotations || [])}</div>
+        {result.annotations?.length ? <div className="mt-5 grid gap-3">{result.annotations.map((item, index) => <div key={`${item.original}-${index}`} className="rounded-[6px] border border-black/10 p-4"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-3 py-1 text-xs font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black text-[var(--ink-2)]">{severityLabels[item.severity] || item.severity}</span></div><p className="mt-3 text-sm font-black">原文：{item.original}</p><p className="mt-2 text-sm leading-7 text-[var(--teal)]">建议：{item.revision}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason}</p></div>)}</div> : <p className="mt-4 rounded-[6px] bg-[var(--yellow-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">基础评分报告暂不生成逐句批注；等大模型服务恢复后重新提交，就会显示逐句修改建议。</p>}
       </section>
 
       <section className="grid gap-5 lg:grid-cols-2">
@@ -948,11 +971,9 @@ function ReviewReport({ result, prompt, essay, savedVocabulary, savedTraining, o
         <CollocationReport items={result.collocations || []} />
       </section>
 
-      <section>
-        <TrainingReport items={plan} savedTraining={savedTraining} onSave={onSaveTraining} />
-      </section>
+      <TrainingReport items={plan} savedTraining={savedTraining} onSave={onSaveTraining} />
 
-      <section className="rounded-[8px] border border-[var(--teal)]/15 bg-[var(--teal-soft)] p-5 md:p-7">
+      <section className="border border-[var(--teal)]/15 bg-[var(--teal-soft)] p-5 md:p-7">
         <h2 className="text-xl font-black text-[var(--ink)]">参考高分版本</h2>
         <p className="mt-4 whitespace-pre-wrap text-[15px] leading-8 text-[var(--ink-2)]">{result.polishedEssay || essay}</p>
       </section>
@@ -969,19 +990,19 @@ function DetailedFeedbackOverview({ result }: { result: ReviewResult }) {
   const fallbackItems = result.improvementPlan?.slice(0, 3) || (result.recommendations || []).slice(0, 3).map((detail) => ({ title: '修改建议', detail, priority: 'medium' }))
 
   return (
-    <section className="rounded-[8px] border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
+    <section className="border border-black/10 bg-white p-5 shadow-[var(--shadow-sm)] md:p-6">
       <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-4">
         <div>
           <p className="text-xs font-black text-[var(--teal)]">Detailed Feedback</p>
           <h2 className="mt-1 text-2xl font-black text-[var(--ink)]">逐句精批</h2>
         </div>
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] bg-[var(--teal-soft)] text-[var(--teal)]"><PenLine size={21} /></span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[6px] bg-[var(--teal-soft)] text-[var(--teal)]"><PenLine size={21} /></span>
       </div>
 
       {annotations.length > 0 ? (
         <div className="mt-4 space-y-3">
           {annotations.map((item, index) => (
-            <div key={`${item.original}-${index}`} className="rounded-[8px] bg-[var(--bg)] p-4">
+            <div key={`${item.original}-${index}`} className="rounded-[6px] bg-[var(--bg)] p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${issueColors[item.issueType] || issueColors.Style}`}>{item.issueType}</span>
                 <span className="text-[11px] font-black text-[var(--ink-3)]">{severityLabels[item.severity] || item.severity}</span>
@@ -994,50 +1015,50 @@ function DetailedFeedbackOverview({ result }: { result: ReviewResult }) {
         </div>
       ) : (
         <div className="mt-4 space-y-3">
-          <p className="rounded-[8px] bg-[var(--teal-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">{result.summary}</p>
-          {fallbackItems.map((item, index) => <div key={`${item.title}-${index}`} className="flex gap-3 rounded-[8px] bg-[var(--bg)] p-3"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--yellow)]" /><div><p className="text-sm font-black text-[var(--ink)]">{item.title}</p><p className="mt-1 text-xs font-bold leading-5 text-[var(--ink-3)]">{item.detail}</p></div></div>)}
+          <p className="rounded-[6px] bg-[var(--teal-soft)] p-4 text-sm font-bold leading-7 text-[var(--ink-2)]">{result.summary}</p>
+          {fallbackItems.map((item, index) => <div key={`${item.title}-${index}`} className="flex gap-3 rounded-[6px] bg-[var(--bg)] p-3"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--yellow)]" /><div><p className="text-sm font-black text-[var(--ink)]">{item.title}</p><p className="mt-1 text-xs font-bold leading-5 text-[var(--ink-3)]">{item.detail}</p></div></div>)}
         </div>
       )}
 
-      {vocabulary && <div className="mt-4 rounded-[8px] border border-[var(--teal)]/20 bg-white p-4"><p className="text-xs font-black text-[var(--ink-3)]">词汇提升</p><p className="mt-2 text-sm font-black text-[var(--ink)]">{vocabulary.original} <span className="px-1 text-[var(--teal)]">{'->'}</span> <span className="text-[var(--teal)]">{vocabulary.upgrade}</span></p><p className="mt-2 text-xs font-bold leading-5 text-[var(--ink-3)]">{vocabulary.reason || vocabulary.context}</p></div>}
+      {vocabulary && <div className="mt-4 rounded-[6px] border border-[var(--teal)]/20 bg-white p-4"><p className="text-xs font-black text-[var(--ink-3)]">词汇提升</p><p className="mt-2 text-sm font-black text-[var(--ink)]">{vocabulary.original} <span className="px-1 text-[var(--teal)]">{'->'}</span> <span className="text-[var(--teal)]">{vocabulary.upgrade}</span></p><p className="mt-2 text-xs font-bold leading-5 text-[var(--ink-3)]">{vocabulary.reason || vocabulary.context}</p></div>}
     </section>
   )
 }
 
 function VocabularyReport({ items, savedVocabulary, onSave }: { items: VocabularyUpgrade[]; savedVocabulary: SavedVocabulary[]; onSave: (item: VocabularyUpgrade) => void }) {
-  return <div className="rounded-[8px] border border-black/10 bg-white p-5 md:p-6">
+  return <div className="border border-black/10 bg-white p-5 md:p-6">
     <h2 className="text-xl font-black text-[var(--ink)]">高分词替换</h2>
     <div className="mt-4 space-y-3">
       {items.length ? items.map((item) => {
         const saved = savedVocabulary.some((savedItem) => savedItem.original === item.original && savedItem.upgrade === item.upgrade)
-        return <div key={`${item.original}-${item.upgrade}`} className="rounded-[8px] bg-[var(--bg)] p-4">
+        return <div key={`${item.original}-${item.upgrade}`} className="rounded-[6px] bg-[var(--bg)] p-4">
           <p className="text-sm font-black text-[var(--ink)]">{item.original} <span className="px-1 text-[var(--teal)]">{'->'}</span> <span className="text-[var(--teal)]">{item.upgrade}</span></p>
           <p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.reason || item.context}</p>
-          <button type="button" onClick={() => onSave(item)} className="mt-3 inline-flex min-h-9 items-center gap-2 rounded-[8px] border border-[var(--teal)]/35 bg-white px-3 text-xs font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)] disabled:opacity-55" disabled={saved}><Save size={14} />{saved ? '已保存' : '保存到词汇本'}</button>
+          <button type="button" onClick={() => onSave(item)} className="mt-3 inline-flex min-h-9 items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-xs font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)] disabled:opacity-55" disabled={saved}><Save size={14} />{saved ? '已保存' : '保存到词汇本'}</button>
         </div>
-      }) : <p className="rounded-[8px] bg-[var(--bg)] p-4 text-sm font-bold leading-7 text-[var(--ink-3)]">本次结果暂未返回词汇替换。后端升级后会显示原词、推荐替换和使用原因。</p>}
+      }) : <p className="rounded-[6px] bg-[var(--bg)] p-4 text-sm font-bold leading-7 text-[var(--ink-3)]">本次结果暂未返回词汇替换。后端升级后会显示原词、推荐替换和使用原因。</p>}
     </div>
   </div>
 }
 
 function CollocationReport({ items }: { items: Collocation[] }) {
-  return <div className="rounded-[8px] bg-[var(--bg)] p-5 md:p-6">
+  return <div className="bg-[var(--bg)] p-5 md:p-6">
     <h2 className="text-xl font-black text-[var(--ink)]">可复用词伙</h2>
     <div className="mt-4 space-y-3">
-      {items.length ? items.map((item) => <div key={item.phrase} className="rounded-[8px] bg-white p-4 ring-1 ring-black/10"><p className="text-sm font-black text-[var(--teal)]">{item.phrase}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.example}</p>{item.useCase && <p className="mt-2 text-xs font-black text-[var(--ink-3)]">{item.useCase}</p>}</div>) : <p className="rounded-[8px] bg-white p-4 text-sm font-bold leading-7 text-[var(--ink-3)] ring-1 ring-black/10">本次结果暂未返回词伙。可以先用“高分词替换”和“参考高分版本”复盘表达。</p>}
+      {items.length ? items.map((item) => <div key={item.phrase} className="rounded-[6px] bg-white p-4 ring-1 ring-black/10"><p className="text-sm font-black text-[var(--teal)]">{item.phrase}</p><p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.example}</p>{item.useCase && <p className="mt-2 text-xs font-black text-[var(--ink-3)]">{item.useCase}</p>}</div>) : <p className="rounded-[6px] bg-white p-4 text-sm font-bold leading-7 text-[var(--ink-3)] ring-1 ring-black/10">本次结果暂未返回词伙。可以先用高分词替换和参考高分版本复盘表达。</p>}
     </div>
   </div>
 }
 
 function TrainingReport({ items, savedTraining, onSave }: { items: ImprovementItem[]; savedTraining: SavedTraining[]; onSave: (item: ImprovementItem) => void }) {
-  return <div className="rounded-[8px] bg-white p-5 shadow-[var(--shadow-sm)] ring-1 ring-black/10 md:p-6">
+  return <div className="bg-white p-5 shadow-[var(--shadow-sm)] ring-1 ring-black/10 md:p-6">
     <h2 className="text-xl font-black">下一步训练</h2>
     <ul className="mt-4 space-y-3">{items.map((item) => {
       const saved = savedTraining.some((savedItem) => savedItem.title === item.title)
-      return <li key={`${item.priority}-${item.title}`} className="rounded-[8px] bg-[var(--bg)] p-4">
+      return <li key={`${item.priority}-${item.title}`} className="rounded-[6px] bg-[var(--bg)] p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[var(--teal)] ring-1 ring-black/10">{item.priority}</span>
-          <button type="button" onClick={() => onSave(item)} disabled={saved} className="inline-flex min-h-9 items-center gap-2 rounded-[8px] border border-[var(--teal)]/35 bg-white px-3 text-xs font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)] disabled:opacity-55"><Save size={14} />{saved ? '已保存' : '保存训练'}</button>
+          <button type="button" onClick={() => onSave(item)} disabled={saved} className="inline-flex min-h-9 items-center gap-2 rounded-[6px] border border-[var(--teal)]/35 bg-white px-3 text-xs font-black text-[var(--teal)] transition hover:bg-[var(--teal-soft)] disabled:opacity-55"><Save size={14} />{saved ? '已保存' : '保存训练'}</button>
         </div>
         <p className="mt-3 text-sm font-black text-[var(--ink)]">{item.title}</p>
         <p className="mt-2 text-sm leading-7 text-[var(--ink-2)]">{item.detail}</p>
@@ -1047,7 +1068,7 @@ function TrainingReport({ items, savedTraining, onSave }: { items: ImprovementIt
 }
 
 function ReportFact({ icon: Icon, label, value }: { icon: typeof Brain; label: string; value: string }) {
-  return <div className="rounded-[8px] bg-[var(--bg)] p-3">
+  return <div className="rounded-[6px] bg-[var(--bg)] p-3">
     <Icon size={18} className="text-[var(--teal)]" />
     <p className="mt-2 text-xs font-black text-[var(--ink-3)]">{label}</p>
     <p className="mt-1 text-sm font-black leading-6 text-[var(--ink)]">{value}</p>
