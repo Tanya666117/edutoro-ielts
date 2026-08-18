@@ -223,10 +223,6 @@ function getChartFieldDefinitions(chartType: string) {
   return chartTypeFieldDefinitions[chartType] || chartTypeFieldDefinitions.柱状图
 }
 
-function getRelevantChartKeys(chartType: string) {
-  return getChartFieldDefinitions(chartType).map((item) => item.key)
-}
-
 function chartFactsToText(facts: ChartFacts) {
   return getChartFieldDefinitions(facts.chartType).map(({ key, label }) => `${label}: ${facts[key] || '未填写'}`).join('\n')
 }
